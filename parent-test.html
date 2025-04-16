@@ -90,14 +90,42 @@
         }
         .examples-container {
             margin-top: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            background-color: #f9fafb;
+        }
+        .examples-container h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .examples-container h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 8px;
         }
         .example-button {
             background-color: #6b7280;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            padding: 6px 12px;
         }
         .example-button:hover {
             background-color: #4b5563;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+        .mb-4 {
+            margin-bottom: 16px;
         }
     </style>
 </head>
@@ -123,10 +151,35 @@
 
             <div class="examples-container">
                 <h3>Exemplos:</h3>
-                <button class="example-button" data-example="button">Botão Simples</button>
-                <button class="example-button" data-example="card">Card</button>
-                <button class="example-button" data-example="dashboard">Dashboard</button>
-                <button class="example-button" data-example="complex">Componente Complexo</button>
+                <h4 class="mb-2">Básicos:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="button">Botão Simples</button>
+                    <button class="example-button" data-example="buttonGroup">Grupo de Botões</button>
+                    <button class="example-button" data-example="toggle">Toggle</button>
+                    <button class="example-button" data-example="counter">Contador</button>
+                </div>
+
+                <h4 class="mb-2">Layout:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="card">Card</button>
+                    <button class="example-button" data-example="cardList">Lista de Cards</button>
+                    <button class="example-button" data-example="tabs">Tabs</button>
+                    <button class="example-button" data-example="accordion">Accordion</button>
+                </div>
+
+                <h4 class="mb-2">Interativos:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="form">Formulário</button>
+                    <button class="example-button" data-example="tooltip">Tooltip</button>
+                    <button class="example-button" data-example="darkMode">Modo Escuro</button>
+                    <button class="example-button" data-example="notification">Notificações</button>
+                </div>
+
+                <h4 class="mb-2">Avançados:</h4>
+                <div class="flex flex-wrap">
+                    <button class="example-button" data-example="dashboard">Dashboard</button>
+                    <button class="example-button" data-example="complex">Componente Complexo</button>
+                </div>
             </div>
 
             <div class="log-container" id="log-container">
@@ -201,7 +254,283 @@
       </Card>
     </div>
   );
-};`
+};`,
+            // Novos exemplos
+            buttonGroup: `function Component() {
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Grupo de Botões</h2>
+      <div className="flex space-x-2">
+        <Button variant="default">Padrão</Button>
+        <Button variant="destructive">Destrutivo</Button>
+        <Button variant="outline">Contorno</Button>
+        <Button variant="secondary">Secundário</Button>
+        <Button variant="ghost">Fantasma</Button>
+        <Button variant="link">Link</Button>
+      </div>
+    </div>
+  );
+}`,
+            toggle: `const Component = () => {
+  const [enabled, setEnabled] = React.useState(false);
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Botão Toggle</h2>
+      <div className="flex items-center space-x-2">
+        <Button
+          variant={enabled ? "default" : "outline"}
+          onClick={() => setEnabled(!enabled)}
+        >
+          {enabled ? "Ativado" : "Desativado"}
+        </Button>
+        <div className="text-sm">
+          Status: <span className={enabled ? "text-green-500" : "text-red-500"}>
+            {enabled ? "ON" : "OFF"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+            cardList: `function Component() {
+  const items = [
+    { title: "Item 1", description: "Descrição do item 1" },
+    { title: "Item 2", description: "Descrição do item 2" },
+    { title: "Item 3", description: "Descrição do item 3" }
+  ];
+
+  return (
+    <div className="space-y-4 p-4">
+      <h2 className="text-2xl font-bold">Lista de Cards</h2>
+      {items.map((item, index) => (
+        <Card key={index} className="w-full">
+          <CardHeader>
+            <CardTitle>{item.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{item.description}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}`,
+            counter: `const Component = () => {
+  const [count, setCount] = React.useState(0);
+
+  const increment = () => setCount(prev => prev + 1);
+  const decrement = () => setCount(prev => Math.max(0, prev - 1));
+  const reset = () => setCount(0);
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Contador Avançado</h2>
+      <div className="text-4xl font-bold text-center mb-4">{count}</div>
+      <div className="flex justify-center space-x-2">
+        <Button onClick={decrement} variant="outline">-</Button>
+        <Button onClick={reset} variant="secondary">Reset</Button>
+        <Button onClick={increment}>+</Button>
+      </div>
+    </div>
+  );
+}`,
+            form: `const Component = () => {
+  const [formData, setFormData] = React.useState({ name: "", email: "" });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(\`Formulário enviado! Nome: \${formData.name}, Email: \${formData.email}\`);
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Formulário Simples</h2>
+      <Card>
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nome</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded-md"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email</label>
+              <input
+                type="email"
+                className="w-full p-2 border rounded-md"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">Enviar</Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}`,
+            tabs: `const Component = () => {
+  const [activeTab, setActiveTab] = React.useState("tab1");
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Componente com Tabs</h2>
+      <div className="border-b mb-4">
+        <div className="flex">
+          <button
+            className={\`py-2 px-4 \${activeTab === "tab1" ? "border-b-2 border-blue-500 font-medium" : ""}\`}
+            onClick={() => setActiveTab("tab1")}
+          >
+            Tab 1
+          </button>
+          <button
+            className={\`py-2 px-4 \${activeTab === "tab2" ? "border-b-2 border-blue-500 font-medium" : ""}\`}
+            onClick={() => setActiveTab("tab2")}
+          >
+            Tab 2
+          </button>
+          <button
+            className={\`py-2 px-4 \${activeTab === "tab3" ? "border-b-2 border-blue-500 font-medium" : ""}\`}
+            onClick={() => setActiveTab("tab3")}
+          >
+            Tab 3
+          </button>
+        </div>
+      </div>
+      <div className="p-4 border rounded-md">
+        {activeTab === "tab1" && <div>Conteúdo da Tab 1</div>}
+        {activeTab === "tab2" && <div>Conteúdo da Tab 2</div>}
+        {activeTab === "tab3" && <div>Conteúdo da Tab 3</div>}
+      </div>
+    </div>
+  );
+}`,
+            accordion: `function Component() {
+  const [openItem, setOpenItem] = React.useState(null);
+
+  const toggleItem = (index) => {
+    setOpenItem(openItem === index ? null : index);
+  };
+
+  const items = [
+    { title: "Seção 1", content: "Conteúdo da seção 1" },
+    { title: "Seção 2", content: "Conteúdo da seção 2" },
+    { title: "Seção 3", content: "Conteúdo da seção 3" }
+  ];
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Accordion Simples</h2>
+      <div className="border rounded-md overflow-hidden">
+        {items.map((item, index) => (
+          <div key={index} className="border-b last:border-b-0">
+            <button
+              className="flex justify-between items-center w-full p-4 text-left font-medium"
+              onClick={() => toggleItem(index)}
+            >
+              {item.title}
+              <span>{openItem === index ? "-" : "+"}</span>
+            </button>
+            {openItem === index && (
+              <div className="p-4 bg-gray-50">{item.content}</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}`,
+            tooltip: `const Component = () => {
+  const [showTooltip, setShowTooltip] = React.useState(false);
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Botão com Tooltip</h2>
+      <div className="flex justify-center">
+        <div className="relative inline-block">
+          <Button
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            Passe o mouse aqui
+          </Button>
+          {showTooltip && (
+            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+              Isso é um tooltip!
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black"></div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}`,
+            darkMode: `function Component() {
+  const [darkMode, setDarkMode] = React.useState(false);
+
+  return (
+    <div className={\`p-4 \${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"}\`}>
+      <h2 className="text-2xl font-bold mb-4">Alternador de Tema</h2>
+      <div className="flex items-center space-x-2">
+        <Button
+          variant={darkMode ? "outline" : "default"}
+          onClick={() => setDarkMode(!darkMode)}
+          className={darkMode ? "border-white" : ""}
+        >
+          {darkMode ? "Modo Claro" : "Modo Escuro"}
+        </Button>
+        <div className="text-sm">
+          Tema atual: {darkMode ? "Escuro" : "Claro"}
+        </div>
+      </div>
+      <Card className={\`mt-4 \${darkMode ? "bg-gray-700 border-gray-600" : ""}\`}>
+        <CardContent className="pt-6">
+          <p>Este card muda de acordo com o tema selecionado.</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}`,
+            notification: `const Component = () => {
+  const [notifications, setNotifications] = React.useState([]);
+
+  const addNotification = () => {
+    const newNotification = {
+      id: Date.now(),
+      message: \`Notificação \${notifications.length + 1}\`
+    };
+    setNotifications([...notifications, newNotification]);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== newNotification.id));
+    }, 3000);
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Sistema de Notificações</h2>
+      <Button onClick={addNotification}>Adicionar Notificação</Button>
+
+      <div className="fixed top-4 right-4 space-y-2 w-64">
+        {notifications.map(notification => (
+          <div
+            key={notification.id}
+            className="bg-blue-500 text-white p-3 rounded-md shadow-md animate-fade-in"
+          >
+            {notification.message}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}`
         };
 
         // Elementos do DOM
