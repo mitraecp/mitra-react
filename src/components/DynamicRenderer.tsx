@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { messageService } from '@/lib/message-service';
-import * as ShadcnComponents from '@/components/ui';
+// Importar todos os componentes que podem ser usados no código dinâmico
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dashboard } from './Dashboard';
-import { transformJSX, containsJSX, sanitizeJSXCode, extractComponent } from '@/lib/jsx-transformer';
+import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
 
 // Componentes pré-definidos para uso direto
 const SimpleButton = () => {
@@ -111,84 +111,61 @@ const DynamicRenderer: React.FC = () => {
     if (!componentCode) return null;
 
     try {
-      // Verificar se o código contém JSX
-      const hasJSX = containsJSX(componentCode);
-
-      // Sanitizar o código
+      // Sanitizar o código para garantir que seja válido
       const sanitizedCode = sanitizeJSXCode(componentCode);
 
-      // Extrair o componente do código
-      const extractedCode = extractComponent(sanitizedCode);
-
-      // Contexto para a função eval que inclui React e componentes do Shadcn
-      const context = {
-        React,
-        ...ShadcnComponents,
-        Button,
-        Card,
-        CardHeader,
-        CardContent,
-        CardDescription,
-        CardTitle,
-        Dashboard
-      };
-
-      // Se o código contiver JSX, transformá-lo
-      let processedCode = extractedCode;
-
-      if (hasJSX) {
-        console.log('Código contém JSX, transformando...');
-        processedCode = transformJSX(extractedCode);
-        console.log('Código transformado:', processedCode);
-      }
-
-      // Abordagem alternativa: renderizar componentes simples baseados no texto
-      if (componentCode.includes('<Button>') && componentCode.includes('Clique em Mim')) {
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Componente Dinâmico</h2>
-            <Button>Clique em Mim</Button>
-          </div>
-        );
-      }
-
-      // Se o código contiver "Componente Dinâmico", renderizar um componente simples
-      if (componentCode.includes('Componente Dinâmico')) {
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Componente Dinâmico</h2>
-            <Button>Clique em Mim</Button>
-          </div>
-        );
-      }
-
-      // Tentar criar e executar o componente
+      // Transpilar o código JSX para JavaScript válido
+      let transpiledCode;
       try {
-        // Criar uma função que retorna o componente JSX
-        const createComponent = new Function(
-          ...Object.keys(context),
-          `try {
-            ${processedCode}
-            return typeof Component === 'function' ? Component : null;
+        transpiledCode = transformJSX(sanitizedCode);
+        console.log('Código transpilado com sucesso');
+      } catch (error) {
+        console.error('Erro ao transpilar código com Babel:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+        throw new Error(`Erro ao transpilar código: ${errorMessage}`);
+      }
+
+      // Não fazemos mais detecção baseada em texto - processamos diretamente o JSX
+
+      // Abordagem direta: definir o componente diretamente no escopo atual
+      try {
+        console.log('Processando código JSX...');
+
+        // Criar um componente dinâmico diretamente a partir do código
+        // Esta abordagem é mais direta e evita problemas de escopo
+        const DynamicComponentWrapper = () => {
+          // Definir variáveis para o escopo local
+          let Component: React.FC | null = null;
+
+          // Executar o código para definir o Component
+          try {
+            // eslint-disable-next-line no-new-func
+            const defineComponent = new Function('React', 'Button', 'Card', 'CardHeader', 'CardContent', 'CardDescription', 'CardTitle', 'Dashboard', `
+              ${transpiledCode}
+              return Component;
+            `);
+
+            Component = defineComponent(React, Button, Card, CardHeader, CardContent, CardDescription, CardTitle, Dashboard);
           } catch (error) {
-            console.error("Erro ao renderizar componente:", error);
-            throw error;
-          }`
-        );
+            console.error('Erro ao definir o componente:', error);
+            throw new Error(`Erro ao definir o componente: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+          }
 
-        // Executar a função com o contexto
-        const DynamicComponent = createComponent(...Object.values(context));
+          // Verificar se Component foi definido
+          if (!Component) {
+            throw new Error('O componente não foi definido corretamente. Certifique-se de definir uma função chamada "Component".');
+          }
 
-        if (!DynamicComponent) {
-          throw new Error('O componente não foi definido corretamente. Certifique-se de definir uma função chamada "Component".');
-        }
+          return <Component />;
+        };
 
-        return <DynamicComponent />;
+        // Renderizar o wrapper que contém o componente dinâmico
+        return <DynamicComponentWrapper />;
       } catch (evalError) {
         console.error('Erro ao avaliar o código:', evalError);
 
         // Se o erro for relacionado a JSX, tentar renderizar um componente simples
-        if (evalError.toString().includes("Unexpected token '<'")) {
+        if (evalError && evalError.toString().includes("Unexpected token '<'")) {
           messageService.sendMessage('ERROR', { message: 'Erro de sintaxe JSX. Tentando renderizar um componente simples...' });
           return (
             <div>
