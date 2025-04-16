@@ -6,6 +6,7 @@ import * as ShadcnComponents from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dashboard } from './Dashboard';
+import { transformJSX, containsJSX, sanitizeJSXCode, extractComponent } from '@/lib/jsx-transformer';
 
 // Componentes pré-definidos para uso direto
 const SimpleButton = () => {
@@ -110,6 +111,37 @@ const DynamicRenderer: React.FC = () => {
     if (!componentCode) return null;
 
     try {
+      // Verificar se o código contém JSX
+      const hasJSX = containsJSX(componentCode);
+
+      // Sanitizar o código
+      const sanitizedCode = sanitizeJSXCode(componentCode);
+
+      // Extrair o componente do código
+      const extractedCode = extractComponent(sanitizedCode);
+
+      // Contexto para a função eval que inclui React e componentes do Shadcn
+      const context = {
+        React,
+        ...ShadcnComponents,
+        Button,
+        Card,
+        CardHeader,
+        CardContent,
+        CardDescription,
+        CardTitle,
+        Dashboard
+      };
+
+      // Se o código contiver JSX, transformá-lo
+      let processedCode = extractedCode;
+
+      if (hasJSX) {
+        console.log('Código contém JSX, transformando...');
+        processedCode = transformJSX(extractedCode);
+        console.log('Código transformado:', processedCode);
+      }
+
       // Abordagem alternativa: renderizar componentes simples baseados no texto
       if (componentCode.includes('<Button>') && componentCode.includes('Clique em Mim')) {
         return (
@@ -130,8 +162,45 @@ const DynamicRenderer: React.FC = () => {
         );
       }
 
-      // Tentativa de renderizar o código (abordagem mais arriscada)
-      throw new Error('Não foi possível renderizar o componente. Por favor, use um dos exemplos pré-definidos.');
+      // Tentar criar e executar o componente
+      try {
+        // Criar uma função que retorna o componente JSX
+        const createComponent = new Function(
+          ...Object.keys(context),
+          `try {
+            ${processedCode}
+            return typeof Component === 'function' ? Component : null;
+          } catch (error) {
+            console.error("Erro ao renderizar componente:", error);
+            throw error;
+          }`
+        );
+
+        // Executar a função com o contexto
+        const DynamicComponent = createComponent(...Object.values(context));
+
+        if (!DynamicComponent) {
+          throw new Error('O componente não foi definido corretamente. Certifique-se de definir uma função chamada "Component".');
+        }
+
+        return <DynamicComponent />;
+      } catch (evalError) {
+        console.error('Erro ao avaliar o código:', evalError);
+
+        // Se o erro for relacionado a JSX, tentar renderizar um componente simples
+        if (evalError.toString().includes("Unexpected token '<'")) {
+          messageService.sendMessage('ERROR', { message: 'Erro de sintaxe JSX. Tentando renderizar um componente simples...' });
+          return (
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Componente Fallback</h2>
+              <p className="mb-4">O código JSX não pôde ser processado, mas renderizamos este componente simples.</p>
+              <Button>Botão Fallback</Button>
+            </div>
+          );
+        }
+
+        throw evalError;
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao renderizar componente';
       setError(errorMessage);

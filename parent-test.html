@@ -109,7 +109,14 @@
 
             <div>
                 <h2>Código React</h2>
-                <textarea id="component-code" placeholder="Digite o código React aqui...">SIMPLE_BUTTON</textarea>
+                <textarea id="component-code" placeholder="Digite o código React aqui...">const Component = () => {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Componente Dinâmico</h2>
+      <Button>Clique em Mim</Button>
+    </div>
+  );
+};</textarea>
             </div>
 
             <button id="render-button">Renderizar</button>
@@ -138,10 +145,63 @@
     <script>
         // Exemplos de código
         const examples = {
-            button: `SIMPLE_BUTTON`,
-            card: `SIMPLE_CARD`,
-            dashboard: `DASHBOARD`,
-            complex: `SIMPLE_CARD`
+            button: `const Component = () => {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Botão com Contador</h2>
+      <Button
+        onClick={() => setCount(prev => prev + 1)}
+      >
+        Cliques: {count}
+      </Button>
+    </div>
+  );
+};`,
+            card: `const Component = () => {
+  return (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>Título do Card</CardTitle>
+        <CardDescription>Descrição do card com informações adicionais</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Este é um exemplo de card do Shadcn UI renderizado dinamicamente.</p>
+      </CardContent>
+      <div className="p-6 pt-0 flex justify-end">
+        <Button>Ação</Button>
+      </div>
+    </Card>
+  );
+};`,
+            dashboard: `const Component = () => {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold">Dashboard Dinâmico</h2>
+      <Dashboard />
+    </div>
+  );
+};`,
+            complex: `const Component = () => {
+  return (
+    <div className="p-4 border rounded-lg">
+      <h2 className="text-2xl font-bold mb-4">Componente Complexo</h2>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Card Interno</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Este é um exemplo de componente com múltiplos elementos aninhados.</p>
+          <div className="flex gap-2 mt-4">
+            <Button variant="outline">Cancelar</Button>
+            <Button>Confirmar</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};`
         };
 
         // Elementos do DOM
