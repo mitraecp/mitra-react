@@ -54,11 +54,35 @@ export function sanitizeJSXCode(code: string): string {
 
 /**
  * Função para extrair o componente de uma string de código
+ * Suporta vários padrões de declaração de componentes
  */
 export function extractComponent(code: string): string {
-  // Procura por "const Component = " ou "function Component"
-  const componentMatch = code.match(/const\s+Component\s*=\s*(\([^)]*\)\s*=>|function\s*\([^)]*\))\s*{/);
+  // 1) Tenta capturar arrow functions com bloco
+  const arrowWithBlock = code.match(/const\s+Component\s*=\s*\(\)\s*=>\s*{([\s\S]*?)};?/);
+  if (arrowWithBlock) {
+    return `const Component = () => {${arrowWithBlock[1]}};`;
+  }
 
+  // 2) Tenta capturar arrow functions com return implícito
+  const arrowImplicit = code.match(/const\s+Component\s*=\s*\(\)\s*=>\s*\(([\s\S]*?)\);?/);
+  if (arrowImplicit) {
+    return `const Component = () => (${arrowImplicit[1]});`;
+  }
+
+  // 3) Tenta capturar funções declaradas
+  const functionDeclaration = code.match(/(export\s+default\s+)?function\s+Component\s*\([^)]*\)\s*{([\s\S]*?)\}\s*;?/);
+  if (functionDeclaration) {
+    return `function Component() {${functionDeclaration[2]}}`;
+  }
+
+  // 4) Tenta capturar export default Component no final
+  const exportDefault = code.match(/const\s+Component\s*=\s*[\s\S]*?;\s*export\s+default\s+Component\s*;?/);
+  if (exportDefault) {
+    return exportDefault[0];
+  }
+
+  // 5) Método original como fallback
+  const componentMatch = code.match(/const\s+Component\s*=\s*(\([^)]*\)\s*=>|function\s*\([^)]*\))\s*{/);
   if (componentMatch && componentMatch.index !== undefined) {
     // Encontra o corpo da função
     let braceCount = 0;
@@ -78,6 +102,8 @@ export function extractComponent(code: string): string {
     return code.substring(componentMatch.index, endIndex);
   }
 
+  // Fallback: devolve o código original e deixa o wrapCodeInModule cuidar
+  console.log('Nenhum padrão de componente reconhecido, usando código original');
   return code;
 }
 
