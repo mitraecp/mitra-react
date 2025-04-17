@@ -165,12 +165,10 @@
                     <div class="flex gap-2">
                         <button id="filter-all"
                             class="filter-btn active px-3 py-1.5 bg-gray-200 text-gray-800 text-sm rounded-md font-medium transition-colors">Todos</button>
-                        <button id="filter-basic"
-                            class="filter-btn px-3 py-1.5 bg-blue-100 text-blue-800 text-sm rounded-md font-medium transition-colors">Básicos</button>
-                        <button id="filter-layout"
-                            class="filter-btn px-3 py-1.5 bg-purple-100 text-purple-800 text-sm rounded-md font-medium transition-colors">Layout</button>
-                        <button id="filter-interactive"
-                            class="filter-btn px-3 py-1.5 bg-green-100 text-green-800 text-sm rounded-md font-medium transition-colors">Interativos</button>
+                        <button id="filter-foundation"
+                            class="filter-btn px-3 py-1.5 bg-blue-100 text-blue-800 text-sm rounded-md font-medium transition-colors">Foundation</button>
+                        <button id="filter-system"
+                            class="filter-btn px-3 py-1.5 bg-purple-100 text-purple-800 text-sm rounded-md font-medium transition-colors">System</button>
                     </div>
                 </div>
 
@@ -566,15 +564,14 @@
         const apiComponentsList = document.getElementById('api-components-list');
         const searchInput = document.getElementById('search-components');
         const filterAllBtn = document.getElementById('filter-all');
-        const filterBasicBtn = document.getElementById('filter-basic');
-        const filterLayoutBtn = document.getElementById('filter-layout');
-        const filterInteractiveBtn = document.getElementById('filter-interactive');
+        const filterFoundationBtn = document.getElementById('filter-foundation');
+        const filterSystemBtn = document.getElementById('filter-system');
 
         // Configurando os botões de filtro
         function setActiveFilter(button) {
             // Remover a classe ativa de todos os botões
-            [filterAllBtn, filterBasicBtn, filterLayoutBtn, filterInteractiveBtn].forEach(btn => {
-                btn.classList.remove('active');
+            [filterAllBtn, filterFoundationBtn, filterSystemBtn].forEach(btn => {
+                if (btn) btn.classList.remove('active');
             });
 
             // Adicionar a classe ativa ao botão clicado
@@ -587,23 +584,21 @@
             applyFilters();
         });
 
-        filterBasicBtn.addEventListener('click', () => {
-            setActiveFilter(filterBasicBtn);
-            currentFilter = 'basic';
-            applyFilters();
-        });
+        if (filterFoundationBtn) {
+            filterFoundationBtn.addEventListener('click', () => {
+                setActiveFilter(filterFoundationBtn);
+                currentFilter = 'foundation';
+                applyFilters();
+            });
+        }
 
-        filterLayoutBtn.addEventListener('click', () => {
-            setActiveFilter(filterLayoutBtn);
-            currentFilter = 'layout';
-            applyFilters();
-        });
-
-        filterInteractiveBtn.addEventListener('click', () => {
-            setActiveFilter(filterInteractiveBtn);
-            currentFilter = 'interactive';
-            applyFilters();
-        });
+        if (filterSystemBtn) {
+            filterSystemBtn.addEventListener('click', () => {
+                setActiveFilter(filterSystemBtn);
+                currentFilter = 'system';
+                applyFilters();
+            });
+        }
 
         // Função para compartilhar via URL
         function shareViaUrl() {
@@ -696,9 +691,8 @@
                 // Verificar se o componente corresponde ao filtro de categoria
                 let matchesFilter = currentFilter === 'all';
                 if (!matchesFilter) {
-                    if (currentFilter === 'basic' && type.includes('básico')) matchesFilter = true;
-                    if (currentFilter === 'layout' && type.includes('layout')) matchesFilter = true;
-                    if (currentFilter === 'interactive' && type.includes('interativo')) matchesFilter = true;
+                    if (currentFilter === 'foundation' && type.toLowerCase() === 'foundation') matchesFilter = true;
+                    if (currentFilter === 'system' && type.toLowerCase() === 'system') matchesFilter = true;
                 }
 
                 // Verificar se o componente corresponde ao termo de busca
@@ -769,23 +763,16 @@
 
                 apiComponentsList.innerHTML = '';
                 components.forEach(component => {
-                    // Determinar o tipo de componente
-                    let componentType = 'Componente';
+                    // Determinar o tipo de componente com base na categoria da API
+                    let componentType = component.category || 'Componente';
                     let typeColor = 'bg-gray-100 text-gray-800';
-                    let typeBadge = 'component-type';
+            
 
-                    if (component.description) {
-                        const desc = component.description.toLowerCase();
-                        if (desc.includes('botão') || desc.includes('button') || desc.includes('toggle')) {
-                            componentType = 'Básico';
-                            typeColor = 'bg-blue-100 text-blue-800';
-                        } else if (desc.includes('card') || desc.includes('dashboard') || desc.includes('layout')) {
-                            componentType = 'Layout';
-                            typeColor = 'bg-purple-100 text-purple-800';
-                        } else if (desc.includes('form') || desc.includes('input') || desc.includes('login')) {
-                            componentType = 'Interativo';
-                            typeColor = 'bg-green-100 text-green-800';
-                        }
+                    // Definir cores com base na categoria
+                    if (componentType === 'Foundation') {
+                        typeColor = 'bg-blue-100 text-blue-800';
+                    } else if (componentType === 'System') {
+                        typeColor = 'bg-purple-100 text-purple-800';
                     }
 
                     const componentCard = document.createElement('div');
@@ -794,14 +781,18 @@
                     componentCard.innerHTML = `
                         <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-start">
                             <h3 class="font-semibold text-gray-800 truncate">${component.description || `Componente ${component.id}`}</h3>
-                            <span class="${typeColor} ${typeBadge} text-xs px-2 py-1 rounded-full font-medium">${componentType}</span>
+                            <span class="${typeColor} component-type text-xs px-2 py-1 rounded-full font-medium">${componentType}</span>
                         </div>
                         <div class="p-4 flex-grow">
                             <div class="flex items-center gap-2 mb-3">
                                 <span class="component-id text-xs font-medium bg-gray-200 text-gray-700 px-2 py-1 rounded">ID: ${component.id}</span>
+                                ${component.categoryId ? `<span class="text-xs font-medium bg-gray-200 text-gray-700 px-2 py-1 rounded">Cat: ${component.categoryId}</span>` : ''}
                                 ${component.updatedAt ? `<span class="text-xs text-gray-500">Atualizado: ${new Date(component.updatedAt).toLocaleDateString()}</span>` : ''}
                             </div>
-                            <p class="component-author text-sm text-gray-600">Autor: ${component.updatedBy || 'N/A'}</p>
+                            <div class="flex items-center mt-2">
+                                ${component.updatedByPhoto ? `<img src="${component.updatedByPhoto}" alt="Avatar" class="w-6 h-6 rounded-full mr-2">` : ''}
+                                <p class="component-author text-sm text-gray-600">Autor: ${component.updatedBy || 'N/A'}</p>
+                            </div>
                         </div>
                         <div class="p-3 border-t border-gray-100 bg-gray-50">
                             <button class="load-component-btn w-full bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center gap-2" data-id="${component.id}">

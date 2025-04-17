@@ -24,9 +24,9 @@ export async function fetchComponents() {
     }
 
     const data = await response.json();
-    
+
     // Filtra componentes válidos (que têm código)
-    const validComponents = data.content.filter(component => 
+    const validComponents = data.content.filter(component =>
       component.code !== null && component.code !== undefined && component.code.trim() !== ''
     );
 
@@ -34,10 +34,14 @@ export async function fetchComponents() {
       id: component.ID,
       description: component.Descrição || `Componente ${component.ID}`,
       code: component.code,
+      categoryId: component['Id Categoria'],
+      category: component['Descrição Categoria'],
       createdAt: component['Data Criação (React Components)'],
       createdBy: component['Usuário Criação (React Components)'],
+      createdByPhoto: component['Foto Criação (React Components)'],
       updatedAt: component['Data Últ. Alteração (React Components)'],
-      updatedBy: component['Usuário Últ. Alteração (React Components)']
+      updatedBy: component['Usuário Últ. Alteração (React Components)'],
+      updatedByPhoto: component['Foto Últ. Alteração (React Components)']
     }));
   } catch (error) {
     console.error('Erro ao buscar componentes:', error);
@@ -62,7 +66,7 @@ export async function fetchComponentById(id) {
  */
 export function formatCode(code) {
   if (!code) return '';
-  
+
   // Remove espaços extras e quebras de linha desnecessárias
   return code.trim()
     .replace(/\s{2,}/g, ' ')
