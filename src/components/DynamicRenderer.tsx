@@ -4,8 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { messageService } from '@/lib/message-service';
 // Importar todos os componentes que podem ser usados no código dinâmico
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dashboard } from './Dashboard';
+import * as LucideReact from 'lucide-react';
 import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
 
 // Componentes pré-definidos para uso direto
@@ -140,12 +144,29 @@ const DynamicRenderer: React.FC = () => {
           // Executar o código para definir o Component
           try {
             // eslint-disable-next-line no-new-func
-            const defineComponent = new Function('React', 'Button', 'Card', 'CardHeader', 'CardContent', 'CardDescription', 'CardTitle', 'Dashboard', `
-              ${transpiledCode}
-              return Component;
-            `);
+            const defineComponent = new Function(
+              'React',
+              'Button',
+              'Card', 'CardHeader', 'CardContent', 'CardDescription', 'CardTitle', 'CardFooter',
+              'Input', 'Label', 'Checkbox',
+              'Dashboard',
+              'LucideReact',
+              `
+                // Disponibilizar o LucideReact globalmente para o código do usuário
+                window.LucideReact = LucideReact;
+                ${transpiledCode}
+                return Component;
+              `
+            );
 
-            Component = defineComponent(React, Button, Card, CardHeader, CardContent, CardDescription, CardTitle, Dashboard);
+            Component = defineComponent(
+              React,
+              Button,
+              Card, CardHeader, CardContent, CardDescription, CardTitle, CardFooter,
+              Input, Label, Checkbox,
+              Dashboard,
+              LucideReact
+            );
           } catch (error) {
             console.error('Erro ao definir o componente:', error);
             throw new Error(`Erro ao definir o componente: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);

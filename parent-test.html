@@ -537,9 +537,13 @@
   const [password, setPassword] = React.useState('');
   const [rememberMe, setRememberMe] = React.useState(false);
 
+  // Importar os ícones do Lucide
+  const { Mail, LockKeyhole, Github } = window.LucideReact;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, password, rememberMe });
+    alert(\`Login com: \${email} / Senha: \${password} / Lembrar: \${rememberMe}\`);
   };
 
   return (
@@ -554,61 +558,60 @@
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                  @
+                  {Mail ? <Mail size={16} /> : '@'}
                 </div>
-                <input
+                <Input
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-2 pl-10 border rounded-md"
+                  className="pl-10"
                   required
                 />
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <label htmlFor="password" className="text-sm font-medium">Senha</label>
+                <Label htmlFor="password">Senha</Label>
                 <a href="#" className="text-sm text-blue-600 hover:text-blue-800">
                   Esqueceu a senha?
                 </a>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                  🔒
+                  {LockKeyhole ? <LockKeyhole size={16} /> : '🔒'}
                 </div>
-                <input
+                <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-2 pl-10 border rounded-md"
+                  className="pl-10"
                   required
                 />
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
+              <Checkbox
                 id="remember"
                 checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
+                onCheckedChange={setRememberMe}
               />
-              <label htmlFor="remember" className="text-sm font-medium">
+              <Label htmlFor="remember" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Lembrar de mim
-              </label>
+              </Label>
             </div>
             <Button type="submit" className="w-full">
               Entrar
             </Button>
           </form>
         </CardContent>
-        <div className="p-6 pt-0">
+        <CardFooter className="flex flex-col space-y-4">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -617,21 +620,22 @@
               <span className="bg-white px-2 text-gray-500">Ou continue com</span>
             </div>
           </div>
-          <div className="flex space-x-2 mt-4">
+          <div className="flex space-x-2">
             <Button variant="outline" className="w-full">
               Google
             </Button>
             <Button variant="outline" className="w-full">
+              {Github ? <Github className="mr-2 h-4 w-4" /> : ''}
               GitHub
             </Button>
           </div>
-          <div className="text-center text-sm mt-4">
+          <div className="text-center text-sm">
             Não tem uma conta?{' '}
             <a href="#" className="font-medium text-blue-600 hover:text-blue-800">
               Registre-se
             </a>
           </div>
-        </div>
+        </CardFooter>
       </Card>
     </div>
   );
