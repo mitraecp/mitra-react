@@ -1,6 +1,18 @@
 {
-  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm run build && cp parent-test-v2.html dist/",
+  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm run build",
   "rewrites": [
-    { "source": "/parent-test-v2.html", "destination": "/parent-test-v2.html" }
+    { "source": "/parent-test-v2.html", "destination": "/parent-test-v2.html" },
+    { "source": "/src/lib/api-service.js", "destination": "/src/lib/api-service.js" },
+    { "source": "/src/snippets/code-snippets.js", "destination": "/src/snippets/code-snippets.js" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
   ]
 }

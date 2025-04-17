@@ -7,6 +7,22 @@
       "headers": {
         "cache-control": "public, max-age=0, must-revalidate"
       }
+    },
+    {
+      "src": "/src/lib/api-service.js",
+      "dest": "/src/lib/api-service.js",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/javascript"
+      }
+    },
+    {
+      "src": "/src/snippets/code-snippets.js",
+      "dest": "/src/snippets/code-snippets.js",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/javascript"
+      }
     }
   ]
 }

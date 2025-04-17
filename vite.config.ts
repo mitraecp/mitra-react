@@ -5,27 +5,35 @@ import fs from 'fs';
 import { Plugin } from 'vite';
 
 // https://vitejs.dev/config/
-// Plugin personalizado para copiar arquivos HTML adicionais para o diretório de build
-function copyExtraHtml(): Plugin {
+// Plugin personalizado para copiar arquivos adicionais para o diretório de build
+function copyExtraFiles(): Plugin {
   return {
-    name: 'copy-extra-html',
+    name: 'copy-extra-files',
     closeBundle() {
       // Lista de arquivos HTML adicionais para copiar
-      const htmlFiles = ['parent-test-v2.html'];
+      const filesToCopy = [
+        // Arquivos HTML
+        { src: 'parent-test-v2.html', dest: 'dist/parent-test-v2.html' },
 
-      htmlFiles.forEach(file => {
-        if (fs.existsSync(file)) {
-          const content = fs.readFileSync(file, 'utf-8');
-          const outDir = 'dist';
+        // Arquivos JS e diretórios
+        { src: 'src/lib/api-service.js', dest: 'dist/src/lib/api-service.js' },
+        { src: 'src/snippets/code-snippets.js', dest: 'dist/src/snippets/code-snippets.js' }
+      ];
 
-          if (!fs.existsSync(outDir)) {
-            fs.mkdirSync(outDir, { recursive: true });
+      filesToCopy.forEach(file => {
+        if (fs.existsSync(file.src)) {
+          const content = fs.readFileSync(file.src, 'utf-8');
+
+          // Garantir que o diretório de destino exista
+          const destDir = file.dest.substring(0, file.dest.lastIndexOf('/'));
+          if (!fs.existsSync(destDir)) {
+            fs.mkdirSync(destDir, { recursive: true });
           }
 
-          fs.writeFileSync(`${outDir}/${file}`, content);
-          console.log(`Copied ${file} to ${outDir}/${file}`);
+          fs.writeFileSync(file.dest, content);
+          console.log(`Copied ${file.src} to ${file.dest}`);
         } else {
-          console.warn(`File ${file} not found, skipping copy`);
+          console.warn(`File ${file.src} not found, skipping copy`);
         }
       });
     }
@@ -33,7 +41,7 @@ function copyExtraHtml(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), copyExtraHtml()],
+  plugins: [react(), copyExtraFiles()],
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
