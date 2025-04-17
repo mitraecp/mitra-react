@@ -67,10 +67,53 @@ export async function fetchComponentById(id) {
 export function formatCode(code) {
   if (!code) return '';
 
-  // Remove espaços extras e quebras de linha desnecessárias
-  return code.trim()
-    .replace(/\s{2,}/g, ' ')
-    .replace(/\n\s*\n/g, '\n');
+  // Remover espaços extras e quebras de linha desnecessárias
+  let formattedCode = code.trim();
+
+  // Formatar JSX com indentação básica
+  try {
+    // Substituir múltiplos espaços por um único espaço
+    formattedCode = formattedCode.replace(/\s{2,}/g, ' ');
+
+    // Adicionar quebras de linha após chaves, parênteses e tags JSX
+    formattedCode = formattedCode
+      .replace(/({)\s*/g, '$1\n  ') // Adiciona quebra após chave de abertura
+      .replace(/\s*(})/g, '\n$1') // Adiciona quebra antes de chave de fechamento
+      .replace(/(return)\s*\(/g, '$1 (\n  ') // Formata o return com parênteses
+      .replace(/(>)\s*(<\/)/g, '$1\n$2') // Quebra entre tags de fechamento
+      .replace(/(<\w+)\s+([^>]*>)/g, '$1 $2') // Espaçamento em tags
+      .replace(/(\/>)/g, ' $1'); // Espaço antes de tags auto-fechantes
+
+    // Ajustar indentação para blocos aninhados
+    const lines = formattedCode.split('\n');
+    let indentLevel = 0;
+    const indentSize = 2;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      // Reduzir indentação para linhas com chaves/tags de fechamento
+      if (line.match(/^[})]/) || line.match(/^<\//)) {
+        indentLevel = Math.max(0, indentLevel - 1);
+      }
+
+      // Aplicar indentação atual
+      lines[i] = ' '.repeat(indentLevel * indentSize) + line;
+
+      // Aumentar indentação para próximas linhas após abertura de blocos
+      if (line.match(/{$/) || line.match(/\($/) || (line.match(/<\w+/) && !line.match(/\/>$/) && !line.match(/<\/\w+>$/))) {
+        indentLevel++;
+      }
+    }
+
+    formattedCode = lines.join('\n');
+  } catch (error) {
+    console.error('Erro ao formatar código:', error);
+    // Em caso de erro, retornar o código apenas com trim
+    return code.trim();
+  }
+
+  return formattedCode;
 }
 
 export default {
