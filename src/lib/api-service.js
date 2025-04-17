@@ -153,11 +153,28 @@ export async function createComponent(componentData) {
       throw new Error(`Erro ao criar componente: ${response.status}`);
     }
 
-    const data = await response.json();
+    // Tentar obter a resposta como JSON, mas lidar com texto simples se falhar
+    let data;
+    let responseText;
+    try {
+      // Tentar ler como JSON
+      data = await response.json();
+    } catch (jsonError) {
+      // Se falhar, ler como texto
+      try {
+        // Clonar a resposta porque já tentamos ler como JSON
+        responseText = await response.clone().text();
+        console.log('Resposta da API (texto):', responseText);
+      } catch (textError) {
+        console.error('Erro ao ler resposta como texto:', textError);
+        responseText = 'Componente criado com sucesso';
+      }
+    }
+
     return {
       success: true,
       message: 'Componente criado com sucesso',
-      data: data
+      data: data || { message: responseText }
     };
   } catch (error) {
     console.error('Erro ao criar componente:', error);
@@ -208,11 +225,28 @@ export async function updateComponent(id, componentData) {
       throw new Error(`Erro ao atualizar componente: ${response.status}`);
     }
 
-    const data = await response.json();
+    // Tentar obter a resposta como JSON, mas lidar com texto simples se falhar
+    let data;
+    let responseText;
+    try {
+      // Tentar ler como JSON
+      data = await response.json();
+    } catch (jsonError) {
+      // Se falhar, ler como texto
+      try {
+        // Clonar a resposta porque já tentamos ler como JSON
+        responseText = await response.clone().text();
+        console.log('Resposta da API (texto):', responseText);
+      } catch (textError) {
+        console.error('Erro ao ler resposta como texto:', textError);
+        responseText = 'Componente atualizado com sucesso';
+      }
+    }
+
     return {
       success: true,
       message: 'Componente atualizado com sucesso',
-      data: data
+      data: data || { message: responseText }
     };
   } catch (error) {
     console.error('Erro ao atualizar componente:', error);
@@ -248,9 +282,28 @@ export async function deleteComponent(id) {
       throw new Error(`Erro ao excluir componente: ${response.status}`);
     }
 
+    // Tentar obter a resposta como JSON, mas lidar com texto simples se falhar
+    let data;
+    let responseText;
+    try {
+      // Tentar ler como JSON
+      data = await response.json();
+    } catch (jsonError) {
+      // Se falhar, ler como texto
+      try {
+        // Clonar a resposta porque já tentamos ler como JSON
+        responseText = await response.clone().text();
+        console.log('Resposta da API (texto):', responseText);
+      } catch (textError) {
+        console.error('Erro ao ler resposta como texto:', textError);
+        responseText = 'Componente excluído com sucesso';
+      }
+    }
+
     return {
       success: true,
-      message: 'Componente excluído com sucesso'
+      message: 'Componente excluído com sucesso',
+      data: data || { message: responseText }
     };
   } catch (error) {
     console.error('Erro ao excluir componente:', error);

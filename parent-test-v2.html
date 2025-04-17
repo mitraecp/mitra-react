@@ -1284,12 +1284,25 @@
 
                         const categorySelect = document.getElementById('edit-category');
                         if (component.categoryId) {
+                            console.log('Categoria do componente:', component.categoryId, typeof component.categoryId);
+                            console.log('Opções disponíveis:', Array.from(categorySelect.options).map(opt => ({ value: opt.value, text: opt.text, type: typeof opt.value })));
+
+                            // Converter para string para garantir comparação correta
+                            const categoryIdStr = String(component.categoryId);
+
                             // Tentar encontrar a opção correspondente
-                            const option = Array.from(categorySelect.options).find(opt => opt.value === component.categoryId);
+                            const option = Array.from(categorySelect.options).find(opt => String(opt.value) === categoryIdStr);
+
                             if (option) {
-                                option.selected = true;
+                                console.log('Opção encontrada:', option.value, option.text);
+                                categorySelect.value = option.value;
+                            } else {
+                                console.log('Opção não encontrada para categoria:', categoryIdStr);
+                                // Tentar definir diretamente
+                                categorySelect.value = categoryIdStr;
                             }
                         } else {
+                            console.log('Componente sem categoria');
                             categorySelect.value = '';
                         }
 
