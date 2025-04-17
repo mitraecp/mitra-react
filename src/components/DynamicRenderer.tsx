@@ -62,6 +62,7 @@ import { Dashboard } from './Dashboard';
 // Ícones
 import * as LucideReact from 'lucide-react';
 import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
+import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
 
 // Componentes pré-definidos para uso direto
 const SimpleButton = () => {
@@ -169,10 +170,14 @@ const DynamicRenderer: React.FC = () => {
       // Sanitizar o código para garantir que seja válido
       const sanitizedCode = sanitizeJSXCode(componentCode);
 
+      // Processar valores arbitrários do Tailwind
+      const processedCode = processArbitraryValues(sanitizedCode);
+      console.log('Código processado com valores arbitrários:', processedCode);
+
       // Transpilar o código JSX para JavaScript válido
       let transpiledCode;
       try {
-        transpiledCode = transformJSX(sanitizedCode);
+        transpiledCode = transformJSX(processedCode);
         console.log('Código transpilado com sucesso');
       } catch (error) {
         console.error('Erro ao transpilar código com Babel:', error);

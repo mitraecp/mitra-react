@@ -141,6 +141,9 @@
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Componente Dinâmico</h2>
+      <p className="text-[#ff0000] mb-4">Este texto deve ser vermelho</p>
+      <p className="text-[32px] mb-4">Este texto deve ter 32px</p>
+      <p className="p-[20px] bg-[#0000ff] text-white mb-4">Este texto deve ter padding de 20px e fundo azul</p>
       <Button>Clique em Mim</Button>
     </div>
   );
@@ -186,12 +189,21 @@
                 </div>
 
                 <h4 class="mb-2">Shadcn UI:</h4>
-                <div class="flex flex-wrap">
+                <div class="flex flex-wrap mb-4">
                     <button class="example-button" data-example="shadcnTabs">Tabs</button>
                     <button class="example-button" data-example="shadcnAccordion">Accordion</button>
                     <button class="example-button" data-example="shadcnDialog">Dialog</button>
                     <button class="example-button" data-example="shadcnDropdown">Dropdown</button>
                     <button class="example-button" data-example="shadcnForm">Formulário</button>
+                </div>
+
+                <h4 class="mb-2">Teste Tailwind:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="tailwindTest">Teste Tailwind</button>
+                    <button class="example-button" data-example="tailwindSpacing">Espaçamento</button>
+                    <button class="example-button" data-example="tailwindGrid">Grid</button>
+                    <button class="example-button" data-example="tailwindFlex">Flex</button>
+                    <button class="example-button" data-example="tailwindArbitrary">Valores Arbitrários</button>
                 </div>
             </div>
 
@@ -1031,6 +1043,553 @@
     </div>
   );
 }`,
+            tailwindTest: `const Component = () => {
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">Teste de Classes do Tailwind</h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Card 1 */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">Card com Borda</h3>
+            <p className="text-gray-600">Este card usa classes de borda, arredondamento e sombra do Tailwind.</p>
+          </div>
+          <div className="bg-gray-50 px-6 py-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" className="mr-2">Cancelar</Button>
+              <Button size="sm">Confirmar</Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 2 */}
+        <div className="bg-blue-50 rounded-lg shadow-md overflow-hidden border border-blue-200">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2 text-blue-800">Card Colorido</h3>
+            <p className="text-blue-600">Este card usa classes de cores do Tailwind para criar um tema azul.</p>
+          </div>
+          <div className="bg-blue-100 px-6 py-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" className="mr-2">Voltar</Button>
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Avançar</Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3 */}
+        <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg shadow-lg overflow-hidden">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2 text-white">Card com Gradiente</h3>
+            <p className="text-purple-100">Este card usa um gradiente do Tailwind como fundo.</p>
+          </div>
+          <div className="bg-black bg-opacity-20 px-6 py-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" className="mr-2 text-white border-white hover:bg-white hover:text-purple-700">Opções</Button>
+              <Button size="sm" className="bg-white text-purple-700 hover:bg-purple-100">Iniciar</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-100 rounded-lg p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Tipografia e Espaçamento</h3>
+        <div className="space-y-4">
+          <p className="text-4xl font-bold text-gray-900">Texto muito grande (text-4xl)</p>
+          <p className="text-3xl font-bold text-gray-800">Título grande (text-3xl)</p>
+          <p className="text-2xl font-semibold text-gray-800">Subtítulo (text-2xl)</p>
+          <p className="text-xl font-medium text-gray-700">Título menor (text-xl)</p>
+          <p className="text-lg text-gray-700">Texto grande (text-lg)</p>
+          <p className="text-base text-gray-600">Texto normal (text-base)</p>
+          <p className="text-sm text-gray-500">Texto pequeno (text-sm)</p>
+          <p className="text-xs text-gray-400">Texto muito pequeno (text-xs)</p>
+        </div>
+      </div>
+
+      <div className="bg-gray-800 text-white rounded-lg p-6">
+        <h3 className="text-xl font-semibold mb-4">Flex e Alinhamento</h3>
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="bg-gray-700 p-4 rounded-md">Item 1</div>
+          <div className="bg-gray-700 p-4 rounded-md">Item 2</div>
+          <div className="bg-gray-700 p-4 rounded-md">Item 3</div>
+          <div className="bg-gray-700 p-4 rounded-md">Item 4</div>
+        </div>
+        <div className="flex justify-between mb-6">
+          <div className="bg-gray-700 p-4 rounded-md">Esquerda</div>
+          <div className="bg-gray-700 p-4 rounded-md">Centro</div>
+          <div className="bg-gray-700 p-4 rounded-md">Direita</div>
+        </div>
+        <div className="flex items-center bg-gray-700 h-24 rounded-md p-4">
+          <div className="bg-gray-600 p-2 rounded-md">Alinhado ao centro verticalmente</div>
+        </div>
+      </div>
+    </div>
+  );
+};`,
+            tailwindSpacing: `const Component = () => {
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">Teste de Espaçamento do Tailwind</h2>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Margin (m-*)</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <div className="flex flex-wrap gap-4">
+            <div className="bg-blue-500 text-white p-2 m-0">m-0</div>
+            <div className="bg-blue-500 text-white p-2 m-1">m-1</div>
+            <div className="bg-blue-500 text-white p-2 m-2">m-2</div>
+            <div className="bg-blue-500 text-white p-2 m-4">m-4</div>
+            <div className="bg-blue-500 text-white p-2 m-6">m-6</div>
+            <div className="bg-blue-500 text-white p-2 m-8">m-8</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Padding (p-*)</h3>
+
+        <div className="bg-gray-100 rounded-lg flex flex-wrap gap-4">
+          <div className="bg-green-500 text-white p-0 m-1">p-0</div>
+          <div className="bg-green-500 text-white p-1 m-1">p-1</div>
+          <div className="bg-green-500 text-white p-2 m-1">p-2</div>
+          <div className="bg-green-500 text-white p-4 m-1">p-4</div>
+          <div className="bg-green-500 text-white p-6 m-1">p-6</div>
+          <div className="bg-green-500 text-white p-8 m-1">p-8</div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Espaçamento entre elementos (space-*)</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg mb-4">
+          <h4 className="text-lg font-medium mb-2">space-y-* (vertical)</h4>
+          <div className="space-y-2 bg-gray-200 p-4 rounded">
+            <div className="bg-purple-500 text-white p-2 rounded">Item 1</div>
+            <div className="bg-purple-500 text-white p-2 rounded">Item 2</div>
+            <div className="bg-purple-500 text-white p-2 rounded">Item 3</div>
+            <div className="bg-purple-500 text-white p-2 rounded">Item 4</div>
+          </div>
+        </div>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h4 className="text-lg font-medium mb-2">space-x-* (horizontal)</h4>
+          <div className="flex space-x-4 bg-gray-200 p-4 rounded">
+            <div className="bg-indigo-500 text-white p-2 rounded">Item 1</div>
+            <div className="bg-indigo-500 text-white p-2 rounded">Item 2</div>
+            <div className="bg-indigo-500 text-white p-2 rounded">Item 3</div>
+            <div className="bg-indigo-500 text-white p-2 rounded">Item 4</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Gap (gap-*)</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg mb-4">
+          <h4 className="text-lg font-medium mb-2">Grid com gap</h4>
+          <div className="grid grid-cols-3 gap-2 bg-gray-200 p-4 rounded mb-4">
+            <div className="bg-red-500 text-white p-4 rounded">1</div>
+            <div className="bg-red-500 text-white p-4 rounded">2</div>
+            <div className="bg-red-500 text-white p-4 rounded">3</div>
+            <div className="bg-red-500 text-white p-4 rounded">4</div>
+            <div className="bg-red-500 text-white p-4 rounded">5</div>
+            <div className="bg-red-500 text-white p-4 rounded">6</div>
+          </div>
+
+          <h4 className="text-lg font-medium mb-2">Flex com gap</h4>
+          <div className="flex flex-wrap gap-4 bg-gray-200 p-4 rounded">
+            <div className="bg-yellow-500 text-white p-4 rounded">A</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">B</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">C</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">D</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">E</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">F</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};`,
+            tailwindGrid: `const Component = () => {
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">Sistema de Grid do Tailwind</h2>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Grid Simples</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg mb-6">
+          <h4 className="text-lg font-medium mb-2">grid-cols-2</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-500 text-white p-4 rounded">1</div>
+            <div className="bg-blue-500 text-white p-4 rounded">2</div>
+            <div className="bg-blue-500 text-white p-4 rounded">3</div>
+            <div className="bg-blue-500 text-white p-4 rounded">4</div>
+          </div>
+        </div>
+
+        <div className="bg-gray-100 p-4 rounded-lg mb-6">
+          <h4 className="text-lg font-medium mb-2">grid-cols-3</h4>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-green-500 text-white p-4 rounded">1</div>
+            <div className="bg-green-500 text-white p-4 rounded">2</div>
+            <div className="bg-green-500 text-white p-4 rounded">3</div>
+            <div className="bg-green-500 text-white p-4 rounded">4</div>
+            <div className="bg-green-500 text-white p-4 rounded">5</div>
+            <div className="bg-green-500 text-white p-4 rounded">6</div>
+          </div>
+        </div>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h4 className="text-lg font-medium mb-2">grid-cols-4</h4>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="bg-purple-500 text-white p-4 rounded">1</div>
+            <div className="bg-purple-500 text-white p-4 rounded">2</div>
+            <div className="bg-purple-500 text-white p-4 rounded">3</div>
+            <div className="bg-purple-500 text-white p-4 rounded">4</div>
+            <div className="bg-purple-500 text-white p-4 rounded">5</div>
+            <div className="bg-purple-500 text-white p-4 rounded">6</div>
+            <div className="bg-purple-500 text-white p-4 rounded">7</div>
+            <div className="bg-purple-500 text-white p-4 rounded">8</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Grid Responsivo</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h4 className="text-lg font-medium mb-2">grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4</h4>
+          <p className="text-gray-600 mb-4">Redimensione a janela para ver o grid mudar</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="bg-red-500 text-white p-4 rounded">1</div>
+            <div className="bg-red-500 text-white p-4 rounded">2</div>
+            <div className="bg-red-500 text-white p-4 rounded">3</div>
+            <div className="bg-red-500 text-white p-4 rounded">4</div>
+            <div className="bg-red-500 text-white p-4 rounded">5</div>
+            <div className="bg-red-500 text-white p-4 rounded">6</div>
+            <div className="bg-red-500 text-white p-4 rounded">7</div>
+            <div className="bg-red-500 text-white p-4 rounded">8</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Grid com Colunas de Tamanhos Diferentes</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg mb-6">
+          <h4 className="text-lg font-medium mb-2">col-span-*</h4>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-yellow-500 text-white p-4 rounded">1 coluna</div>
+            <div className="bg-yellow-500 text-white p-4 rounded col-span-2">2 colunas</div>
+            <div className="bg-yellow-500 text-white p-4 rounded col-span-3">3 colunas</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">1 coluna</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">1 coluna</div>
+            <div className="bg-yellow-500 text-white p-4 rounded">1 coluna</div>
+          </div>
+        </div>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h4 className="text-lg font-medium mb-2">Layout complexo</h4>
+
+          <div className="grid grid-cols-6 gap-4">
+            <div className="bg-indigo-500 text-white p-4 rounded col-span-6">Cabeçalho</div>
+            <div className="bg-indigo-500 text-white p-4 rounded col-span-2">Barra lateral</div>
+            <div className="bg-indigo-500 text-white p-4 rounded col-span-4">Conteúdo principal</div>
+            <div className="bg-indigo-500 text-white p-4 rounded col-span-6">Rodapé</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">Grid com Linhas</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h4 className="text-lg font-medium mb-2">grid-rows-*</h4>
+
+          <div className="grid grid-cols-3 grid-rows-3 gap-4 h-64">
+            <div className="bg-blue-500 text-white p-4 rounded">1</div>
+            <div className="bg-blue-500 text-white p-4 rounded row-span-2">2 (row-span-2)</div>
+            <div className="bg-blue-500 text-white p-4 rounded">3</div>
+            <div className="bg-blue-500 text-white p-4 rounded">4</div>
+            <div className="bg-blue-500 text-white p-4 rounded">5</div>
+            <div className="bg-blue-500 text-white p-4 rounded row-span-3">6 (row-span-3)</div>
+            <div className="bg-blue-500 text-white p-4 rounded">7</div>
+            <div className="bg-blue-500 text-white p-4 rounded">8</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};`,
+            tailwindFlex: `const Component = () => {
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">Sistema Flexbox do Tailwind</h2>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Direção do Flex</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg mb-6">
+          <h4 className="text-lg font-medium mb-2">flex-row (padrão)</h4>
+          <div className="flex flex-row bg-gray-200 p-4 rounded">
+            <div className="bg-blue-500 text-white p-4 rounded m-2">1</div>
+            <div className="bg-blue-500 text-white p-4 rounded m-2">2</div>
+            <div className="bg-blue-500 text-white p-4 rounded m-2">3</div>
+          </div>
+        </div>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h4 className="text-lg font-medium mb-2">flex-col</h4>
+          <div className="flex flex-col bg-gray-200 p-4 rounded">
+            <div className="bg-green-500 text-white p-4 rounded m-2">1</div>
+            <div className="bg-green-500 text-white p-4 rounded m-2">2</div>
+            <div className="bg-green-500 text-white p-4 rounded m-2">3</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Alinhamento Horizontal (justify-*)</h3>
+
+        <div className="space-y-6">
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">justify-start</h4>
+            <div className="flex justify-start bg-gray-200 p-4 rounded">
+              <div className="bg-purple-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-purple-500 text-white p-4 rounded m-2">2</div>
+              <div className="bg-purple-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">justify-center</h4>
+            <div className="flex justify-center bg-gray-200 p-4 rounded">
+              <div className="bg-purple-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-purple-500 text-white p-4 rounded m-2">2</div>
+              <div className="bg-purple-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">justify-end</h4>
+            <div className="flex justify-end bg-gray-200 p-4 rounded">
+              <div className="bg-purple-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-purple-500 text-white p-4 rounded m-2">2</div>
+              <div className="bg-purple-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">justify-between</h4>
+            <div className="flex justify-between bg-gray-200 p-4 rounded">
+              <div className="bg-purple-500 text-white p-4 rounded">1</div>
+              <div className="bg-purple-500 text-white p-4 rounded">2</div>
+              <div className="bg-purple-500 text-white p-4 rounded">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">justify-around</h4>
+            <div className="flex justify-around bg-gray-200 p-4 rounded">
+              <div className="bg-purple-500 text-white p-4 rounded">1</div>
+              <div className="bg-purple-500 text-white p-4 rounded">2</div>
+              <div className="bg-purple-500 text-white p-4 rounded">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">justify-evenly</h4>
+            <div className="flex justify-evenly bg-gray-200 p-4 rounded">
+              <div className="bg-purple-500 text-white p-4 rounded">1</div>
+              <div className="bg-purple-500 text-white p-4 rounded">2</div>
+              <div className="bg-purple-500 text-white p-4 rounded">3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Alinhamento Vertical (items-*)</h3>
+
+        <div className="space-y-6">
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">items-start</h4>
+            <div className="flex items-start bg-gray-200 p-4 rounded h-32">
+              <div className="bg-red-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-red-500 text-white p-8 rounded m-2">2</div>
+              <div className="bg-red-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">items-center</h4>
+            <div className="flex items-center bg-gray-200 p-4 rounded h-32">
+              <div className="bg-red-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-red-500 text-white p-8 rounded m-2">2</div>
+              <div className="bg-red-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">items-end</h4>
+            <div className="flex items-end bg-gray-200 p-4 rounded h-32">
+              <div className="bg-red-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-red-500 text-white p-8 rounded m-2">2</div>
+              <div className="bg-red-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">items-stretch (padrão)</h4>
+            <div className="flex items-stretch bg-gray-200 p-4 rounded h-32">
+              <div className="bg-red-500 text-white p-4 rounded m-2">1</div>
+              <div className="bg-red-500 text-white p-4 rounded m-2">2</div>
+              <div className="bg-red-500 text-white p-4 rounded m-2">3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">Flex Wrap</h3>
+
+        <div className="space-y-6">
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">flex-nowrap (padrão)</h4>
+            <div className="flex flex-nowrap bg-gray-200 p-4 rounded overflow-x-auto">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="bg-yellow-500 text-white p-4 rounded m-2 flex-shrink-0 w-20">{i + 1}</div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-lg font-medium mb-2">flex-wrap</h4>
+            <div className="flex flex-wrap bg-gray-200 p-4 rounded">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="bg-yellow-500 text-white p-4 rounded m-2 w-20">{i + 1}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};`,
+            tailwindArbitrary: `const Component = () => {
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">Valores Arbitrários do Tailwind</h2>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Tamanhos de Texto Arbitrários</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg space-y-4">
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[10px]</h4>
+            <p className="text-[10px]">Este texto tem exatamente 10 pixels de tamanho.</p>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[16px]</h4>
+            <p className="text-[16px]">Este texto tem exatamente 16 pixels de tamanho.</p>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[24px]</h4>
+            <p className="text-[24px]">Este texto tem exatamente 24 pixels de tamanho.</p>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[32px]</h4>
+            <p className="text-[32px]">Este texto tem exatamente 32 pixels de tamanho.</p>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[48px]</h4>
+            <p className="text-[48px]">Este texto tem exatamente 48 pixels de tamanho.</p>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[64px]</h4>
+            <p className="text-[64px]">Este texto tem exatamente 64 pixels de tamanho.</p>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">text-[100px]</h4>
+            <p className="text-[100px]">100px</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Cores Arbitrárias</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded bg-[#ff5733] text-white font-medium">bg-[#ff5733]</div>
+            <div className="p-4 rounded bg-[#33ff57] text-black font-medium">bg-[#33ff57]</div>
+            <div className="p-4 rounded bg-[#3357ff] text-white font-medium">bg-[#3357ff]</div>
+            <div className="p-4 rounded bg-[rgb(255,100,50)] text-white font-medium">bg-[rgb(255,100,50)]</div>
+            <div className="p-4 rounded bg-[hsl(200,100%,50%)] text-white font-medium">bg-[hsl(200,100%,50%)]</div>
+            <div className="p-4 rounded bg-[rgba(100,200,50,0.8)] text-white font-medium">bg-[rgba(100,200,50,0.8)]</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Dimensões Arbitrárias</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <div className="flex flex-wrap gap-4">
+            <div className="w-[50px] h-[50px] bg-blue-500 flex items-center justify-center text-white font-medium">50px</div>
+            <div className="w-[75px] h-[75px] bg-blue-500 flex items-center justify-center text-white font-medium">75px</div>
+            <div className="w-[100px] h-[100px] bg-blue-500 flex items-center justify-center text-white font-medium">100px</div>
+            <div className="w-[150px] h-[150px] bg-blue-500 flex items-center justify-center text-white font-medium">150px</div>
+            <div className="w-[200px] h-[200px] bg-blue-500 flex items-center justify-center text-white font-medium">200px</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">Outros Valores Arbitrários</h3>
+
+        <div className="bg-gray-100 p-4 rounded-lg space-y-6">
+          <div>
+            <h4 className="text-lg font-medium mb-2">Bordas</h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="w-24 h-24 bg-white border-[3px] border-blue-500 flex items-center justify-center">border-[3px]</div>
+              <div className="w-24 h-24 bg-white border-[6px] border-green-500 flex items-center justify-center">border-[6px]</div>
+              <div className="w-24 h-24 bg-white border-[10px] border-red-500 flex items-center justify-center">border-[10px]</div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">Arredondamento</h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="w-24 h-24 bg-purple-500 rounded-[5px] flex items-center justify-center text-white">rounded-[5px]</div>
+              <div className="w-24 h-24 bg-purple-500 rounded-[15px] flex items-center justify-center text-white">rounded-[15px]</div>
+              <div className="w-24 h-24 bg-purple-500 rounded-[25px] flex items-center justify-center text-white">rounded-[25px]</div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-2">Opacidade</h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="w-24 h-24 bg-black opacity-[0.2] flex items-center justify-center text-white">opacity-[0.2]</div>
+              <div className="w-24 h-24 bg-black opacity-[0.5] flex items-center justify-center text-white">opacity-[0.5]</div>
+              <div className="w-24 h-24 bg-black opacity-[0.8] flex items-center justify-center text-white">opacity-[0.8]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};`,
             loginForm: `const Component = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
