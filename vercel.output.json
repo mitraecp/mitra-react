@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "routes": [
+    {
+      "src": "/parent-test-v2.html",
+      "dest": "/parent-test-v2.html",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate"
+      }
+    }
+  ]
+}

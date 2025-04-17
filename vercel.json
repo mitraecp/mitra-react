@@ -1,3 +1,6 @@
 {
-  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm run build"
+  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm run build && cp parent-test-v2.html dist/",
+  "rewrites": [
+    { "source": "/parent-test-v2.html", "destination": "/parent-test-v2.html" }
+  ]
 }
