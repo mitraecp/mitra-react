@@ -1211,7 +1211,10 @@
         // Carregar categorias para os selects
         async function loadCategories() {
             try {
-                const categories = await apiService.fetchCategories();
+                // Usar a nova função para buscar todas as categorias
+                const categories = await apiService.fetchAllCategories();
+                console.log('Categorias carregadas da API:', categories);
+
                 const createCategorySelect = document.getElementById('create-category');
                 const editCategorySelect = document.getElementById('edit-category');
 
@@ -1224,21 +1227,45 @@
                     editCategorySelect.remove(1);
                 }
 
+                if (categories.length === 0) {
+                    addLogEntry('Nenhuma categoria encontrada. Verifique a conexão com a API.', 'warning');
+                    return;
+                }
+
                 // Adicionar categorias
                 categories.forEach(category => {
+                    // Garantir que o ID seja uma string
+                    const categoryId = String(category.id);
+
                     const createOption = document.createElement('option');
-                    createOption.value = category.id;
+                    createOption.value = categoryId;
                     createOption.textContent = category.name;
                     createCategorySelect.appendChild(createOption);
 
                     const editOption = document.createElement('option');
-                    editOption.value = category.id;
+                    editOption.value = categoryId;
                     editOption.textContent = category.name;
                     editCategorySelect.appendChild(editOption);
+
+                    console.log(`Adicionada categoria: ${category.name} (ID: ${categoryId})`);
                 });
+
+                addLogEntry(`${categories.length} categorias carregadas com sucesso.`, 'info');
             } catch (error) {
                 console.error('Erro ao carregar categorias:', error);
                 addLogEntry(`Erro ao carregar categorias: ${error.message}`, 'error');
+
+                // Tentar usar o método antigo como fallback
+                try {
+                    const fallbackCategories = await apiService.fetchCategories();
+                    if (fallbackCategories.length > 0) {
+                        addLogEntry('Usando categorias dos componentes existentes como fallback.', 'warning');
+                        // Recarregar a página para aplicar as categorias de fallback
+                        window.location.reload();
+                    }
+                } catch (fallbackError) {
+                    console.error('Erro no fallback de categorias:', fallbackError);
+                }
             }
         }
 
@@ -1330,6 +1357,8 @@
             const description = document.getElementById('edit-description').value;
             const categoryId = document.getElementById('edit-category').value;
             const code = document.getElementById('edit-code').value;
+
+            console.log('Dados do formulário de edição:', { id, description, categoryId, code });
 
             try {
                 const result = await apiService.updateComponent(id, { description, categoryId, code });

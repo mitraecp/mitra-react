@@ -136,9 +136,11 @@ export async function createComponent(componentData) {
     // Preparar dados para a API
     const apiData = {
       'Descrição': description,
-      'ID Categoria': categoryId || '',
+      'ID Categoria': categoryId ? String(categoryId) : '',
       'code': code
     };
+
+    console.log('Dados enviados para criação:', apiData);
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -208,9 +210,11 @@ export async function updateComponent(id, componentData) {
     const apiData = {
       'ID': parseInt(id),
       'Descrição': description,
-      'ID Categoria': categoryId || '',
+      'ID Categoria': categoryId ? String(categoryId) : '',
       'code': code
     };
+
+    console.log('Dados enviados para atualização:', apiData);
 
     const response = await fetch(API_URL, {
       method: 'PUT',
@@ -316,11 +320,53 @@ export async function deleteComponent(id) {
 }
 
 /**
+ * Busca todas as categorias diretamente da API
+ * @returns {Promise<Array>} Lista completa de categorias
+ */
+export async function fetchAllCategories() {
+  try {
+    const response = await fetch('https://api0.mitraecp.com:1004/rest/v0/Categoria', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar categorias: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Categorias da API:', data);
+
+    // Mapear os dados da API para o formato esperado
+    const categories = data.content.map(category => ({
+      id: category.ID,
+      name: category.Descrição || `Categoria ${category.ID}`
+    }));
+
+    return categories;
+  } catch (error) {
+    console.error('Erro ao buscar categorias da API:', error);
+    return [];
+  }
+}
+
+/**
  * Busca categorias disponíveis
  * @returns {Promise<Array>} Lista de categorias
+ * @deprecated Use fetchAllCategories para obter todas as categorias
  */
 export async function fetchCategories() {
   try {
+    // Primeiro, tentar buscar todas as categorias da API
+    const allCategories = await fetchAllCategories();
+    if (allCategories.length > 0) {
+      return allCategories;
+    }
+
+    // Fallback: extrair categorias dos componentes existentes
     const components = await fetchComponents();
 
     // Extrair categorias únicas dos componentes
@@ -350,5 +396,6 @@ export default {
   updateComponent,
   deleteComponent,
   fetchCategories,
+  fetchAllCategories,
   formatCode
 };
