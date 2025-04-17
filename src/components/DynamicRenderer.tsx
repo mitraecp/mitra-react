@@ -42,7 +42,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Resizable, ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
@@ -53,7 +53,7 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Toggle, ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle';
+import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Componentes personalizados
@@ -201,10 +201,59 @@ const DynamicRenderer: React.FC = () => {
               'Button',
               'Card', 'CardHeader', 'CardContent', 'CardDescription', 'CardTitle', 'CardFooter',
               'Input', 'Label', 'Checkbox',
+
+              // Componentes de layout
+              'Accordion', 'AccordionContent', 'AccordionItem', 'AccordionTrigger',
+              'Alert', 'AlertDescription', 'AlertTitle',
+              'AlertDialog', 'AlertDialogAction', 'AlertDialogCancel', 'AlertDialogContent', 'AlertDialogDescription', 'AlertDialogFooter', 'AlertDialogHeader', 'AlertDialogTitle', 'AlertDialogTrigger',
+              'AspectRatio',
+              'Avatar', 'AvatarFallback', 'AvatarImage',
+              'Badge',
+              'Breadcrumb', 'BreadcrumbItem', 'BreadcrumbLink', 'BreadcrumbList', 'BreadcrumbPage', 'BreadcrumbSeparator',
+
+              // Componentes de data
+              'Calendar',
+              'Carousel', 'CarouselContent', 'CarouselItem', 'CarouselNext', 'CarouselPrevious',
+
+              // Componentes de disclosure
+              'Collapsible', 'CollapsibleContent', 'CollapsibleTrigger',
+              'Command', 'CommandDialog', 'CommandEmpty', 'CommandGroup', 'CommandInput', 'CommandItem', 'CommandList', 'CommandSeparator', 'CommandShortcut',
+              'ContextMenu', 'ContextMenuCheckboxItem', 'ContextMenuContent', 'ContextMenuItem', 'ContextMenuLabel', 'ContextMenuRadioGroup', 'ContextMenuRadioItem', 'ContextMenuSeparator', 'ContextMenuShortcut', 'ContextMenuSub', 'ContextMenuSubContent', 'ContextMenuSubTrigger', 'ContextMenuTrigger',
+              'Dialog', 'DialogContent', 'DialogDescription', 'DialogFooter', 'DialogHeader', 'DialogTitle', 'DialogTrigger',
+              'Drawer', 'DrawerClose', 'DrawerContent', 'DrawerDescription', 'DrawerFooter', 'DrawerHeader', 'DrawerTitle', 'DrawerTrigger',
+              'DropdownMenu', 'DropdownMenuCheckboxItem', 'DropdownMenuContent', 'DropdownMenuGroup', 'DropdownMenuItem', 'DropdownMenuLabel', 'DropdownMenuPortal', 'DropdownMenuRadioGroup', 'DropdownMenuRadioItem', 'DropdownMenuSeparator', 'DropdownMenuShortcut', 'DropdownMenuSub', 'DropdownMenuSubContent', 'DropdownMenuSubTrigger', 'DropdownMenuTrigger',
+
+              // Componentes de formulário
+              'Form', 'FormControl', 'FormDescription', 'FormField', 'FormItem', 'FormLabel', 'FormMessage',
+              'HoverCard', 'HoverCardContent', 'HoverCardTrigger',
+              'Menubar', 'MenubarCheckboxItem', 'MenubarContent', 'MenubarGroup', 'MenubarItem', 'MenubarLabel', 'MenubarMenu', 'MenubarRadioGroup', 'MenubarRadioItem', 'MenubarSeparator', 'MenubarShortcut', 'MenubarSub', 'MenubarSubContent', 'MenubarSubTrigger', 'MenubarTrigger',
+              'NavigationMenu', 'NavigationMenuContent', 'NavigationMenuItem', 'NavigationMenuLink', 'NavigationMenuList', 'NavigationMenuTrigger', 'navigationMenuTriggerStyle',
+
+              // Componentes de feedback
+              'Pagination', 'PaginationContent', 'PaginationEllipsis', 'PaginationItem', 'PaginationLink', 'PaginationNext', 'PaginationPrevious',
+              'Popover', 'PopoverContent', 'PopoverTrigger',
+              'Progress',
+              'RadioGroup', 'RadioGroupItem',
+              'ResizablePanel', 'ResizablePanelGroup', 'ResizableHandle',
+              'ScrollArea', 'ScrollBar',
+              'Select', 'SelectContent', 'SelectGroup', 'SelectItem', 'SelectLabel', 'SelectSeparator', 'SelectTrigger', 'SelectValue',
+              'Separator',
+              'Sheet', 'SheetClose', 'SheetContent', 'SheetDescription', 'SheetFooter', 'SheetHeader', 'SheetTitle', 'SheetTrigger',
+              'Skeleton',
+              'Slider',
+              'Switch',
+              'Table', 'TableBody', 'TableCaption', 'TableCell', 'TableFooter', 'TableHead', 'TableHeader', 'TableRow',
+              'Tabs', 'TabsContent', 'TabsList', 'TabsTrigger',
+              'Textarea',
+              'Toggle',
+              'Tooltip', 'TooltipContent', 'TooltipProvider', 'TooltipTrigger',
+
               // Componentes personalizados
               'Dashboard',
+
               // Ícones
               'LucideReact',
+
               `
                 // Disponibilizar o LucideReact globalmente para o código do usuário
                 window.LucideReact = LucideReact;
@@ -219,8 +268,56 @@ const DynamicRenderer: React.FC = () => {
               Button,
               Card, CardHeader, CardContent, CardDescription, CardTitle, CardFooter,
               Input, Label, Checkbox,
+
+              // Componentes de layout
+              Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+              Alert, AlertDescription, AlertTitle,
+              AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+              AspectRatio,
+              Avatar, AvatarFallback, AvatarImage,
+              Badge,
+              Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
+
+              // Componentes de data
+              Calendar,
+              Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
+
+              // Componentes de disclosure
+              Collapsible, CollapsibleContent, CollapsibleTrigger,
+              Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut,
+              ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuRadioGroup, ContextMenuRadioItem, ContextMenuSeparator, ContextMenuShortcut, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger,
+              Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+              Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger,
+              DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
+
+              // Componentes de formulário
+              Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,
+              HoverCard, HoverCardContent, HoverCardTrigger,
+              Menubar, MenubarCheckboxItem, MenubarContent, MenubarGroup, MenubarItem, MenubarLabel, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger,
+              NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle,
+
+              // Componentes de feedback
+              Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
+              Popover, PopoverContent, PopoverTrigger,
+              Progress,
+              RadioGroup, RadioGroupItem,
+              ResizablePanel, ResizablePanelGroup, ResizableHandle,
+              ScrollArea, ScrollBar,
+              Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue,
+              Separator,
+              Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger,
+              Skeleton,
+              Slider,
+              Switch,
+              Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
+              Tabs, TabsContent, TabsList, TabsTrigger,
+              Textarea,
+              Toggle,
+              Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+
               // Componentes personalizados
               Dashboard,
+
               // Ícones
               LucideReact
             );
