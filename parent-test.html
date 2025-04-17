@@ -170,6 +170,7 @@
                 <h4 class="mb-2">Interativos:</h4>
                 <div class="flex flex-wrap mb-4">
                     <button class="example-button" data-example="form">Formulário</button>
+                    <button class="example-button" data-example="loginForm">Login</button>
                     <button class="example-button" data-example="tooltip">Tooltip</button>
                     <button class="example-button" data-example="darkMode">Modo Escuro</button>
                     <button class="example-button" data-example="notification">Notificações</button>
@@ -530,7 +531,111 @@
       </div>
     </div>
   );
-}`
+}`,
+            loginForm: `const Component = () => {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [rememberMe, setRememberMe] = React.useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log({ email, password, rememberMe });
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <Card className="w-full max-w-md mx-auto shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Entrar</CardTitle>
+          <CardDescription className="text-center">
+            Digite suas credenciais para acessar sua conta
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                  @
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 pl-10 border rounded-md"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <label htmlFor="password" className="text-sm font-medium">Senha</label>
+                <a href="#" className="text-sm text-blue-600 hover:text-blue-800">
+                  Esqueceu a senha?
+                </a>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                  🔒
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-2 pl-10 border rounded-md"
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label htmlFor="remember" className="text-sm font-medium">
+                Lembrar de mim
+              </label>
+            </div>
+            <Button type="submit" className="w-full">
+              Entrar
+            </Button>
+          </form>
+        </CardContent>
+        <div className="p-6 pt-0">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Ou continue com</span>
+            </div>
+          </div>
+          <div className="flex space-x-2 mt-4">
+            <Button variant="outline" className="w-full">
+              Google
+            </Button>
+            <Button variant="outline" className="w-full">
+              GitHub
+            </Button>
+          </div>
+          <div className="text-center text-sm mt-4">
+            Não tem uma conta?{' '}
+            <a href="#" className="font-medium text-blue-600 hover:text-blue-800">
+              Registre-se
+            </a>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};`
         };
 
         // Elementos do DOM
