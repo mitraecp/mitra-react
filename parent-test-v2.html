@@ -423,7 +423,7 @@
                     </div>
                     <div class="flex-grow p-4 transition-colors duration-300" style="background-color: var(--hover-bg);">
                         <div class="iframe-container h-full rounded-lg border overflow-hidden transition-colors duration-300" style="background-color: #ffffff; border-color: var(--border-color);">
-                            <iframe id="react-iframe" src="http://localhost:5173" class="w-full h-full"></iframe>
+                            <iframe id="react-iframe" src="" class="w-full h-full"></iframe>
                         </div>
                     </div>
                     <div
@@ -587,6 +587,9 @@
         let iframeReady = false;
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
         let monacoEditor = null;
+
+        // Configurar src do iframe dinamicamente
+        iframe.src =  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5173' : 'https://builder.mitralab.io/';
 
         // Aplicar tema escuro se estiver salvo nas preferências
         if (isDarkMode) {
