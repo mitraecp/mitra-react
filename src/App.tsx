@@ -28,7 +28,7 @@ function App() {
   }, []);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
       {renderMode === 'default' ? (
         // Renderização padrão quando não estamos em um iframe
         <>

@@ -362,7 +362,7 @@ const DynamicRenderer: React.FC = () => {
   };
 
   return (
-    <div className="dynamic-renderer">
+    <div className="dynamic-renderer p-4">
       {error ? (
         <div className="p-4 bg-red-100 text-red-800 rounded">
           <h3 className="font-bold">Erro ao renderizar componente:</h3>

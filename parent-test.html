@@ -177,9 +177,21 @@
                 </div>
 
                 <h4 class="mb-2">Avançados:</h4>
-                <div class="flex flex-wrap">
+                <div class="flex flex-wrap mb-4">
                     <button class="example-button" data-example="dashboard">Dashboard</button>
                     <button class="example-button" data-example="complex">Componente Complexo</button>
+                    <button class="example-button" data-example="advancedAccordion">Accordion Avançado</button>
+                    <button class="example-button" data-example="dataTable">Tabela de Dados</button>
+                    <button class="example-button" data-example="userProfile">Perfil de Usuário</button>
+                </div>
+
+                <h4 class="mb-2">Shadcn UI:</h4>
+                <div class="flex flex-wrap">
+                    <button class="example-button" data-example="shadcnTabs">Tabs</button>
+                    <button class="example-button" data-example="shadcnAccordion">Accordion</button>
+                    <button class="example-button" data-example="shadcnDialog">Dialog</button>
+                    <button class="example-button" data-example="shadcnDropdown">Dropdown</button>
+                    <button class="example-button" data-example="shadcnForm">Formulário</button>
                 </div>
             </div>
 
@@ -529,6 +541,493 @@
           </div>
         ))}
       </div>
+    </div>
+  );
+}`,
+            advancedAccordion: `const Component = () => {
+  return (
+    <div className="p-6 space-y-6 max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6">FAQ - Perguntas Frequentes</h2>
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="text-lg font-medium">O que é o Shadcn UI?</AccordionTrigger>
+          <AccordionContent className="text-gray-600 pt-2 pb-4 px-4">
+            <p>Shadcn UI é uma coleção de componentes React reutilizáveis construídos com Radix UI e Tailwind CSS. Ele fornece componentes acessíveis e estilizáveis para ajudar a construir interfaces de usuário modernas.</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-2">
+          <AccordionTrigger className="text-lg font-medium">Como instalar os componentes?</AccordionTrigger>
+          <AccordionContent className="text-gray-600 pt-2 pb-4 px-4">
+            <p>Você pode instalar componentes individuais usando o CLI:</p>
+            <pre className="bg-gray-100 p-2 rounded mt-2 overflow-x-auto">npx shadcn-ui@latest add button</pre>
+            <p className="mt-2">Isso instalará todas as dependências necessárias e adicionará o código do componente ao seu projeto.</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-3">
+          <AccordionTrigger className="text-lg font-medium">Os componentes são acessíveis?</AccordionTrigger>
+          <AccordionContent className="text-gray-600 pt-2 pb-4 px-4">
+            <p>Sim, os componentes são construídos com acessibilidade em mente. Eles usam Radix UI como base, que fornece primitivos acessíveis para construção de interfaces.</p>
+            <p className="mt-2">Recursos de acessibilidade incluem:</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Suporte completo para teclado</li>
+              <li>Atributos ARIA apropriados</li>
+              <li>Gestão de foco</li>
+              <li>Anunção para leitores de tela</li>
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}`,
+            dataTable: `const Component = () => {
+  // Dados de exemplo
+  const data = [
+    { id: 1, name: "João Silva", email: "joao@exemplo.com", status: "Ativo", role: "Admin" },
+    { id: 2, name: "Maria Souza", email: "maria@exemplo.com", status: "Inativo", role: "Usuário" },
+    { id: 3, name: "Pedro Santos", email: "pedro@exemplo.com", status: "Pendente", role: "Editor" },
+    { id: 4, name: "Ana Oliveira", email: "ana@exemplo.com", status: "Ativo", role: "Usuário" },
+    { id: 5, name: "Carlos Pereira", email: "carlos@exemplo.com", status: "Ativo", role: "Admin" },
+  ];
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">Usuários</h2>
+        <Button>
+          <span className="mr-2">+</span> Adicionar Usuário
+        </Button>
+      </div>
+
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[50px]">ID</TableHead>
+              <TableHead className="w-[180px]">Nome</TableHead>
+              <TableHead className="w-[200px]">Email</TableHead>
+              <TableHead className="w-[100px]">Status</TableHead>
+              <TableHead className="w-[100px]">Função</TableHead>
+              <TableHead className="w-[100px]">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.id}</TableCell>
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell>{row.email}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={row.status === "Ativo" ? "default" :
+                           row.status === "Inativo" ? "secondary" : "outline"}
+                  >
+                    {row.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>{row.role}</TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="ghost" size="sm">
+                      Editar
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button variant="outline" size="sm">
+          Anterior
+        </Button>
+        <Button variant="outline" size="sm">
+          Próximo
+        </Button>
+      </div>
+    </div>
+  );
+}`,
+            userProfile: `const Component = () => {
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar */}
+        <div className="w-full md:w-1/3">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center">
+                <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-200 flex items-center justify-center">
+                  <Avatar className="w-full h-full">
+                    <AvatarImage src="https://github.com/shadcn.png" alt="Avatar" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+                <h3 className="text-xl font-bold">Carlos Nogueira</h3>
+                <p className="text-gray-500 mb-4">Designer de Produto</p>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm">Mensagem</Button>
+                  <Button size="sm">Seguir</Button>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Email</h4>
+                  <p className="text-sm text-gray-500">carlos@exemplo.com</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Localização</h4>
+                  <p className="text-sm text-gray-500">São Paulo, Brasil</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Entrou em</h4>
+                  <p className="text-sm text-gray-500">Junho 2022</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <div className="w-full md:w-2/3 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sobre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                Designer de produto com mais de 5 anos de experiência em design de interfaces e experiência do usuário. Especializado em criar soluções intuitivas e acessíveis para produtos digitais.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Projetos Recentes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { name: "Redesign do Dashboard", desc: "Redesign completo do dashboard principal" },
+                  { name: "App Mobile", desc: "Design do aplicativo móvel para iOS e Android" },
+                  { name: "Sistema de Design", desc: "Criação de um sistema de design unificado" }
+                ].map((project, i) => (
+                  <div key={i} className="p-4 border rounded-lg">
+                    <h4 className="font-medium">{project.name}</h4>
+                    <p className="text-sm text-gray-500">{project.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+            shadcnTabs: `const Component = () => {
+  return (
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6">Informações do Produto</h2>
+
+      <Tabs defaultValue="descricao" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="descricao">Descrição</TabsTrigger>
+          <TabsTrigger value="especificacoes">Especificações</TabsTrigger>
+          <TabsTrigger value="avaliacoes">Avaliações</TabsTrigger>
+        </TabsList>
+        <TabsContent value="descricao" className="p-4 border rounded-md mt-4">
+          <h3 className="text-lg font-medium mb-2">Sobre o Produto</h3>
+          <p className="text-gray-600">
+            Este é um produto incrível que vai revolucionar sua vida. Feito com materiais de alta qualidade e design inovador, ele combina funcionalidade e estética de maneira única.
+          </p>
+          <p className="text-gray-600 mt-2">
+            Disponível em várias cores e tamanhos para atender às suas necessidades específicas.
+          </p>
+        </TabsContent>
+        <TabsContent value="especificacoes" className="p-4 border rounded-md mt-4">
+          <h3 className="text-lg font-medium mb-2">Especificações Técnicas</h3>
+          <ul className="space-y-2 text-gray-600">
+            <li><strong>Dimensões:</strong> 10 x 20 x 5 cm</li>
+            <li><strong>Peso:</strong> 500g</li>
+            <li><strong>Material:</strong> Alumínio e plástico</li>
+            <li><strong>Bateria:</strong> 5000mAh</li>
+            <li><strong>Garantia:</strong> 12 meses</li>
+          </ul>
+        </TabsContent>
+        <TabsContent value="avaliacoes" className="p-4 border rounded-md mt-4">
+          <h3 className="text-lg font-medium mb-2">Avaliações dos Clientes</h3>
+          <div className="space-y-4">
+            {[
+              { name: "João Silva", rating: 5, comment: "Excelente produto! Superou minhas expectativas." },
+              { name: "Maria Oliveira", rating: 4, comment: "Muito bom, mas poderia ser um pouco mais barato." },
+              { name: "Pedro Santos", rating: 5, comment: "Perfeito! Já comprei três unidades." }
+            ].map((review, i) => (
+              <div key={i} className="p-3 border rounded">
+                <div className="flex items-center mb-1">
+                  <span className="font-medium mr-2">{review.name}</span>
+                  <span className="text-yellow-500">
+                    {Array(review.rating).fill("★").join("")}
+                  </span>
+                </div>
+                <p className="text-gray-600">{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}`,
+            shadcnAccordion: `const Component = () => {
+  return (
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6">Perguntas Frequentes</h2>
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>O que é o Shadcn UI?</AccordionTrigger>
+          <AccordionContent>
+            Shadcn UI é uma coleção de componentes React reutilizáveis que você pode copiar e colar em seus aplicativos. Os componentes são construídos usando Radix UI e Tailwind CSS.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Shadcn UI é uma biblioteca?</AccordionTrigger>
+          <AccordionContent>
+            Não, Shadcn UI não é uma biblioteca tradicional que você instala como uma dependência. Em vez disso, você instala os componentes diretamente em seu projeto, o que lhe dá controle total sobre o código.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Os componentes são acessíveis?</AccordionTrigger>
+          <AccordionContent>
+            Sim, os componentes são construídos com acessibilidade em mente usando Radix UI. Eles incluem suporte adequado para navegação por teclado, atributos ARIA e gestão de foco.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-4">
+          <AccordionTrigger>Posso personalizar os componentes?</AccordionTrigger>
+          <AccordionContent>
+            Absolutamente! Como você tem o código-fonte dos componentes em seu projeto, você pode personalizá-los como quiser. Isso inclui alterar estilos, adicionar funcionalidades ou modificar o comportamento existente.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}`,
+            shadcnDialog: `const Component = () => {
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[400px]">
+      <h2 className="text-3xl font-bold mb-6 text-center">Exemplo de Dialog</h2>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="default">Abrir Dialog</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Perfil</DialogTitle>
+            <DialogDescription>
+              Faça alterações no seu perfil aqui. Clique em salvar quando terminar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Nome
+              </Label>
+              <Input id="name" defaultValue="Pedro Silva" className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="username" className="text-right">
+                Usuário
+              </Label>
+              <Input id="username" defaultValue="@pedrosilva" className="col-span-3" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Salvar alterações</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <p className="text-gray-500 mt-4 text-center max-w-md">
+        Clique no botão acima para abrir um dialog modal com formulário de edição de perfil.
+      </p>
+    </div>
+  );
+}`,
+            shadcnDropdown: `const Component = () => {
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[400px]">
+      <h2 className="text-3xl font-bold mb-6 text-center">Menu Dropdown</h2>
+
+      <div className="flex flex-col items-center gap-6">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">Abrir Menu</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                Perfil
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Faturamento
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Configurações
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Teclados
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                Equipe
+              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  Convidar usuários
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>
+                    Email
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Mensagem
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    Mais...
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <p className="text-gray-500 text-center max-w-md">
+          Clique no botão acima para abrir um menu dropdown com várias opções e um submenu.
+        </p>
+      </div>
+    </div>
+  );
+}`,
+            shadcnForm: `const Component = () => {
+  const [formData, setFormData] = React.useState({
+    name: "",
+    email: "",
+    message: "",
+    terms: false
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(\`Formulário enviado! \nNome: \${formData.name} \nEmail: \${formData.email} \nMensagem: \${formData.message} \nTermos aceitos: \${formData.terms}\`);
+  };
+
+  return (
+    <div className="p-6 max-w-2xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6">Formulário de Contato</h2>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Entre em contato</CardTitle>
+          <CardDescription>
+            Preencha o formulário abaixo para enviar uma mensagem para nossa equipe.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  placeholder="Seu nome completo"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="message">Mensagem</Label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  placeholder="Digite sua mensagem aqui..."
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  className="min-h-[120px]"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="terms"
+                  name="terms"
+                  checked={formData.terms}
+                  onCheckedChange={(checked) =>
+                    setFormData(prev => ({ ...prev, terms: checked === true }))
+                  }
+                  required
+                />
+                <Label
+                  htmlFor="terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Eu concordo com os termos e condições
+                </Label>
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full">
+              Enviar mensagem
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }`,
