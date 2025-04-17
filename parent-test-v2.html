@@ -50,6 +50,34 @@
         button:hover {
             background-color: #4338ca;
         }
+        #share-button {
+            background-color: #16a34a;
+        }
+        #share-button:hover {
+            background-color: #15803d;
+        }
+        #load-api-button {
+            background-color: #2563eb;
+        }
+        #load-api-button:hover {
+            background-color: #1d4ed8;
+        }
+        .load-component-btn {
+            background-color: #2563eb;
+            transition: background-color 0.2s;
+        }
+        .load-component-btn:hover {
+            background-color: #1d4ed8;
+        }
+        #close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 8px;
+            border-radius: 4px;
+        }
+        #close-modal:hover {
+            background-color: #f3f4f6;
+        }
         .iframe-container {
             width: 100%;
             height: 600px;
@@ -150,7 +178,11 @@
 };</textarea>
             </div>
 
-            <button id="render-button">Renderizar</button>
+            <div class="flex space-x-2 mb-4">
+                <button id="render-button" class="flex-1">Renderizar</button>
+                <button id="share-button" class="bg-green-600">Compartilhar</button>
+                <button id="load-api-button" class="bg-blue-600">Carregar da API</button>
+            </div>
 
             <div class="examples-container">
                 <h3>Exemplos:</h3>
@@ -198,7 +230,21 @@
         <div class="panel">
             <h2>Visualização</h2>
             <div class="iframe-container">
-                <iframe id="react-iframe" src="http://localhost:5174" allow="fullscreen"></iframe>
+                <iframe id="react-iframe" src="http://localhost:5173" allow="fullscreen"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para componentes da API -->
+    <div id="api-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+        <!-- Nota: a classe flex será adicionada via JavaScript quando o modal for aberto -->
+        <div class="bg-white p-6 rounded-lg w-3/4 max-w-4xl max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Componentes da API</h2>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <div id="api-components-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-center col-span-2">Carregando componentes...</p>
             </div>
         </div>
     </div>
@@ -299,6 +345,139 @@
                 }
             });
         });
+
+        // Importar o serviço de API
+        import * as apiService from './src/lib/api-service.js';
+
+        // Elementos adicionais do DOM
+        const shareButton = document.getElementById('share-button');
+        const loadApiButton = document.getElementById('load-api-button');
+        const apiModal = document.getElementById('api-modal');
+        const closeModalButton = document.getElementById('close-modal');
+        const apiComponentsList = document.getElementById('api-components-list');
+
+        // Função para compartilhar via URL
+        function shareViaUrl() {
+            const code = componentCodeTextarea.value.trim();
+            if (!code) {
+                addLogEntry('Não há código para compartilhar.', 'error');
+                return;
+            }
+
+            // Codificar o código em base64 para URL
+            const encodedCode = btoa(encodeURIComponent(code));
+            const shareUrl = `${window.location.href.split('?')[0]}?code=${encodedCode}`;
+
+            // Copiar para a área de transferência
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    addLogEntry('URL copiada para a área de transferência!', 'info');
+                    alert('URL copiada para a área de transferência!');
+                })
+                .catch(err => {
+                    addLogEntry(`Erro ao copiar URL: ${err}`, 'error');
+                    // Fallback para seleção manual
+                    prompt('Copie a URL abaixo:', shareUrl);
+                });
+        }
+
+        // Função para carregar código da URL
+        function loadFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedCode = urlParams.get('code');
+
+            if (encodedCode) {
+                try {
+                    const code = decodeURIComponent(atob(encodedCode));
+                    componentCodeTextarea.value = code;
+                    addLogEntry('Código carregado da URL.', 'info');
+
+                    // Renderizar automaticamente
+                    if (iframeReady) {
+                        sendMessageToIframe('RENDER_COMPONENT', code);
+                    } else {
+                        // Se o iframe não estiver pronto, aguardar e tentar novamente
+                        const checkInterval = setInterval(() => {
+                            if (iframeReady) {
+                                sendMessageToIframe('RENDER_COMPONENT', code);
+                                clearInterval(checkInterval);
+                            }
+                        }, 500);
+                    }
+                } catch (error) {
+                    addLogEntry(`Erro ao decodificar código da URL: ${error}`, 'error');
+                }
+            }
+        }
+
+        // Função para abrir o modal da API
+        async function openApiModal() {
+            apiModal.classList.remove('hidden');
+            apiModal.classList.add('flex');
+            apiComponentsList.innerHTML = '<p class="text-center col-span-2">Carregando componentes...</p>';
+
+            try {
+                const components = await apiService.fetchComponents();
+
+                if (components.length === 0) {
+                    apiComponentsList.innerHTML = '<p class="text-center col-span-2">Nenhum componente encontrado.</p>';
+                    return;
+                }
+
+                apiComponentsList.innerHTML = '';
+                components.forEach(component => {
+                    const componentCard = document.createElement('div');
+                    componentCard.className = 'border rounded-lg p-4 hover:shadow-md transition-shadow';
+                    componentCard.innerHTML = `
+                        <h3 class="font-semibold mb-2">${component.description || `Componente ${component.id}`}</h3>
+                        <p class="text-sm text-gray-500 mb-2">ID: ${component.id}</p>
+                        <p class="text-sm text-gray-500 mb-4">Atualizado por: ${component.updatedBy || 'N/A'}</p>
+                        <button class="load-component-btn bg-blue-600 text-white px-3 py-1 rounded text-sm w-full" data-id="${component.id}">Carregar</button>
+                    `;
+                    apiComponentsList.appendChild(componentCard);
+                });
+
+                // Adicionar event listeners aos botões de carregar
+                document.querySelectorAll('.load-component-btn').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const componentId = parseInt(button.getAttribute('data-id'), 10);
+                        const component = await apiService.fetchComponentById(componentId);
+
+                        if (component && component.code) {
+                            componentCodeTextarea.value = apiService.formatCode(component.code);
+                            addLogEntry(`Componente ${componentId} carregado.`, 'info');
+                            closeApiModal();
+                        } else {
+                            addLogEntry(`Erro ao carregar componente ${componentId}.`, 'error');
+                        }
+                    });
+                });
+            } catch (error) {
+                apiComponentsList.innerHTML = `<p class="text-center col-span-2 text-red-500">Erro ao carregar componentes: ${error.message}</p>`;
+                addLogEntry(`Erro ao carregar componentes da API: ${error}`, 'error');
+            }
+        }
+
+        // Função para fechar o modal da API
+        function closeApiModal() {
+            apiModal.classList.add('hidden');
+            apiModal.classList.remove('flex');
+        }
+
+        // Event listeners para os novos botões
+        shareButton.addEventListener('click', shareViaUrl);
+        loadApiButton.addEventListener('click', openApiModal);
+        closeModalButton.addEventListener('click', closeApiModal);
+
+        // Fechar o modal ao clicar fora dele
+        apiModal.addEventListener('click', (e) => {
+            if (e.target === apiModal) {
+                closeApiModal();
+            }
+        });
+
+        // Verificar se há código na URL ao carregar a página
+        loadFromUrl();
 
         // Inicialização
         addLogEntry('Página carregada. Aguardando iframe ficar pronto...', 'info');
