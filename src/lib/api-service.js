@@ -116,8 +116,186 @@ export function formatCode(code) {
   return formattedCode;
 }
 
+/**
+ * Cria um novo componente
+ * @param {Object} componentData Dados do componente a ser criado
+ * @param {string} componentData.description Descrição do componente
+ * @param {string} componentData.categoryId ID da categoria do componente
+ * @param {string} componentData.code Código do componente
+ * @returns {Promise<Object>} Componente criado
+ */
+export async function createComponent(componentData) {
+  try {
+    const { description, categoryId, code } = componentData;
+
+    // Validar dados obrigatórios
+    if (!description || !code) {
+      throw new Error('Descrição e código são obrigatórios');
+    }
+
+    // Preparar dados para a API
+    const apiData = {
+      'Descrição': description,
+      'ID Categoria': categoryId || '',
+      'code': code
+    };
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${API_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(apiData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao criar componente: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      message: 'Componente criado com sucesso',
+      data: data
+    };
+  } catch (error) {
+    console.error('Erro ao criar componente:', error);
+    return {
+      success: false,
+      message: error.message || 'Erro ao criar componente',
+      error: error
+    };
+  }
+}
+
+/**
+ * Atualiza um componente existente
+ * @param {number} id ID do componente a ser atualizado
+ * @param {Object} componentData Dados do componente a ser atualizado
+ * @param {string} componentData.description Descrição do componente
+ * @param {string} componentData.categoryId ID da categoria do componente
+ * @param {string} componentData.code Código do componente
+ * @returns {Promise<Object>} Resultado da operação
+ */
+export async function updateComponent(id, componentData) {
+  try {
+    const { description, categoryId, code } = componentData;
+
+    // Validar dados obrigatórios
+    if (!id || !description || !code) {
+      throw new Error('ID, descrição e código são obrigatórios');
+    }
+
+    // Preparar dados para a API
+    const apiData = {
+      'ID': parseInt(id),
+      'Descrição': description,
+      'ID Categoria': categoryId || '',
+      'code': code
+    };
+
+    const response = await fetch(API_URL, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${API_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(apiData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao atualizar componente: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      message: 'Componente atualizado com sucesso',
+      data: data
+    };
+  } catch (error) {
+    console.error('Erro ao atualizar componente:', error);
+    return {
+      success: false,
+      message: error.message || 'Erro ao atualizar componente',
+      error: error
+    };
+  }
+}
+
+/**
+ * Exclui um componente
+ * @param {number} id ID do componente a ser excluído
+ * @returns {Promise<Object>} Resultado da operação
+ */
+export async function deleteComponent(id) {
+  try {
+    // Validar ID
+    if (!id) {
+      throw new Error('ID é obrigatório');
+    }
+
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao excluir componente: ${response.status}`);
+    }
+
+    return {
+      success: true,
+      message: 'Componente excluído com sucesso'
+    };
+  } catch (error) {
+    console.error('Erro ao excluir componente:', error);
+    return {
+      success: false,
+      message: error.message || 'Erro ao excluir componente',
+      error: error
+    };
+  }
+}
+
+/**
+ * Busca categorias disponíveis
+ * @returns {Promise<Array>} Lista de categorias
+ */
+export async function fetchCategories() {
+  try {
+    const components = await fetchComponents();
+
+    // Extrair categorias únicas dos componentes
+    const categories = components
+      .filter(component => component.categoryId && component.category)
+      .map(component => ({
+        id: component.categoryId,
+        name: component.category
+      }));
+
+    // Remover duplicatas
+    const uniqueCategories = Array.from(new Map(
+      categories.map(category => [category.id, category])
+    ).values());
+
+    return uniqueCategories;
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+    return [];
+  }
+}
+
 export default {
   fetchComponents,
   fetchComponentById,
+  createComponent,
+  updateComponent,
+  deleteComponent,
+  fetchCategories,
   formatCode
 };

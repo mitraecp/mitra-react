@@ -192,6 +192,13 @@
                     </svg>
                     Biblioteca de Componentes
                 </h2>
+                <button id="create-component-btn" class="px-3 py-1.5 bg-primary-500 hover:bg-primary-600 text-white text-sm rounded-md font-medium transition-colors flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Novo Componente
+                </button>
             </div>
             <div class="p-4 space-y-4">
                 <!-- Filtros e Busca -->
@@ -440,6 +447,114 @@
         </div>
 
 
+
+        <!-- Modais de CRUD -->
+        <!-- Modal de Criar Componente -->
+        <div id="create-component-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+            <!-- O flex será adicionado via JavaScript quando o modal for aberto -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color);">
+                <div class="border-b px-4 py-3 flex justify-between items-center transition-colors duration-300" style="border-color: var(--border-color);">
+                    <h3 class="font-semibold text-lg">Criar Novo Componente</h3>
+                    <button class="close-modal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <form id="create-component-form" class="p-4">
+                    <div class="mb-4">
+                        <label for="create-description" class="block text-sm font-medium mb-1 transition-colors duration-300" style="color: var(--text-muted);">Descrição</label>
+                        <input type="text" id="create-description" name="description" class="w-full px-3 py-2 border rounded-md transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color); border-color: var(--border-color);" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="create-category" class="block text-sm font-medium mb-1 transition-colors duration-300" style="color: var(--text-muted);">Categoria</label>
+                        <select id="create-category" name="categoryId" class="w-full px-3 py-2 border rounded-md transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                            <option value="">Selecione uma categoria</option>
+                            <!-- Opções serão preenchidas via JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="create-code" class="block text-sm font-medium mb-1 transition-colors duration-300" style="color: var(--text-muted);">Código</label>
+                        <textarea id="create-code" name="code" rows="6" class="w-full px-3 py-2 border rounded-md font-mono text-sm transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color); border-color: var(--border-color);" required></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" class="close-modal px-4 py-2 border rounded-md transition-colors duration-300" style="border-color: var(--border-color); color: var(--text-color);">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-md transition-colors">Criar Componente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Editar Componente -->
+        <div id="edit-component-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+            <!-- O flex será adicionado via JavaScript quando o modal for aberto -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color);">
+                <div class="border-b px-4 py-3 flex justify-between items-center transition-colors duration-300" style="border-color: var(--border-color);">
+                    <h3 class="font-semibold text-lg">Editar Componente</h3>
+                    <button class="close-modal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <form id="edit-component-form" class="p-4">
+                    <input type="hidden" id="edit-id" name="id">
+                    <div class="mb-4">
+                        <label for="edit-description" class="block text-sm font-medium mb-1 transition-colors duration-300" style="color: var(--text-muted);">Descrição</label>
+                        <input type="text" id="edit-description" name="description" class="w-full px-3 py-2 border rounded-md transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color); border-color: var(--border-color);" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-category" class="block text-sm font-medium mb-1 transition-colors duration-300" style="color: var(--text-muted);">Categoria</label>
+                        <select id="edit-category" name="categoryId" class="w-full px-3 py-2 border rounded-md transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                            <option value="">Selecione uma categoria</option>
+                            <!-- Opções serão preenchidas via JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-code" class="block text-sm font-medium mb-1 transition-colors duration-300" style="color: var(--text-muted);">Código</label>
+                        <textarea id="edit-code" name="code" rows="6" class="w-full px-3 py-2 border rounded-md font-mono text-sm transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color); border-color: var(--border-color);" required></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" class="close-modal px-4 py-2 border rounded-md transition-colors duration-300" style="border-color: var(--border-color); color: var(--text-color);">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md transition-colors">Atualizar Componente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <div id="delete-component-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+            <!-- O flex será adicionado via JavaScript quando o modal for aberto -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 transition-colors duration-300" style="background-color: var(--card-bg); color: var(--text-color);">
+                <div class="border-b px-4 py-3 flex justify-between items-center transition-colors duration-300" style="border-color: var(--border-color);">
+                    <h3 class="font-semibold text-lg">Confirmar Exclusão</h3>
+                    <button class="close-modal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-red-100 p-2 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <p class="transition-colors duration-300" style="color: var(--text-color);">Tem certeza que deseja excluir este componente? Esta ação não pode ser desfeita.</p>
+                    </div>
+                    <div class="mt-2 p-3 rounded-md transition-colors duration-300" style="background-color: var(--hover-bg);">
+                        <p class="font-medium text-sm component-to-delete-name">Nome do Componente</p>
+                        <p class="text-xs mt-1 transition-colors duration-300" style="color: var(--text-muted);">ID: <span class="component-to-delete-id">123</span></p>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" class="close-modal px-4 py-2 border rounded-md transition-colors duration-300" style="border-color: var(--border-color); color: var(--text-color);">Cancelar</button>
+                        <button id="confirm-delete-btn" data-id="" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors">Excluir Componente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast de Notificação -->
+        <div id="toast-notification" class="fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 flex items-center gap-3 transform translate-x-full transition-transform duration-300">
+            <div id="toast-icon" class="flex-shrink-0"></div>
+            <div>
+                <h4 id="toast-title" class="font-medium text-sm"></h4>
+                <p id="toast-message" class="text-xs mt-1"></p>
+            </div>
+        </div>
 
         <!-- Footer -->
         <footer class="mt-8 text-center text-sm py-4 transition-colors duration-300" style="color: var(--text-muted);">
@@ -909,10 +1024,18 @@
                             </div>
                         </div>
                         <div class="p-3 border-t transition-colors duration-300" style="border-color: var(--border-color); background-color: var(--hover-bg);">
-                            <button class="load-component-btn w-full bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center gap-2" data-id="${component.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                Carregar Componente
-                            </button>
+                            <div class="flex gap-2 mb-2">
+                                <button class="load-component-btn flex-1 bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center gap-1" data-id="${component.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Carregar
+                                </button>
+                                <button class="edit-component-btn bg-amber-500 hover:bg-amber-600 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center" data-id="${component.id}" title="Editar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                                <button class="delete-component-btn bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center" data-id="${component.id}" title="Excluir">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
                         </div>
                     `;
 
@@ -994,6 +1117,270 @@
 
         // Verificar se há código na URL ao carregar a página
         loadFromUrl();
+
+        // Elementos dos modais
+        const createComponentBtn = document.getElementById('create-component-btn');
+        const createComponentModal = document.getElementById('create-component-modal');
+        const createComponentForm = document.getElementById('create-component-form');
+        const editComponentModal = document.getElementById('edit-component-modal');
+        const editComponentForm = document.getElementById('edit-component-form');
+        const deleteComponentModal = document.getElementById('delete-component-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+        const toastNotification = document.getElementById('toast-notification');
+
+        // Função para mostrar toast de notificação
+        function showToast(title, message, type = 'success') {
+            const toast = toastNotification;
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            // Definir conteúdo
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            // Definir cores e ícone com base no tipo
+            let bgColor, iconHtml;
+
+            if (type === 'success') {
+                bgColor = 'bg-green-500';
+                iconHtml = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            } else if (type === 'error') {
+                bgColor = 'bg-red-500';
+                iconHtml = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+            } else if (type === 'warning') {
+                bgColor = 'bg-amber-500';
+                iconHtml = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
+            } else {
+                bgColor = 'bg-blue-500';
+                iconHtml = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+            }
+
+            // Aplicar estilo
+            toast.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 flex items-center gap-3 text-white ${bgColor}`;
+            toastIcon.innerHTML = iconHtml;
+
+            // Mostrar toast
+            toast.style.transform = 'translateX(0)';
+
+            // Esconder após 5 segundos
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+            }, 5000);
+        }
+
+        // Função para abrir modal
+        function openModal(modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Impedir rolagem
+        }
+
+        // Função para fechar modal
+        function closeModal(modal) {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Permitir rolagem
+        }
+
+        // Fechar todos os modais
+        function closeAllModals() {
+            [createComponentModal, editComponentModal, deleteComponentModal].forEach(modal => {
+                closeModal(modal);
+            });
+        }
+
+        // Event listeners para abrir/fechar modais
+        createComponentBtn.addEventListener('click', () => openModal(createComponentModal));
+
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = button.closest('[id$="-modal"]');
+                if (modal) closeModal(modal);
+            });
+        });
+
+        // Fechar modal ao clicar fora
+        [createComponentModal, editComponentModal, deleteComponentModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        });
+
+        // Carregar categorias para os selects
+        async function loadCategories() {
+            try {
+                const categories = await apiService.fetchCategories();
+                const createCategorySelect = document.getElementById('create-category');
+                const editCategorySelect = document.getElementById('edit-category');
+
+                // Limpar opções existentes, mantendo a primeira
+                while (createCategorySelect.options.length > 1) {
+                    createCategorySelect.remove(1);
+                }
+
+                while (editCategorySelect.options.length > 1) {
+                    editCategorySelect.remove(1);
+                }
+
+                // Adicionar categorias
+                categories.forEach(category => {
+                    const createOption = document.createElement('option');
+                    createOption.value = category.id;
+                    createOption.textContent = category.name;
+                    createCategorySelect.appendChild(createOption);
+
+                    const editOption = document.createElement('option');
+                    editOption.value = category.id;
+                    editOption.textContent = category.name;
+                    editCategorySelect.appendChild(editOption);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+                addLogEntry(`Erro ao carregar categorias: ${error.message}`, 'error');
+            }
+        }
+
+        // Criar componente
+        createComponentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const description = document.getElementById('create-description').value;
+            const categoryId = document.getElementById('create-category').value;
+            const code = document.getElementById('create-code').value;
+
+            try {
+                const result = await apiService.createComponent({ description, categoryId, code });
+
+                if (result.success) {
+                    showToast('Sucesso', 'Componente criado com sucesso', 'success');
+                    closeModal(createComponentModal);
+                    createComponentForm.reset();
+                    loadApiComponents(); // Recarregar lista
+                } else {
+                    showToast('Erro', result.message, 'error');
+                }
+            } catch (error) {
+                showToast('Erro', `Erro ao criar componente: ${error.message}`, 'error');
+            }
+        });
+
+        // Editar componente - Carregar dados
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.edit-component-btn')) {
+                const button = e.target.closest('.edit-component-btn');
+                const componentId = parseInt(button.getAttribute('data-id'), 10);
+
+                try {
+                    // Efeito visual de carregamento
+                    button.innerHTML = '<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+                    const component = await apiService.fetchComponentById(componentId);
+
+                    if (component) {
+                        document.getElementById('edit-id').value = component.id;
+                        document.getElementById('edit-description').value = component.description || '';
+
+                        const categorySelect = document.getElementById('edit-category');
+                        if (component.categoryId) {
+                            // Tentar encontrar a opção correspondente
+                            const option = Array.from(categorySelect.options).find(opt => opt.value === component.categoryId);
+                            if (option) {
+                                option.selected = true;
+                            }
+                        } else {
+                            categorySelect.value = '';
+                        }
+
+                        document.getElementById('edit-code').value = component.code || '';
+
+                        // Abrir modal
+                        openModal(editComponentModal);
+                    } else {
+                        showToast('Erro', 'Componente não encontrado', 'error');
+                    }
+                } catch (error) {
+                    showToast('Erro', `Erro ao carregar componente: ${error.message}`, 'error');
+                } finally {
+                    // Restaurar botão
+                    button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+                }
+            }
+        });
+
+        // Editar componente - Salvar alterações
+        editComponentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('edit-id').value;
+            const description = document.getElementById('edit-description').value;
+            const categoryId = document.getElementById('edit-category').value;
+            const code = document.getElementById('edit-code').value;
+
+            try {
+                const result = await apiService.updateComponent(id, { description, categoryId, code });
+
+                if (result.success) {
+                    showToast('Sucesso', 'Componente atualizado com sucesso', 'success');
+                    closeModal(editComponentModal);
+                    loadApiComponents(); // Recarregar lista
+                } else {
+                    showToast('Erro', result.message, 'error');
+                }
+            } catch (error) {
+                showToast('Erro', `Erro ao atualizar componente: ${error.message}`, 'error');
+            }
+        });
+
+        // Excluir componente - Confirmação
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.delete-component-btn')) {
+                const button = e.target.closest('.delete-component-btn');
+                const componentId = button.getAttribute('data-id');
+                const componentCard = button.closest('.component-card');
+                const componentName = componentCard.querySelector('h3').textContent;
+
+                // Preencher dados no modal de confirmação
+                document.querySelector('.component-to-delete-name').textContent = componentName;
+                document.querySelector('.component-to-delete-id').textContent = componentId;
+                confirmDeleteBtn.setAttribute('data-id', componentId);
+
+                // Abrir modal
+                openModal(deleteComponentModal);
+            }
+        });
+
+        // Excluir componente - Executar
+        confirmDeleteBtn.addEventListener('click', async () => {
+            const componentId = confirmDeleteBtn.getAttribute('data-id');
+
+            try {
+                // Efeito visual de carregamento
+                const originalText = confirmDeleteBtn.textContent;
+                confirmDeleteBtn.innerHTML = '<svg class="animate-spin h-4 w-4 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Excluindo...';
+                confirmDeleteBtn.disabled = true;
+
+                const result = await apiService.deleteComponent(componentId);
+
+                if (result.success) {
+                    showToast('Sucesso', 'Componente excluído com sucesso', 'success');
+                    closeModal(deleteComponentModal);
+                    loadApiComponents(); // Recarregar lista
+                } else {
+                    showToast('Erro', result.message, 'error');
+                }
+            } catch (error) {
+                showToast('Erro', `Erro ao excluir componente: ${error.message}`, 'error');
+            } finally {
+                // Restaurar botão
+                confirmDeleteBtn.textContent = 'Excluir Componente';
+                confirmDeleteBtn.disabled = false;
+            }
+        });
+
+        // Carregar categorias ao iniciar
+        loadCategories();
 
         // Carregar componentes da API automaticamente
         loadApiComponents();
