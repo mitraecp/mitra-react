@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { messageService } from '@/lib/message-service';
-// Importar todos os componentes que podem ser usados no código dinâmico
+import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
+import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
+
+// --- 1. Importar TODOS os componentes necessários UMA VEZ ---
 // Componentes básicos
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-
 // Componentes de layout
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -18,11 +20,9 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-
 // Componentes de data
 import { Calendar } from '@/components/ui/calendar';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-
 // Componentes de disclosure
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from '@/components/ui/command';
@@ -30,13 +30,11 @@ import { ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuIt
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-
 // Componentes de formulário
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'; // Assumindo que você tenha um componente Form
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Menubar, MenubarCheckboxItem, MenubarContent, MenubarGroup, MenubarItem, MenubarLabel, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from '@/components/ui/menubar';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-
 // Componentes de feedback
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -55,18 +53,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-// Componentes personalizados
-import { Dashboard } from './Dashboard';
-
 // Ícones
-import * as LucideReact from 'lucide-react';
-import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
-import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
+import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
 
-// Componentes pré-definidos para uso direto
+// --- Componentes pré-definidos (mantidos por simplicidade) ---
+import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
+
 const SimpleButton = () => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = React.useState(0); // Usar React.useState aqui
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Botão com Contador</h2>
@@ -94,50 +88,112 @@ const SimpleCard = () => {
   );
 };
 
-// Componente para renderizar código React dinamicamente
+// --- 2. Criar o Registro de Componentes e Utilitários ---
+// Colocado fora do componente para evitar recriação em cada render,
+// mas pode ser movido para dentro e memoizado com useMemo se preferir.
+const componentRegistry = {
+  // React e Hooks Essenciais
+  React,
+  useState: React.useState,
+  useEffect: React.useEffect,
+  useCallback: React.useCallback,
+  useMemo: React.useMemo,
+  useRef: React.useRef,
+  useContext: React.useContext,
+  // Adicione outros hooks se necessário
+
+  // Componentes UI (Shadcn UI)
+  Button,
+  Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter,
+  Input, Label, Checkbox,
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+  Alert, AlertDescription, AlertTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AspectRatio,
+  Avatar, AvatarFallback, AvatarImage,
+  Badge,
+  Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
+  Calendar,
+  Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
+  Collapsible, CollapsibleContent, CollapsibleTrigger,
+  Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut,
+  ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuRadioGroup, ContextMenuRadioItem, ContextMenuSeparator, ContextMenuShortcut, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger,
+  DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
+  Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, // Assumindo que existem
+  HoverCard, HoverCardContent, HoverCardTrigger,
+  Menubar, MenubarCheckboxItem, MenubarContent, MenubarGroup, MenubarItem, MenubarLabel, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger,
+  NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle,
+  Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
+  Popover, PopoverContent, PopoverTrigger,
+  Progress,
+  RadioGroup, RadioGroupItem,
+  ResizableHandle, ResizablePanel, ResizablePanelGroup,
+  ScrollArea, ScrollBar,
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue,
+  Separator,
+  Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger,
+  Skeleton,
+  Slider,
+  Switch,
+  Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
+  Tabs, TabsContent, TabsList, TabsTrigger,
+  Textarea,
+  Toggle,
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+
+  // Biblioteca de Ícones
+  LucideReact, // Expõe todo o objeto LucideReact
+
+  // Componentes Pré-definidos
+  Dashboard
+
+  // Adicione outros componentes/utilitários que você quer expor
+  // Ex: Alguma lib de gráficos, helpers, etc.
+};
+
+// --- 3. Mapa para Componentes Pré-definidos ---
+const predefinedComponentsMap = new Map<string, React.FC>([
+  ['SIMPLE_BUTTON', SimpleButton],
+  ['SIMPLE_CARD', SimpleCard],
+  ['DASHBOARD', Dashboard],
+]);
+
+// --- Componente Renderer Principal ---
 const DynamicRenderer: React.FC = () => {
   const [componentCode, setComponentCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
+  const [selectedPredefinedKey, setSelectedPredefinedKey] = useState<string | null>(null);
+  const [RenderedComponent, setRenderedComponent] = useState<React.FC | null>(null);
 
   useEffect(() => {
-    // Adicionar listener para mensagens de renderização de componentes
     const unsubscribe = messageService.addListener('RENDER_COMPONENT', (payload) => {
+      setError(null); // Limpa erros anteriores
+      setRenderedComponent(null); // Limpa componente renderizado anteriormente
+      setSelectedPredefinedKey(null);
+      setComponentCode(null);
+
       try {
-        if (typeof payload === 'string') {
-          // Verificar se o código é um identificador de componente pré-definido
-          if (payload.trim() === 'SIMPLE_BUTTON') {
-            setSelectedComponent('SIMPLE_BUTTON');
-            setComponentCode(null);
-            setError(null);
-            messageService.sendMessage('COMPONENT_RENDERED', { success: true });
-            return;
-          } else if (payload.trim() === 'SIMPLE_CARD') {
-            setSelectedComponent('SIMPLE_CARD');
-            setComponentCode(null);
-            setError(null);
-            messageService.sendMessage('COMPONENT_RENDERED', { success: true });
-            return;
-          } else if (payload.trim() === 'DASHBOARD') {
-            setSelectedComponent('DASHBOARD');
-            setComponentCode(null);
-            setError(null);
-            messageService.sendMessage('COMPONENT_RENDERED', { success: true });
-            return;
-          }
-
-          // Se não for um componente pré-definido, tenta renderizar o código
-          setComponentCode(payload);
-          setSelectedComponent(null);
-          setError(null);
-
-          // Informar ao pai que o componente foi renderizado com sucesso
-          messageService.sendMessage('COMPONENT_RENDERED', { success: true });
-        } else {
-          throw new Error('Payload inválido: deve ser uma string de código React');
+        if (typeof payload !== 'string') {
+          throw new Error('Payload inválido: deve ser uma string (código React ou chave pré-definida).');
         }
+
+        const trimmedPayload = payload.trim();
+
+        // Verificar se é uma chave pré-definida
+        if (predefinedComponentsMap.has(trimmedPayload)) {
+          setSelectedPredefinedKey(trimmedPayload);
+          messageService.sendMessage('COMPONENT_RENDERED', { success: true, type: 'predefined', key: trimmedPayload });
+
+        } else {
+          // Se não for pré-definido, trata como código JSX
+          setComponentCode(trimmedPayload);
+          messageService.sendMessage('COMPONENT_RENDERED', { success: true, type: 'dynamic' });
+        }
+
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+        const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao processar payload';
         setError(errorMessage);
         messageService.sendMessage('ERROR', { message: errorMessage });
       }
@@ -146,246 +202,139 @@ const DynamicRenderer: React.FC = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, []); // Dependência vazia para rodar apenas na montagem
 
-  // Renderizar componente pré-definido
-  const renderPredefinedComponent = () => {
-    switch (selectedComponent) {
-      case 'SIMPLE_BUTTON':
-        return <SimpleButton />;
-      case 'SIMPLE_CARD':
-        return <SimpleCard />;
-      case 'DASHBOARD':
-        return <Dashboard />;
-      default:
-        return null;
+  // Memoizar a compilação do componente dinâmico
+  // Isso só será re-executado quando `componentCode` mudar.
+  useEffect(() => {
+    if (!componentCode) {
+      setRenderedComponent(null);
+      return;
     }
-  };
 
-  // Função para renderizar o componente dinamicamente
-  const renderDynamicComponent = () => {
-    if (!componentCode) return null;
-
+    let Comp: React.FC | null = null;
     try {
-      // Sanitizar o código para garantir que seja válido
+      console.log('Recebido código JSX:', componentCode);
       const sanitizedCode = sanitizeJSXCode(componentCode);
-
-      // Processar valores arbitrários do Tailwind
       const processedCode = processArbitraryValues(sanitizedCode);
-      console.log('Código processado com valores arbitrários:', processedCode);
+      console.log('Código processado:', processedCode);
+      const transpiledCode = transformJSX(processedCode);
+      console.log('Código transpilado:', transpiledCode);
 
-      // Transpilar o código JSX para JavaScript válido
-      let transpiledCode;
-      try {
-        transpiledCode = transformJSX(processedCode);
-        console.log('Código transpilado com sucesso');
-      } catch (error) {
-        console.error('Erro ao transpilar código com Babel:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-        throw new Error(`Erro ao transpilar código: ${errorMessage}`);
-      }
+      // --- 4. Usar `new Function` com o registro ---
+      // A função recebe UM argumento: `scope` (nosso registro)
+      // Dentro da função, desestruturamos o `scope` para ter acesso fácil
+      // aos componentes e utilitários.
+      // Ela DEVE definir e retornar uma função chamada `Component`.
+      const defineComponent = new Function(
+        'scope', // O nome do argumento que receberá o registro
+        `
+          // Desestruturação para acesso fácil dentro do código do usuário
+          const { ${Object.keys(componentRegistry).join(', ')} } = scope;
 
-      // Não fazemos mais detecção baseada em texto - processamos diretamente o JSX
+          // Disponibilizar LucideReact globalmente se o código antigo depender disso
+          // (Melhor seria usar scope.LucideReact.IconName)
+          // window.LucideReact = scope.LucideReact;
 
-      // Abordagem direta: definir o componente diretamente no escopo atual
-      try {
-        console.log('Processando código JSX...');
+          // O código do usuário vem aqui. Ele deve definir 'Component'.
+          ${transpiledCode}
 
-        // Criar um componente dinâmico diretamente a partir do código
-        // Esta abordagem é mais direta e evita problemas de escopo
-        const DynamicComponentWrapper = () => {
-          // Definir variáveis para o escopo local
-          let Component: React.FC | null = null;
-
-          // Executar o código para definir o Component
-          try {
-            // eslint-disable-next-line no-new-func
-            const defineComponent = new Function(
-              'React',
-              // Componentes básicos
-              'Button',
-              'Card', 'CardHeader', 'CardContent', 'CardDescription', 'CardTitle', 'CardFooter',
-              'Input', 'Label', 'Checkbox',
-
-              // Componentes de layout
-              'Accordion', 'AccordionContent', 'AccordionItem', 'AccordionTrigger',
-              'Alert', 'AlertDescription', 'AlertTitle',
-              'AlertDialog', 'AlertDialogAction', 'AlertDialogCancel', 'AlertDialogContent', 'AlertDialogDescription', 'AlertDialogFooter', 'AlertDialogHeader', 'AlertDialogTitle', 'AlertDialogTrigger',
-              'AspectRatio',
-              'Avatar', 'AvatarFallback', 'AvatarImage',
-              'Badge',
-              'Breadcrumb', 'BreadcrumbItem', 'BreadcrumbLink', 'BreadcrumbList', 'BreadcrumbPage', 'BreadcrumbSeparator',
-
-              // Componentes de data
-              'Calendar',
-              'Carousel', 'CarouselContent', 'CarouselItem', 'CarouselNext', 'CarouselPrevious',
-
-              // Componentes de disclosure
-              'Collapsible', 'CollapsibleContent', 'CollapsibleTrigger',
-              'Command', 'CommandDialog', 'CommandEmpty', 'CommandGroup', 'CommandInput', 'CommandItem', 'CommandList', 'CommandSeparator', 'CommandShortcut',
-              'ContextMenu', 'ContextMenuCheckboxItem', 'ContextMenuContent', 'ContextMenuItem', 'ContextMenuLabel', 'ContextMenuRadioGroup', 'ContextMenuRadioItem', 'ContextMenuSeparator', 'ContextMenuShortcut', 'ContextMenuSub', 'ContextMenuSubContent', 'ContextMenuSubTrigger', 'ContextMenuTrigger',
-              'Dialog', 'DialogContent', 'DialogDescription', 'DialogFooter', 'DialogHeader', 'DialogTitle', 'DialogTrigger',
-              'Drawer', 'DrawerClose', 'DrawerContent', 'DrawerDescription', 'DrawerFooter', 'DrawerHeader', 'DrawerTitle', 'DrawerTrigger',
-              'DropdownMenu', 'DropdownMenuCheckboxItem', 'DropdownMenuContent', 'DropdownMenuGroup', 'DropdownMenuItem', 'DropdownMenuLabel', 'DropdownMenuPortal', 'DropdownMenuRadioGroup', 'DropdownMenuRadioItem', 'DropdownMenuSeparator', 'DropdownMenuShortcut', 'DropdownMenuSub', 'DropdownMenuSubContent', 'DropdownMenuSubTrigger', 'DropdownMenuTrigger',
-
-              // Componentes de formulário
-              'Form', 'FormControl', 'FormDescription', 'FormField', 'FormItem', 'FormLabel', 'FormMessage',
-              'HoverCard', 'HoverCardContent', 'HoverCardTrigger',
-              'Menubar', 'MenubarCheckboxItem', 'MenubarContent', 'MenubarGroup', 'MenubarItem', 'MenubarLabel', 'MenubarMenu', 'MenubarRadioGroup', 'MenubarRadioItem', 'MenubarSeparator', 'MenubarShortcut', 'MenubarSub', 'MenubarSubContent', 'MenubarSubTrigger', 'MenubarTrigger',
-              'NavigationMenu', 'NavigationMenuContent', 'NavigationMenuItem', 'NavigationMenuLink', 'NavigationMenuList', 'NavigationMenuTrigger', 'navigationMenuTriggerStyle',
-
-              // Componentes de feedback
-              'Pagination', 'PaginationContent', 'PaginationEllipsis', 'PaginationItem', 'PaginationLink', 'PaginationNext', 'PaginationPrevious',
-              'Popover', 'PopoverContent', 'PopoverTrigger',
-              'Progress',
-              'RadioGroup', 'RadioGroupItem',
-              'ResizablePanel', 'ResizablePanelGroup', 'ResizableHandle',
-              'ScrollArea', 'ScrollBar',
-              'Select', 'SelectContent', 'SelectGroup', 'SelectItem', 'SelectLabel', 'SelectSeparator', 'SelectTrigger', 'SelectValue',
-              'Separator',
-              'Sheet', 'SheetClose', 'SheetContent', 'SheetDescription', 'SheetFooter', 'SheetHeader', 'SheetTitle', 'SheetTrigger',
-              'Skeleton',
-              'Slider',
-              'Switch',
-              'Table', 'TableBody', 'TableCaption', 'TableCell', 'TableFooter', 'TableHead', 'TableHeader', 'TableRow',
-              'Tabs', 'TabsContent', 'TabsList', 'TabsTrigger',
-              'Textarea',
-              'Toggle',
-              'Tooltip', 'TooltipContent', 'TooltipProvider', 'TooltipTrigger',
-
-              // Componentes personalizados
-              'Dashboard',
-
-              // Ícones
-              'LucideReact',
-
-              `
-                // Disponibilizar o LucideReact globalmente para o código do usuário
-                window.LucideReact = LucideReact;
-                ${transpiledCode}
-                return Component;
-              `
-            );
-
-            Component = defineComponent(
-              React,
-              // Componentes básicos
-              Button,
-              Card, CardHeader, CardContent, CardDescription, CardTitle, CardFooter,
-              Input, Label, Checkbox,
-
-              // Componentes de layout
-              Accordion, AccordionContent, AccordionItem, AccordionTrigger,
-              Alert, AlertDescription, AlertTitle,
-              AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
-              AspectRatio,
-              Avatar, AvatarFallback, AvatarImage,
-              Badge,
-              Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
-
-              // Componentes de data
-              Calendar,
-              Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
-
-              // Componentes de disclosure
-              Collapsible, CollapsibleContent, CollapsibleTrigger,
-              Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut,
-              ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuRadioGroup, ContextMenuRadioItem, ContextMenuSeparator, ContextMenuShortcut, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger,
-              Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
-              Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger,
-              DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
-
-              // Componentes de formulário
-              Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,
-              HoverCard, HoverCardContent, HoverCardTrigger,
-              Menubar, MenubarCheckboxItem, MenubarContent, MenubarGroup, MenubarItem, MenubarLabel, MenubarMenu, MenubarRadioGroup, MenubarRadioItem, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger,
-              NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle,
-
-              // Componentes de feedback
-              Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
-              Popover, PopoverContent, PopoverTrigger,
-              Progress,
-              RadioGroup, RadioGroupItem,
-              ResizablePanel, ResizablePanelGroup, ResizableHandle,
-              ScrollArea, ScrollBar,
-              Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue,
-              Separator,
-              Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger,
-              Skeleton,
-              Slider,
-              Switch,
-              Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
-              Tabs, TabsContent, TabsList, TabsTrigger,
-              Textarea,
-              Toggle,
-              Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
-
-              // Componentes personalizados
-              Dashboard,
-
-              // Ícones
-              LucideReact
-            );
-          } catch (error) {
-            console.error('Erro ao definir o componente:', error);
-            throw new Error(`Erro ao definir o componente: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+          // Garante que Component seja retornado
+          if (typeof Component !== 'function') {
+            throw new Error('O código deve definir uma função React chamada "Component".');
           }
+          return Component;
+        `
+      );
 
-          // Verificar se Component foi definido
-          if (!Component) {
-            throw new Error('O componente não foi definido corretamente. Certifique-se de definir uma função chamada "Component".');
-          }
+      // Executa a função, passando o registro como argumento 'scope'
+      Comp = defineComponent(componentRegistry);
 
-          return <Component />;
-        };
+      setRenderedComponent(() => Comp); // Define o estado com a função do componente
+      setError(null); // Limpa erro se compilação foi bem sucedida
 
-        // Renderizar o wrapper que contém o componente dinâmico
-        return <DynamicComponentWrapper />;
-      } catch (evalError) {
-        console.error('Erro ao avaliar o código:', evalError);
-
-        // Se o erro for relacionado a JSX, tentar renderizar um componente simples
-        if (evalError && evalError.toString().includes("Unexpected token '<'")) {
-          messageService.sendMessage('ERROR', { message: 'Erro de sintaxe JSX. Tentando renderizar um componente simples...' });
-          return (
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Componente Fallback</h2>
-              <p className="mb-4">O código JSX não pôde ser processado, mas renderizamos este componente simples.</p>
-              <Button>Botão Fallback</Button>
-            </div>
-          );
-        }
-
-        throw evalError;
-      }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao renderizar componente';
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao compilar/executar código dinâmico';
+      console.error('Erro no processamento do componente dinâmico:', err);
       setError(errorMessage);
-      messageService.sendMessage('ERROR', { message: errorMessage });
-      return <div className="p-4 bg-red-100 text-red-800 rounded">Erro: {errorMessage}</div>;
+      setRenderedComponent(null);
+      messageService.sendMessage('ERROR', { message: `Erro ao renderizar: ${errorMessage}` });
     }
-  };
 
-  return (
-    <div className="dynamic-renderer p-4">
-      {error ? (
+  }, [componentCode]); // Dependência: re-executa SÓ quando o código mudar
+
+  // --- Renderização ---
+  const renderContent = () => {
+    if (error) {
+      return (
         <div className="p-4 bg-red-100 text-red-800 rounded">
           <h3 className="font-bold">Erro ao renderizar componente:</h3>
           <pre className="mt-2 whitespace-pre-wrap">{error}</pre>
         </div>
-      ) : selectedComponent ? (
-        renderPredefinedComponent()
-      ) : componentCode ? (
-        renderDynamicComponent()
-      ) : (
-        <div className="p-4 text-center">
-          <p className="text-muted-foreground">
-            Aguardando código do componente...
-          </p>
-        </div>
-      )}
+      );
+    }
+
+    if (selectedPredefinedKey) {
+      const PredefinedComponent = predefinedComponentsMap.get(selectedPredefinedKey);
+      return PredefinedComponent ? <PredefinedComponent /> : <p>Componente pré-definido não encontrado.</p>;
+    }
+
+    if (RenderedComponent) {
+      // Envolve o componente renderizado com um ErrorBoundary para capturar erros de renderização
+      // Você precisaria criar um componente ErrorBoundary simples
+      // return <ErrorBoundary><RenderedComponent /></ErrorBoundary>;
+      // Por enquanto, renderiza diretamente:
+      return <RenderedComponent />;
+    }
+
+    // Estado inicial ou quando nenhum código/chave foi fornecido
+    return (
+      <div className="p-4 text-center">
+        <p className="text-muted-foreground">
+          Aguardando código do componente ou chave pré-definida...
+        </p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="dynamic-renderer p-4 border rounded">
+      {renderContent()}
     </div>
   );
 };
+
+// Você pode querer criar um Error Boundary básico para pegar erros
+// que ocorrem *durante* a renderização do componente dinâmico.
+// Exemplo simples:
+/*
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Erro capturado pelo ErrorBoundary:", error, errorInfo);
+    // Você pode enviar o erro para um serviço de logging aqui
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+         <div className="p-4 bg-red-100 text-red-800 rounded">
+          <h3 className="font-bold">Erro durante a renderização:</h3>
+          <pre className="mt-2 whitespace-pre-wrap">{this.state.error?.message || 'Erro desconhecido'}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+*/
 
 export default DynamicRenderer;

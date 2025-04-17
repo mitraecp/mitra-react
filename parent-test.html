@@ -186,6 +186,9 @@
                     <button class="example-button" data-example="advancedAccordion">Accordion Avançado</button>
                     <button class="example-button" data-example="dataTable">Tabela de Dados</button>
                     <button class="example-button" data-example="userProfile">Perfil de Usuário</button>
+                    <button class="example-button" data-example="complexForm">Formulário Complexo</button>
+                    <button class="example-button" data-example="userTable">Tabela de Usuários</button>
+                    <button class="example-button" data-example="loadingAccordion">Accordion com Loading</button>
                 </div>
 
                 <h4 class="mb-2">Shadcn UI:</h4>
@@ -1591,18 +1594,23 @@
   );
 };`,
             loginForm: `const Component = () => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [rememberMe, setRememberMe] = React.useState(false);
+  // Acessa React e useState diretamente (fornecidos pelo scope)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
-  // Importar os ícones do Lucide
-  const { Mail, LockKeyhole, Github } = window.LucideReact;
+  // Acessa LucideReact diretamente (fornecido pelo scope)
+  // REMOVA o 'window.'
+  const { Mail, LockKeyhole, Github } = LucideReact;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, password, rememberMe });
-    alert(\`Login com: \${email} / Senha: \${password} / Lembrar: \${rememberMe}\`);
   };
+
+  // O resto do JSX permanece o mesmo, usando os componentes
+  // diretamente (Button, Card, Input, etc.), que já estão
+  // corretamente disponíveis pelo scope.
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -1619,7 +1627,7 @@
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                  {Mail ? <Mail size={16} /> : '@'}
+                  {Mail ? <Mail size={16} /> : '@'} {/* Funciona com LucideReact local */}
                 </div>
                 <Input
                   id="email"
@@ -1641,7 +1649,7 @@
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
-                  {LockKeyhole ? <LockKeyhole size={16} /> : '🔒'}
+                  {LockKeyhole ? <LockKeyhole size={16} /> : '🔒'} {/* Funciona com LucideReact local */}
                 </div>
                 <Input
                   id="password"
@@ -1658,7 +1666,8 @@
               <Checkbox
                 id="remember"
                 checked={rememberMe}
-                onCheckedChange={setRememberMe}
+                // Ajuste para Checkbox do Shadcn (pode variar um pouco)
+                onCheckedChange={(checked) => setRememberMe(checked)}
               />
               <Label htmlFor="remember" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Lembrar de mim
@@ -1680,10 +1689,10 @@
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" className="w-full">
-              Google
+              Google {/* Ícone do Google precisaria ser importado ou usado de outra forma */}
             </Button>
             <Button variant="outline" className="w-full">
-              {Github ? <Github className="mr-2 h-4 w-4" /> : ''}
+              {Github ? <Github className="mr-2 h-4 w-4" /> : ''} {/* Funciona com LucideReact local */}
               GitHub
             </Button>
           </div>
@@ -1697,7 +1706,287 @@
       </Card>
     </div>
   );
-};`
+};`,
+            complexForm: `const Component = () => {
+  // Hooks e Componentes do scope: useState, React, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Label, Input, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Checkbox, Button, Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    category: '',
+    agreedToTerms: false,
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+
+  const { User, Mail, Tag, CheckCircle } = LucideReact; // Ícones do scope
+
+  const validate = () => {
+    let tempErrors = {};
+    if (!formData.name) tempErrors.name = "Nome é obrigatório.";
+    if (!formData.email) {
+      tempErrors.email = "Email é obrigatório.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      tempErrors.email = "Email inválido.";
+    }
+    if (!formData.category) tempErrors.category = "Selecione uma categoria.";
+    if (!formData.agreedToTerms) tempErrors.agreedToTerms = "Você deve aceitar os termos.";
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { id, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSelectChange = (value) => {
+     setFormData(prev => ({ ...prev, category: value }));
+  };
+
+   const handleCheckboxChange = (checked) => {
+     setFormData(prev => ({ ...prev, agreedToTerms: checked }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      setIsSubmitting(true);
+      console.log("Formulário Válido, enviando:", formData);
+      // Simular envio
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setShowDialog(true); // Abre o diálogo ao "enviar" com sucesso
+      }, 1000);
+    } else {
+      console.log("Erro de validação", errors);
+    }
+  };
+
+  return (
+    <Card className="w-full max-w-lg mx-auto bg-white">
+      <CardHeader>
+        <CardTitle>Formulário Complexo</CardTitle>
+        <CardDescription>Preencha os detalhes abaixo.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Nome */}
+          <div className="space-y-2">
+            <Label htmlFor="name">Nome</Label>
+            <div className="relative">
+               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                 {User && <User size={16} />}
+               </div>
+              <Input id="name" value={formData.name} onChange={handleChange} placeholder="Seu Nome Completo" className={`pl-10 ${errors.name ? 'border-red-500' : ''}`} />
+            </div>
+            {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+             <div className="relative">
+               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                 {Mail && <Mail size={16} />}
+               </div>
+               <Input id="email" type="email" value={formData.email} onChange={handleChange} placeholder="seu@email.com" className={`pl-10 ${errors.email ? 'border-red-500' : ''}`} />
+             </div>
+            {errors.email && <p className="text-xs text-red-600">{errors.email}</p>}
+          </div>
+
+          {/* Categoria */}
+          <div className="space-y-2">
+            <Label htmlFor="category">Categoria</Label>
+             <div className="relative">
+               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                 {Tag && <Tag size={16} />}
+               </div>
+              <Select id="category" onValueChange={handleSelectChange} value={formData.category}>
+                <SelectTrigger className={`pl-10 ${errors.category ? 'border-red-500' : ''}`}>
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tech">Tecnologia</SelectItem>
+                  <SelectItem value="design">Design</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {errors.category && <p className="text-xs text-red-600">{errors.category}</p>}
+          </div>
+
+          {/* Termos */}
+          <div className="flex items-center space-x-2">
+            <Checkbox id="agreedToTerms" checked={formData.agreedToTerms} onCheckedChange={handleCheckboxChange} />
+            <Label htmlFor="agreedToTerms" className={`text-sm ${errors.agreedToTerms ? 'text-red-600' : ''}`}>
+              Eu aceito os termos e condições
+            </Label>
+          </div>
+           {errors.agreedToTerms && <p className="text-xs text-red-600 -mt-2">{errors.agreedToTerms}</p>}
+
+          {/* Botão Submit */}
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogTrigger asChild>
+               <Button type="submit" className="w-full" disabled={isSubmitting}>
+                 {isSubmitting ? 'Enviando...' : 'Enviar Cadastro'}
+               </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center">
+                  {CheckCircle && <CheckCircle className="text-green-500 mr-2" size={20}/>} Sucesso!
+                </DialogTitle>
+                <DialogDescription>
+                  Seu cadastro foi enviado (simulado). Dados: {JSON.stringify(formData)}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button onClick={() => setShowDialog(false)}>Fechar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+        </form>
+      </CardContent>
+    </Card>
+  );
+}`,
+            userTable: `const Component = () => {
+  // Hooks e Componentes: useState, React, Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableCaption, Button, Badge
+  const initialUsers = [
+    { id: 1, name: 'Alice Silva', email: 'alice@example.com', status: 'active', role: 'Admin' },
+    { id: 2, name: 'Bruno Costa', email: 'bruno@example.com', status: 'inactive', role: 'User' },
+    { id: 3, name: 'Carla Dias', email: 'carla@example.com', status: 'active', role: 'User' },
+    { id: 4, name: 'Daniel Reis', email: 'daniel@example.com', status: 'pending', role: 'Editor' },
+  ];
+  const [users, setUsers] = useState(initialUsers);
+
+  const { Trash2, Edit } = LucideReact; // Ícones
+
+  const handleDelete = (userId) => {
+    console.log('Tentando deletar usuário:', userId);
+    setUsers(currentUsers => currentUsers.filter(user => user.id !== userId));
+    alert(`Usuário ${userId} removido (simulado)!`);
+  };
+
+  const handleEdit = (userId) => {
+    alert(`Editar usuário ${userId} (não implementado)`);
+  };
+
+  const getStatusVariant = (status) => {
+    switch(status) {
+      case 'active': return 'success'; // Assume que você tem variantes de Badge ou usa default
+      case 'inactive': return 'secondary';
+      case 'pending': return 'warning'; // Assume variantes personalizadas ou usa default
+      default: return 'outline';
+    }
+  };
+
+  return (
+    <div className="p-4 border rounded-lg bg-white">
+      <h2 className="text-xl font-semibold mb-4">Lista de Usuários</h2>
+      <Table>
+        <TableCaption>Uma lista dos usuários recentes.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">ID</TableHead>
+            <TableHead>Nome</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Cargo</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center text-muted-foreground">
+                Nenhum usuário encontrado.
+              </TableCell>
+            </TableRow>
+          ) : (
+            users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">{user.id}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <Badge variant={getStatusVariant(user.status)}>{user.status}</Badge>
+                </TableCell>
+                <TableCell>{user.role}</TableCell>
+                <TableCell className="text-right space-x-1">
+                   <Button variant="outline" size="icon" onClick={() => handleEdit(user.id)} aria-label="Editar">
+                     {Edit && <Edit className="h-4 w-4" />}
+                   </Button>
+                   <Button variant="destructive" size="icon" onClick={() => handleDelete(user.id)} aria-label="Excluir">
+                     {Trash2 && <Trash2 className="h-4 w-4" />}
+                   </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}`,
+            loadingAccordion: `const Component = () => {
+  // Hooks e Componentes: useState, useEffect, React, Accordion, AccordionItem, AccordionTrigger, AccordionContent, Skeleton
+  const [accordionData, setAccordionData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simular busca de dados na montagem do componente
+  useEffect(() => {
+    console.log("Iniciando busca simulada de dados para Accordion...");
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      const fetchedData = [
+        { id: 'item-1', title: 'Seção 1: Introdução', content: 'Conteúdo detalhado da primeira seção do accordion.' },
+        { id: 'item-2', title: 'Seção 2: Configuração', content: 'Passos para configurar o sistema A, B e C.' },
+        { id: 'item-3', title: 'Seção 3: Tópicos Avançados', content: 'Exploração de recursos avançados e dicas de otimização.' },
+      ];
+      setAccordionData(fetchedData);
+      setIsLoading(false);
+      console.log("Dados do Accordion carregados.");
+    }, 2000); // Simula 2 segundos de delay
+
+    // Função de limpeza para o useEffect
+    return () => clearTimeout(timer);
+  }, []); // Array de dependências vazio para rodar apenas uma vez
+
+  return (
+    <div className="w-full max-w-md p-4 border rounded-lg bg-white">
+      <h2 className="text-xl font-semibold mb-4">Conteúdo Carregado</h2>
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-8 w-5/6" />
+          <Skeleton className="h-10 w-full mt-4" />
+          <Skeleton className="h-8 w-4/6" />
+           <Skeleton className="h-10 w-full mt-4" />
+          <Skeleton className="h-8 w-5/6" />
+        </div>
+      ) : (
+         accordionData.length > 0 ? (
+            <Accordion type="single" collapsible className="w-full">
+              {accordionData.map((item) => (
+                <AccordionItem value={item.id} key={item.id}>
+                  <AccordionTrigger>{item.title}</AccordionTrigger>
+                  <AccordionContent>{item.content}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+         ) : (
+            <p className="text-muted-foreground">Nenhum dado encontrado.</p>
+         )
+      )}
+    </div>
+  );
+}`
         };
 
         // Elementos do DOM

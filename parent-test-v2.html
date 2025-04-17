@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambiente de Teste - Comunicação com iframe React</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1, h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #4338ca;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .log-container {
+            margin-top: 20px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .log-entry.received {
+            background-color: #e6f7ff;
+        }
+        .log-entry.sent {
+            background-color: #f6ffed;
+        }
+        .log-entry.error {
+            background-color: #fff2f0;
+            color: #cf1322;
+        }
+        .examples-container {
+            margin-top: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            background-color: #f9fafb;
+        }
+        .examples-container h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .examples-container h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .example-button {
+            background-color: #6b7280;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            padding: 6px 12px;
+        }
+        .example-button:hover {
+            background-color: #4b5563;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <h1>Ambiente de Teste</h1>
+            <p>Digite o código React com componentes Shadcn abaixo e clique em "Renderizar" para enviar ao iframe.</p>
+
+            <div>
+                <h2>Código React</h2>
+                <textarea id="component-code" placeholder="Digite o código React aqui...">const Component = () => {
+  return (
+    <div className="bg-white text-black p-6 rounded-lg">
+      <h2 className="text-2xl font-bold mb-4">Componente Dinâmico</h2>
+      <p className="text-[#ff0000] mb-4">Este texto deve ser vermelho</p>
+      <p className="text-[32px] mb-4">Este texto deve ter 32px</p>
+      <p className="p-[20px] bg-[#0000ff] text-white mb-4">Este texto deve ter padding de 20px e fundo azul</p>
+      <Button>Clique em Mim</Button>
+    </div>
+  );
+};</textarea>
+            </div>
+
+            <button id="render-button">Renderizar</button>
+
+            <div class="examples-container">
+                <h3>Exemplos:</h3>
+                <h4 class="mb-2">Básicos:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="button">Botão Simples</button>
+                    <button class="example-button" data-example="buttonGroup">Grupo de Botões</button>
+                    <button class="example-button" data-example="toggle">Toggle</button>
+                    <button class="example-button" data-example="counter">Contador</button>
+                </div>
+
+                <h4 class="mb-2">Layout:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="card">Card</button>
+                    <button class="example-button" data-example="cardList">Lista de Cards</button>
+                    <button class="example-button" data-example="tabs">Tabs</button>
+                    <button class="example-button" data-example="accordion">Accordion</button>
+                    <button class="example-button" data-example="dashboard">Dashboard</button>
+                </div>
+
+                <h4 class="mb-2">Interativos:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="form">Formulário</button>
+                    <button class="example-button" data-example="loginForm">Login</button>
+                </div>
+
+                <h4 class="mb-2">Avançados:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="complexForm">Formulário Complexo</button>
+                    <button class="example-button" data-example="userTable">Tabela de Usuários</button>
+                    <button class="example-button" data-example="loadingAccordion">Accordion com Loading</button>
+                </div>
+
+                <h4 class="mb-2">Teste Tailwind:</h4>
+                <div class="flex flex-wrap mb-4">
+                    <button class="example-button" data-example="tailwindTest">Teste Tailwind</button>
+                </div>
+            </div>
+
+            <div class="log-container" id="log-container">
+                <div class="log-entry">Logs de comunicação aparecerão aqui...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Visualização</h2>
+            <div class="iframe-container">
+                <iframe id="react-iframe" src="http://localhost:5174" allow="fullscreen"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Importar os exemplos de código do arquivo JS -->
+    <script type="module">
+        // Importar os exemplos de código
+        import { codeExamples } from './src/snippets/code-snippets.js';
+
+        // Usar os exemplos do arquivo code-snippets.js
+        const examples = codeExamples;
+
+        // Elementos do DOM
+        const iframe = document.getElementById('react-iframe');
+        const componentCodeTextarea = document.getElementById('component-code');
+        const renderButton = document.getElementById('render-button');
+        const logContainer = document.getElementById('log-container');
+        const exampleButtons = document.querySelectorAll('.example-button');
+
+        // Variáveis de estado
+        let iframeReady = false;
+
+        // Função para adicionar log
+        function addLogEntry(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.textContent = `[${timestamp}] ${message}`;
+
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Função para enviar mensagem para o iframe
+        function sendMessageToIframe(type, payload) {
+            if (!iframeReady) {
+                addLogEntry('O iframe ainda não está pronto para receber mensagens.', 'error');
+                return;
+            }
+
+            const message = { type, payload };
+            iframe.contentWindow.postMessage(message, '*');
+            addLogEntry(`Mensagem enviada: ${type}`, 'sent');
+        }
+
+        // Listener para mensagens do iframe
+        window.addEventListener('message', (event) => {
+            const message = event.data;
+
+            if (!message || !message.type) return;
+
+            addLogEntry(`Mensagem recebida: ${message.type}`, 'received');
+
+            switch (message.type) {
+                case 'READY':
+                    iframeReady = true;
+                    addLogEntry('Iframe está pronto para receber mensagens!', 'received');
+                    break;
+
+                case 'COMPONENT_RENDERED':
+                    addLogEntry('Componente renderizado com sucesso!', 'received');
+                    break;
+
+                case 'ERROR':
+                    addLogEntry(`Erro: ${message.payload.message}`, 'error');
+                    break;
+
+                case 'LOG':
+                    addLogEntry(`Log do iframe: ${JSON.stringify(message.payload)}`, 'received');
+                    break;
+            }
+        });
+
+        // Event listener para o botão de renderizar
+        renderButton.addEventListener('click', () => {
+            const code = componentCodeTextarea.value.trim();
+
+            if (!code) {
+                addLogEntry('Por favor, digite algum código para renderizar.', 'error');
+                return;
+            }
+
+            sendMessageToIframe('RENDER_COMPONENT', code);
+        });
+
+        // Event listeners para os botões de exemplo
+        exampleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const exampleName = button.getAttribute('data-example');
+                const exampleCode = examples[exampleName];
+
+                if (exampleCode) {
+                    componentCodeTextarea.value = exampleCode;
+                    addLogEntry(`Exemplo "${exampleName}" carregado.`, 'info');
+                } else {
+                    addLogEntry(`Exemplo "${exampleName}" não encontrado.`, 'error');
+                }
+            });
+        });
+
+        // Inicialização
+        addLogEntry('Página carregada. Aguardando iframe ficar pronto...', 'info');
+    </script>
+</body>
+</html>
