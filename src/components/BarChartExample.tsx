@@ -1,20 +1,21 @@
 // Não precisamos importar React explicitamente com o JSX Transform
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// Componentes do Shadcn UI
 import {
-  // Componentes do Shadcn UI
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
-  ChartLegendContent,
-
-  // Componentes do Recharts
+  ChartLegendContent
+} from '@/components/ui/chart';
+// Componentes do Recharts
+import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid
-} from '@/components/ui/chart';
+} from 'recharts';
 
 export const BarChartExample = () => {
   // Dados de exemplo para o gráfico de barras

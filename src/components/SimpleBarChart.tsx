@@ -1,19 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+// Componentes do Shadcn UI
 import {
-  // Componentes do Shadcn UI
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
-  ChartLegendContent,
-
-  // Componentes do Recharts
+  ChartLegendContent
+} from '@/components/ui/chart';
+// Componentes do Recharts
+import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid
-} from '@/components/ui/chart';
+} from 'recharts';
 
 export const SimpleBarChart = () => {
   // Dados para o gráfico de barras

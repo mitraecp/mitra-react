@@ -353,44 +353,12 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
-// Re-exportar todos os componentes do Recharts para uso direto
+// Exportar apenas os componentes específicos do Shadcn UI
 export {
-  // Componentes do Shadcn UI
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
-
-  // Componentes do Recharts
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  Brush,
-  CartesianGrid,
-  Cell,
-  ComposedChart,
-  ErrorBar,
-  Label,
-  Legend,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  RadialBar,
-  RadialBarChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Scatter,
-  ScatterChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+}
