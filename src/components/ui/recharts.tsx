@@ -1,4 +1,4 @@
-import * as React from "react"
+// Não precisamos importar React explicitamente com o JSX Transform
 import {
   ResponsiveContainer,
   BarChart,
