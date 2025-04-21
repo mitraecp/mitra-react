@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Card com Gráfico de Barras (shadcn/ui)</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            margin: 20px; 
+            background-color: #f8f9fa; /* Um fundo leve para contraste */
+        }
+        iframe { 
+            width: 100%; 
+            max-width: 700px; /* Limita a largura máxima para melhor visualização */
+            height: 550px; /* Altura ajustada para card + gráfico */
+            border: 1px solid #ccc; 
+            display: block; /* Para centralizar com margin auto */
+            margin: 20px auto; /* Centraliza o iframe */
+            background-color: #ffffff; /* Fundo branco para o iframe */
+        }
+        h1 { 
+            color: #333; 
+            text-align: center; /* Centraliza o título */
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demonstração: Card com Gráfico de Barras (shadcn/ui)</h1>
+    
+    <button id="render-btn">Renderizar Gráfico de Barras</button>
+    
+    <iframe id="react-iframe" src="https://builder.mitralab.io/"></iframe>
+    
+    <script>
+        const iframe = document.getElementById('react-iframe');
+        const renderBtn = document.getElementById('render-btn');
+        
+        // Função para renderizar o componente pré-definido
+        function renderSimpleBarChart() {
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({
+                    type: 'RENDER_COMPONENT',
+                    payload: 'SIMPLE_BAR_CHART' // Usa o componente pré-definido
+                }, '*');
+            } else {
+                console.error("Iframe não encontrado ou não pronto.");
+            }
+        }
+        
+        // Adicionar evento de clique ao botão
+        renderBtn.addEventListener('click', renderSimpleBarChart);
+        
+        // Também podemos tentar renderizar automaticamente quando o iframe estiver pronto
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'READY') {
+                console.log('Iframe está pronto, renderizando componente...');
+                renderSimpleBarChart();
+            }
+        });
+    </script>
+</body>
+</html>

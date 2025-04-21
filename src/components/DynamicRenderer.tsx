@@ -53,6 +53,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+// Componentes de gráficos (Shadcn UI)
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent
+} from '@/components/ui/chart';
 // Componentes de gráficos (Recharts)
 import {
   ResponsiveContainer,
@@ -89,6 +97,7 @@ import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um
 // --- Componentes pré-definidos (mantidos por simplicidade) ---
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
 import { BarChartExample } from './BarChartExample';
+import { SimpleBarChart } from './SimpleBarChart';
 
 const SimpleButton = () => {
   const [count, setCount] = React.useState(0); // Usar React.useState aqui
@@ -177,6 +186,13 @@ const componentRegistry = {
   // Biblioteca de Ícones
   LucideReact, // Expõe todo o objeto LucideReact
 
+  // Componentes de gráficos (Shadcn UI)
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+
   // Componentes de gráficos (Recharts)
   ResponsiveContainer,
   BarChart,
@@ -208,7 +224,8 @@ const componentRegistry = {
 
   // Componentes Pré-definidos
   Dashboard,
-  BarChartExample
+  BarChartExample,
+  SimpleBarChart
 
   // Adicione outros componentes/utilitários que você quer expor
   // Ex: Alguma lib de gráficos, helpers, etc.
@@ -220,6 +237,7 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['SIMPLE_CARD', SimpleCard],
   ['DASHBOARD', Dashboard],
   ['BAR_CHART', BarChartExample],
+  ['SIMPLE_BAR_CHART', SimpleBarChart],
 ]);
 
 // --- Componente Renderer Principal ---
