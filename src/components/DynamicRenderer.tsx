@@ -53,11 +53,42 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+// Componentes de gráficos (Recharts)
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend as RechartsLegend,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ScatterChart,
+  Scatter,
+  ComposedChart,
+  Brush,
+  ReferenceLine,
+  ErrorBar,
+  Label as RechartsLabel,
+  Tooltip as RechartsTooltip
+} from '@/components/ui/recharts';
 // Ícones
 import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
 
 // --- Componentes pré-definidos (mantidos por simplicidade) ---
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
+import { BarChartExample } from './BarChartExample';
 
 const SimpleButton = () => {
   const [count, setCount] = React.useState(0); // Usar React.useState aqui
@@ -146,8 +177,38 @@ const componentRegistry = {
   // Biblioteca de Ícones
   LucideReact, // Expõe todo o objeto LucideReact
 
+  // Componentes de gráficos (Recharts)
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  RechartsLegend,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ScatterChart,
+  Scatter,
+  ComposedChart,
+  Brush,
+  ReferenceLine,
+  ErrorBar,
+  RechartsLabel,
+  RechartsTooltip,
+
   // Componentes Pré-definidos
-  Dashboard
+  Dashboard,
+  BarChartExample
 
   // Adicione outros componentes/utilitários que você quer expor
   // Ex: Alguma lib de gráficos, helpers, etc.
@@ -158,6 +219,7 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['SIMPLE_BUTTON', SimpleButton],
   ['SIMPLE_CARD', SimpleCard],
   ['DASHBOARD', Dashboard],
+  ['BAR_CHART', BarChartExample],
 ]);
 
 // --- Componente Renderer Principal ---
