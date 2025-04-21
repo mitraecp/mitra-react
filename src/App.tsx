@@ -27,29 +27,23 @@ function App() {
     }
   }, []);
 
-  return (
+  return renderMode === 'default' ? (
     <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      {renderMode === 'default' ? (
-        // Renderização padrão quando não estamos em um iframe
-        <>
-          <header className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Visualização de dados com gráficos de barras e área</p>
-          </header>
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+        <p className="text-muted-foreground">Visualização de dados com gráficos de barras e área</p>
+      </header>
 
-          <Dashboard />
+      <Dashboard />
 
-          <div className="mt-8 flex justify-end">
-            <Button onClick={() => messageService.sendMessage('LOG', { message: 'Botão clicado' })}>
-              Atualizar Dados
-            </Button>
-          </div>
-        </>
-      ) : (
-        // Renderização dinâmica quando estamos em um iframe
-        <DynamicRenderer />
-      )}
+      <div className="mt-8 flex justify-end">
+        <Button onClick={() => messageService.sendMessage('LOG', { message: 'Botão clicado' })}>
+          Atualizar Dados
+        </Button>
+      </div>
     </div>
+  ) : (
+    <DynamicRenderer />
   );
 }
 
