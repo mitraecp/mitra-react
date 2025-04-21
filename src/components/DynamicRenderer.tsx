@@ -61,7 +61,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend as RechartsLegend,
+  Legend,
   LineChart,
   Line,
   AreaChart,
@@ -81,7 +81,7 @@ import {
   ReferenceLine,
   ErrorBar,
   Label as RechartsLabel,
-  Tooltip as RechartsTooltip
+  RechartsTooltip
 } from '@/components/ui/recharts';
 // Ícones
 import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
@@ -184,7 +184,7 @@ const componentRegistry = {
   XAxis,
   YAxis,
   CartesianGrid,
-  RechartsLegend,
+  Legend,
   LineChart,
   Line,
   AreaChart,
