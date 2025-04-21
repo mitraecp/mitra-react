@@ -9,6 +9,7 @@ import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
 // Componentes básicos
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { DatePicker, DatePickerDemo } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -226,7 +227,9 @@ const componentRegistry = {
   // Componentes Pré-definidos
   Dashboard,
   BarChartExample,
-  SimpleBarChart
+  SimpleBarChart,
+  DatePicker,
+  DatePickerDemo
 
   // Adicione outros componentes/utilitários que você quer expor
   // Ex: Alguma lib de gráficos, helpers, etc.
@@ -239,6 +242,7 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['DASHBOARD', Dashboard],
   ['BAR_CHART', BarChartExample],
   ['SIMPLE_BAR_CHART', SimpleBarChart],
+  ['DATE_PICKER', DatePickerDemo],
 ]);
 
 // --- Componente Renderer Principal ---
