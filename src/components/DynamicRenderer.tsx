@@ -53,16 +53,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-// Componentes de gráficos (Shadcn UI)
+// Componentes de gráficos (Shadcn UI e Recharts)
 import {
+  // Componentes do Shadcn UI
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
-  ChartLegendContent
-} from '@/components/ui/chart';
-// Componentes de gráficos (Recharts)
-import {
+  ChartLegendContent,
+
+  // Componentes do Recharts
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -88,9 +88,9 @@ import {
   Brush,
   ReferenceLine,
   ErrorBar,
-  Label as RechartsLabel,
-  RechartsTooltip
-} from '@/components/ui/recharts';
+  Label as ChartLabel,
+  Tooltip as RechartsTooltip
+} from '@/components/ui/chart';
 // Ícones
 import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
 
@@ -219,7 +219,7 @@ const componentRegistry = {
   Brush,
   ReferenceLine,
   ErrorBar,
-  RechartsLabel,
+  ChartLabel,
   RechartsTooltip,
 
   // Componentes Pré-definidos

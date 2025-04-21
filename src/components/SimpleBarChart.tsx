@@ -1,17 +1,18 @@
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import {
+  // Componentes do Shadcn UI
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+
+  // Componentes do Recharts
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid
-} from '@/components/ui/recharts';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent
 } from '@/components/ui/chart';
 
 export const SimpleBarChart = () => {
@@ -33,12 +34,12 @@ export const SimpleBarChart = () => {
 
   // Configuração do gráfico (cores, rótulos)
   const chartConfig = {
-    sales: { 
-      label: "Vendas", 
+    sales: {
+      label: "Vendas",
       color: "#4f46e5" // Cor indigo-600
     },
   };
-  
+
   return (
     <div className="p-4">
       <Card className="w-full">
@@ -48,32 +49,32 @@ export const SimpleBarChart = () => {
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-64 w-full">
-            <BarChart 
+            <BarChart
               data={barChartData}
               margin={{ top: 20, right: 20, left: 10, bottom: 5 }}
             >
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="month" 
+              <XAxis
+                dataKey="month"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
                 fontSize={12}
               />
-              <YAxis 
+              <YAxis
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
                 fontSize={12}
                 tickFormatter={(value) => `R$ ${value}`}
               />
-              <ChartTooltip 
+              <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent indicator="dot" hideLabel />} 
+                content={<ChartTooltipContent indicator="dot" hideLabel />}
               />
               <ChartLegend content={<ChartLegendContent />} />
-              <Bar 
-                dataKey="sales" 
+              <Bar
+                dataKey="sales"
                 fill="var(--color-sales)"
                 radius={[4, 4, 0, 0]}
               />
