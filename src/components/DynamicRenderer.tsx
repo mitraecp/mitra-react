@@ -257,34 +257,55 @@ const DynamicRenderer: React.FC = () => {
   const [RenderedComponent, setRenderedComponent] = useState<React.FC | null>(null);
 
   useEffect(() => {
-    const unsubscribe = messageService.addListener('RENDER_COMPONENT', (payload) => {
+    const unsubscribe = messageService.addListener('RENDER_COMPONENT', (code, metadata, componentData) => {
+      console.log('RENDER_COMPONENT recebido:', {
+        code: typeof code === 'string' ? code.substring(0, 100) + '...' : code,
+        metadata,
+        componentData
+      });
+
       setError(null); // Limpa erros anteriores
       setRenderedComponent(null); // Limpa componente renderizado anteriormente
       setSelectedPredefinedKey(null);
       setComponentCode(null);
 
       try {
-        if (typeof payload !== 'string') {
-          throw new Error('Payload inválido: deve ser uma string (código React ou chave pré-definida).');
+        // Atualizar a variável global componentData
+        if (componentData) {
+          console.log('Dados do componente recebidos:', componentData);
+          window.componentData = componentData;
+        } else if (window.componentData === undefined) {
+          // Inicializar componentData se não existir
+          window.componentData = {};
         }
 
-        const trimmedPayload = payload.trim();
+        // Se o code for nulo, é apenas uma atualização de dados
+        if (code === null) {
+          console.log('Apenas atualização de dados recebida, sem código de componente');
+          return;
+        }
+
+        if (typeof code !== 'string') {
+          throw new Error('Código inválido: deve ser uma string (código React ou chave pré-definida).');
+        }
+
+        const trimmedCode = code.trim();
 
         // Verificar se é uma chave pré-definida
-        if (predefinedComponentsMap.has(trimmedPayload)) {
-          setSelectedPredefinedKey(trimmedPayload);
-          messageService.sendMessage('COMPONENT_RENDERED', { success: true, type: 'predefined', key: trimmedPayload });
+        if (predefinedComponentsMap.has(trimmedCode)) {
+          setSelectedPredefinedKey(trimmedCode);
+          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'predefined', key: trimmedCode });
 
         } else {
           // Se não for pré-definido, trata como código JSX
-          setComponentCode(trimmedPayload);
-          messageService.sendMessage('COMPONENT_RENDERED', { success: true, type: 'dynamic' });
+          setComponentCode(trimmedCode);
+          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'dynamic' });
         }
 
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao processar payload';
         setError(errorMessage);
-        messageService.sendMessage('ERROR', { message: errorMessage });
+        messageService.sendMessage('ERROR', null, null, { message: errorMessage });
       }
     });
 
@@ -321,9 +342,8 @@ const DynamicRenderer: React.FC = () => {
           // Desestruturação para acesso fácil dentro do código do usuário
           const { ${Object.keys(componentRegistry).join(', ')} } = scope;
 
-          // Disponibilizar LucideReact globalmente se o código antigo depender disso
-          // (Melhor seria usar scope.LucideReact.IconName)
-          // window.LucideReact = scope.LucideReact;
+          // Acesso aos dados do componente via variável global
+          const componentData = window.componentData || {};
 
           // O código do usuário vem aqui. Ele deve definir 'Component'.
           ${transpiledCode}
@@ -347,7 +367,7 @@ const DynamicRenderer: React.FC = () => {
       console.error('Erro no processamento do componente dinâmico:', err);
       setError(errorMessage);
       setRenderedComponent(null);
-      messageService.sendMessage('ERROR', { message: `Erro ao renderizar: ${errorMessage}` });
+      messageService.sendMessage('ERROR', null, null, { message: `Erro ao renderizar: ${errorMessage}` });
     }
 
   }, [componentCode]); // Dependência: re-executa SÓ quando o código mudar

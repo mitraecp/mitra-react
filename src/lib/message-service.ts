@@ -1,28 +1,30 @@
 // Tipos de mensagens que podem ser trocadas entre pai e filho
-export type MessageType = 
-  | 'RENDER_COMPONENT' 
-  | 'COMPONENT_RENDERED' 
-  | 'ERROR' 
+export type MessageType =
+  | 'RENDER_COMPONENT'
+  | 'COMPONENT_RENDERED'
+  | 'ERROR'
   | 'LOG'
   | 'READY';
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {
   type: MessageType;
-  payload?: any;
-  id?: string;
+  code?: string | null; // Código do componente React
+  id?: string | null;
+  metadata?: Record<string, any> | null;
+  componentData?: any | null; // Dados do componente
 }
 
 // Classe para gerenciar a comunicação postMessage
 export class MessageService {
   private static instance: MessageService;
-  private listeners: Map<MessageType, Array<(data: any) => void>> = new Map();
+  private listeners: Map<MessageType, Array<(code: string | null, metadata?: Record<string, any> | null, componentData?: any | null) => void>> = new Map();
   private ready = false;
 
   private constructor() {
     // Configurar o listener de mensagens
     window.addEventListener('message', this.handleMessage.bind(this));
-    
+
     // Informar que está pronto para receber mensagens
     this.sendReadyMessage();
   }
@@ -35,27 +37,29 @@ export class MessageService {
   }
 
   // Enviar mensagem para o pai
-  public sendMessage(type: MessageType, payload?: any, id?: string): void {
+  public sendMessage(type: MessageType, code?: string | null, id?: string | null, metadata?: Record<string, any> | null, componentData?: any | null): void {
     if (window.parent !== window) {
       const message: IFrameMessage = {
         type,
-        payload,
-        id
+        code,
+        id,
+        metadata,
+        componentData
       };
-      
+
       window.parent.postMessage(message, '*');
       console.log('Mensagem enviada para o pai:', message);
     }
   }
 
   // Adicionar um listener para um tipo específico de mensagem
-  public addListener(type: MessageType, callback: (data: any) => void): () => void {
+  public addListener(type: MessageType, callback: (code: string | null, metadata?: Record<string, any> | null, componentData?: any | null) => void): () => void {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, []);
     }
-    
+
     this.listeners.get(type)?.push(callback);
-    
+
     // Retornar função para remover o listener
     return () => {
       const typeListeners = this.listeners.get(type);
@@ -71,23 +75,23 @@ export class MessageService {
   // Processar mensagens recebidas
   private handleMessage(event: MessageEvent): void {
     const message = event.data as IFrameMessage;
-    
+
     if (!message || !message.type) {
       return;
     }
-    
+
     console.log('Mensagem recebida do pai:', message);
-    
+
     const callbacks = this.listeners.get(message.type);
     if (callbacks) {
-      callbacks.forEach(callback => callback(message.payload));
+      callbacks.forEach(callback => callback(message.code || null, message.metadata, message.componentData));
     }
   }
 
   // Enviar mensagem informando que está pronto
   private sendReadyMessage(): void {
     if (this.ready) return;
-    
+
     // Pequeno delay para garantir que o aplicativo esteja totalmente carregado
     setTimeout(() => {
       this.sendMessage('READY');

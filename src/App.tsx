@@ -3,6 +3,7 @@ import { Dashboard } from "@/components/Dashboard";
 import { Button } from "@/components/ui/button";
 import DynamicRenderer from "@/components/DynamicRenderer";
 import { messageService } from "@/lib/message-service";
+import "@/lib/window-types";
 
 function App() {
   const [renderMode, setRenderMode] = useState<'default' | 'dynamic'>('default');
@@ -19,12 +20,31 @@ function App() {
       messageService.addListener('LOG', (payload) => {
         console.log('Log do pai:', payload);
       });
+
+      // Configurar o objeto componentData global
+      window.componentData = {};
+
+      // Adicionar listener para mensagens RENDER_COMPONENT
+      messageService.addListener('RENDER_COMPONENT', (code, _metadata, componentData) => {
+        // Atualizar a variável global componentData
+        if (componentData) {
+          window.componentData = componentData;
+          console.log('Dados do componente recebidos:', window.componentData);
+        }
+
+        // Se o code for uma string, é código de componente
+        if (typeof code === 'string') {
+          console.log('Código de componente recebido');
+        }
+      });
     }
 
     // Enviar mensagem de que estamos prontos
     if (isInIframe) {
-      messageService.sendMessage('READY', { timestamp: Date.now() });
+      messageService.sendMessage('READY', null, null, { timestamp: Date.now() });
     }
+
+
   }, []);
 
   return renderMode === 'default' ? (
@@ -37,7 +57,7 @@ function App() {
       <Dashboard />
 
       <div className="mt-8 flex justify-end">
-        <Button onClick={() => messageService.sendMessage('LOG', { message: 'Botão clicado' })}>
+        <Button onClick={() => messageService.sendMessage('LOG', null, null, { message: 'Botão clicado' })}>
           Atualizar Dados
         </Button>
       </div>
