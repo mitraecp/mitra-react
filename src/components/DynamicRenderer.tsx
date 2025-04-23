@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -233,7 +234,42 @@ const componentRegistry = {
   BarChartExample,
   SimpleBarChart,
   DatePicker,
-  DatePickerDemo
+  DatePickerDemo,
+
+  // Funções de interação para comunicação com o componente pai Vue
+  actionMitra: (action: string, params?: any, componentId?: string | null) => {
+    messageService.sendInteraction('action', { action, params }, componentId);
+    console.log(`actionMitra('${action}', ${JSON.stringify(params)})`);
+  },
+  formMitra: (formData: any, componentId?: string | null) => {
+    messageService.sendInteraction('form', formData, componentId);
+    console.log(`formMitra(${JSON.stringify(formData)})`);
+  },
+  detailMitra: (id: string | number, entity?: string, componentId?: string | null) => {
+    messageService.sendInteraction('detail', { id, entity }, componentId);
+    console.log(`detailMitra(${id}, '${entity || ''}')`);
+  },
+  dbactionMitra: (action: string, params?: any, componentId?: string | null) => {
+    messageService.sendInteraction('dbaction', { action, params }, componentId);
+    console.log(`dbactionMitra('${action}', ${JSON.stringify(params)})`);
+  },
+  modalMitra: (modal: string, params?: any, componentId?: string | null) => {
+    messageService.sendInteraction('modal', { modal, params }, componentId);
+    console.log(`modalMitra('${modal}', ${JSON.stringify(params)})`);
+  },
+  variableMitra: (name: string, value: any, componentId?: string | null) => {
+    messageService.sendInteraction('variable', { name, value }, componentId);
+    console.log(`variableMitra('${name}', ${JSON.stringify(value)})`);
+  },
+  queryMitra: (query: string, jdbcId: number = 1, componentId?: string | null) => {
+    // Formato simplificado para query
+    messageService.sendInteraction('query', { id: query, jdbcId }, componentId);
+    console.log(`queryMitra('${query}', ${jdbcId})`);
+  },
+  goToScreenMitra: (screen: string, params?: any, componentId?: string | null) => {
+    messageService.sendInteraction('goToScreen', { screen, params }, componentId);
+    console.log(`goToScreenMitra('${screen}', ${JSON.stringify(params)})`);
+  },
 
   // Adicione outros componentes/utilitários que você quer expor
   // Ex: Alguma lib de gráficos, helpers, etc.
@@ -257,10 +293,10 @@ const DynamicRenderer: React.FC = () => {
   const [RenderedComponent, setRenderedComponent] = useState<React.FC | null>(null);
 
   useEffect(() => {
-    const unsubscribe = messageService.addListener('RENDER_COMPONENT', (code, metadata, componentData) => {
+    // Listener para mensagens RENDER_COMPONENT
+    const unsubscribeRender = messageService.addListener('RENDER_COMPONENT', (code, componentData) => {
       console.log('RENDER_COMPONENT recebido:', {
         code: typeof code === 'string' ? code.substring(0, 100) + '...' : code,
-        metadata,
         componentData
       });
 
@@ -309,8 +345,19 @@ const DynamicRenderer: React.FC = () => {
       }
     });
 
+    // Listener para mensagens INTERACTIONS_MITRA
+    const unsubscribeInteractions = messageService.addListener('INTERACTIONS_MITRA', (_, payload) => {
+      if (payload && payload.type) {
+        // O payload já contém os dados diretamente, sem aninhamento em 'data'
+        console.log(`Recebida interação do tipo '${payload.type}' com dados:`, payload);
+        // Aqui você pode processar a interação recebida do componente pai Vue
+        // Por exemplo, atualizar o estado do componente React com base na interação
+      }
+    });
+
     return () => {
-      unsubscribe();
+      unsubscribeRender();
+      unsubscribeInteractions();
     };
   }, []); // Dependência vazia para rodar apenas na montagem
 
@@ -324,12 +371,12 @@ const DynamicRenderer: React.FC = () => {
 
     let Comp: React.FC | null = null;
     try {
-      console.log('Recebido código JSX:', componentCode);
+      // console.log('Recebido código JSX:', componentCode);
       const sanitizedCode = sanitizeJSXCode(componentCode);
       const processedCode = processArbitraryValues(sanitizedCode);
-      console.log('Código processado:', processedCode);
+      // console.log('Código processado:', processedCode);
       const transpiledCode = transformJSX(processedCode);
-      console.log('Código transpilado:', transpiledCode);
+      // console.log('Código transpilado:', transpiledCode);
 
       // --- 4. Usar `new Function` com o registro ---
       // A função recebe UM argumento: `scope` (nosso registro)
