@@ -452,52 +452,52 @@ const DynamicRenderer: React.FC = () => {
 
     // Estado inicial ou quando nenhum código/chave foi fornecido
     return (
-      <div className="p-4 text-center">
-        <p className="text-muted-foreground">
-          Aguardando código do componente ou chave pré-definida...
-        </p>
-      </div>
+      LucideReact.Loader2 && (
+        <div className='flex-grow flex items-center justify-center h-[100vh] text-muted-foreground border rounded'>
+          <LucideReact.Loader2 className="h-8 w-8 mr-2 animate-spin" color='#333'/>
+        </div>
+      )
     );
   };
 
   return (
-    <div className="dynamic-renderer p-4 border rounded">
+    <>
       {renderContent()}
-    </div>
+    </>
   );
 };
 
 // Você pode querer criar um Error Boundary básico para pegar erros
 // que ocorrem *durante* a renderização do componente dinâmico.
 // Exemplo simples:
-/*
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
+// class ErrorBoundary extends React.Component {
+//   constructor(props: any) {
+//     super(props);
+//     this.state = { hasError: false, error: null };
+//   }
 
-  componentDidCatch(error, errorInfo) {
-    console.error("Erro capturado pelo ErrorBoundary:", error, errorInfo);
-    // Você pode enviar o erro para um serviço de logging aqui
-  }
+//   static getDerivedStateFromError(error: any) {
+//     return { hasError: true, error };
+//   }
 
-  render() {
-    if (this.state.hasError) {
-      return (
-         <div className="p-4 bg-red-100 text-red-800 rounded">
-          <h3 className="font-bold">Erro durante a renderização:</h3>
-          <pre className="mt-2 whitespace-pre-wrap">{this.state.error?.message || 'Erro desconhecido'}</pre>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-*/
+//   componentDidCatch(error: any, errorInfo: any) {
+//     console.error("Erro capturado pelo ErrorBoundary:", error, errorInfo);
+//     // Você pode enviar o erro para um serviço de logging aqui
+//   }
+
+//   render() {
+//     if ((this.state as any).hasError) {
+//       return (
+//          <div className="p-4 bg-red-100 text-red-800 rounded">
+//           <h3 className="font-bold">Erro durante a renderização:</h3>
+//           <pre className="mt-2 whitespace-pre-wrap">{(this.state as any).error?.message || 'Erro desconhecido'}</pre>
+//         </div>
+//       );
+//     }
+//     return (this.props as any).children;
+//   }
+// }
+
 
 export default DynamicRenderer;

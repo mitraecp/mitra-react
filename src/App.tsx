@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { Dashboard } from "@/components/Dashboard";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+// import { Dashboard } from "@/components/Dashboard";
+// import { Button } from "@/components/ui/button";
 import DynamicRenderer from "@/components/DynamicRenderer";
 import { messageService } from "@/lib/message-service";
 import "@/lib/window-types";
+import { Loader2 } from "lucide-react";
 
 function App() {
   const [renderMode, setRenderMode] = useState<'default' | 'dynamic'>('default');
@@ -25,7 +26,7 @@ function App() {
       window.componentData = {};
 
       // Adicionar listener para mensagens RENDER_COMPONENT
-      messageService.addListener('RENDER_COMPONENT', (code, _metadata, componentData) => {
+      messageService.addListener('RENDER_COMPONENT', (code, componentData) => {
         // Atualizar a variável global componentData
         if (componentData) {
           window.componentData = componentData;
@@ -48,20 +49,10 @@ function App() {
   }, []);
 
   return renderMode === 'default' ? (
-    <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Visualização de dados com gráficos de barras e área</p>
-      </header>
-
-      <Dashboard />
-
-      <div className="mt-8 flex justify-end">
-        <Button onClick={() => messageService.sendMessage('LOG', null, null, { message: 'Botão clicado' })}>
-          Atualizar Dados
-        </Button>
-      </div>
-    </div>
+    <div className='flex-grow flex items-center justify-center h-full text-muted-foreground'>
+    {Loader2 && <Loader2 className="h-6 w-6 mr-2 animate-spin" />}
+    Carregando dados...
+ </div>
   ) : (
     <DynamicRenderer />
   );
