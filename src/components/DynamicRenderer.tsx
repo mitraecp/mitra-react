@@ -237,10 +237,10 @@ const componentRegistry = {
   DatePickerDemo,
 
   // Funções de interação para comunicação com o componente pai Vue
-  actionMitra: async (action: string, params?: any, componentId?: string | null): Promise<any> => {
+  actionMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`actionMitra('${action}', ${JSON.stringify(params)})`);
-      const result = await messageService.sendInteraction('action', { action, params }, componentId);
+      console.log(`actionMitra(${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('action', params, componentId);
       console.log(`actionMitra result:`, result);
       return result;
     } catch (error) {
@@ -248,10 +248,10 @@ const componentRegistry = {
       throw error;
     }
   },
-  formMitra: async (formData: any, componentId?: string | null): Promise<any> => {
+  formMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`formMitra(${JSON.stringify(formData)})`);
-      const result = await messageService.sendInteraction('form', formData, componentId);
+      console.log(`formMitra(${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('form', params, componentId);
       console.log(`formMitra result:`, result);
       return result;
     } catch (error) {
@@ -259,14 +259,21 @@ const componentRegistry = {
       throw error;
     }
   },
-  detailMitra: (id: string | number, entity?: string, componentId?: string | null) => {
-    messageService.sendInteraction('detail', { id, entity }, componentId);
-    console.log(`detailMitra(${id}, '${entity || ''}')`);
-  },
-  dbactionMitra: async (action: string, params?: any, componentId?: string | null): Promise<any> => {
+  detailMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`dbactionMitra('${action}', ${JSON.stringify(params)})`);
-      const result = await messageService.sendInteraction('dbaction', { action, params }, componentId);
+      console.log(`detailMitra(${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('detail', params, componentId);
+      console.log(`detailMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar detailMitra:`, error);
+      throw error;
+    }
+  },
+  dbactionMitra: async (params: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`dbactionMitra(${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('dbaction', params, componentId);
       console.log(`dbactionMitra result:`, result);
       return result;
     } catch (error) {
@@ -274,14 +281,38 @@ const componentRegistry = {
       throw error;
     }
   },
-  modalMitra: (modal: string, params?: any, componentId?: string | null) => {
-    messageService.sendInteraction('modal', { modal, params }, componentId);
-    console.log(`modalMitra('${modal}', ${JSON.stringify(params)})`);
-  },
-  variableMitra: async (name: string, value: any, componentId?: string | null): Promise<any> => {
+  modalMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`variableMitra('${name}', ${JSON.stringify(value)})`);
-      const result = await messageService.sendInteraction('variable', { name, value }, componentId);
+      console.log(`modalMitra(${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('modal', params, componentId);
+      console.log(`modalMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar modalMitra:`, error);
+      throw error;
+    }
+  },
+  // Alias para variableMitra para compatibilidade com a documentação
+  setVariableMitra: async (params: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`setVariableMitra(${JSON.stringify(params)})`);
+      // Garantir que estamos enviando name e content, não name e value
+      const { name, content } = params;
+      const result = await messageService.sendInteraction('variable', { name, content }, componentId);
+      console.log(`setVariableMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar setVariableMitra:`, error);
+      throw error;
+    }
+  },
+  // Manter variableMitra para compatibilidade com código existente
+  variableMitra: async (params: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`variableMitra(${JSON.stringify(params)})`);
+      // Garantir que estamos enviando name e content, não name e value
+      const { name, content } = params;
+      const result = await messageService.sendInteraction('variable', { name, content }, componentId);
       console.log(`variableMitra result:`, result);
       return result;
     } catch (error) {
@@ -289,28 +320,35 @@ const componentRegistry = {
       throw error;
     }
   },
-  queryMitra: async (query: string, jdbcId: number = 1, componentId?: string | null): Promise<any> => {
+  queryMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`queryMitra('${query}', ${jdbcId})`);
-      // Formato simplificado para query, agora retornando uma Promise
+      console.log(`queryMitra(${JSON.stringify(params)})`);
+      // Extrair query e jdbcId do objeto params
+      const { query, jdbcId = 1 } = params;
       const result = await messageService.sendInteraction('query', { id: query, jdbcId }, componentId);
       console.log(`queryMitra result:`, result);
       return result;
     } catch (error) {
       console.error(`Erro ao executar queryMitra:`, error);
-      throw error; // Re-lançar o erro para que o chamador possa tratá-lo
+      throw error;
     }
   },
-  goToScreenMitra: async (screen: string, params?: any, componentId?: string | null): Promise<any> => {
+  goToScreenMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`goToScreenMitra('${screen}', ${JSON.stringify(params)})`);
-      const result = await messageService.sendInteraction('goToScreen', { screen, params }, componentId);
+      console.log(`goToScreenMitra(${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('goToScreen', params, componentId);
       console.log(`goToScreenMitra result:`, result);
       return result;
     } catch (error) {
       console.error(`Erro ao executar goToScreenMitra:`, error);
       throw error;
     }
+  },
+  // Adicionar updateMitra conforme documentação
+  updateMitra: (params?: any) => {
+    console.log(`updateMitra(${JSON.stringify(params)})`);
+    // Este método é chamado pelo componente pai para controlar manualmente os updates
+    // A implementação depende do contexto específico da aplicação
   },
 
   // Adicione outros componentes/utilitários que você quer expor
