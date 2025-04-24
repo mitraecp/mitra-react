@@ -261,10 +261,17 @@ const componentRegistry = {
     messageService.sendInteraction('variable', { name, value }, componentId);
     console.log(`variableMitra('${name}', ${JSON.stringify(value)})`);
   },
-  queryMitra: (query: string, jdbcId: number = 1, componentId?: string | null) => {
-    // Formato simplificado para query
-    messageService.sendInteraction('query', { id: query, jdbcId }, componentId);
-    console.log(`queryMitra('${query}', ${jdbcId})`);
+  queryMitra: async (query: string, jdbcId: number = 1, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`queryMitra('${query}', ${jdbcId})`);
+      // Formato simplificado para query, agora retornando uma Promise
+      const result = await messageService.sendInteraction('query', { id: query, jdbcId }, componentId);
+      console.log(`queryMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar queryMitra:`, error);
+      throw error; // Re-lançar o erro para que o chamador possa tratá-lo
+    }
   },
   goToScreenMitra: (screen: string, params?: any, componentId?: string | null) => {
     messageService.sendInteraction('goToScreen', { screen, params }, componentId);
