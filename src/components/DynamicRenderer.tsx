@@ -237,29 +237,57 @@ const componentRegistry = {
   DatePickerDemo,
 
   // Funções de interação para comunicação com o componente pai Vue
-  actionMitra: (action: string, params?: any, componentId?: string | null) => {
-    messageService.sendInteraction('action', { action, params }, componentId);
-    console.log(`actionMitra('${action}', ${JSON.stringify(params)})`);
+  actionMitra: async (action: string, params?: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`actionMitra('${action}', ${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('action', { action, params }, componentId);
+      console.log(`actionMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar actionMitra:`, error);
+      throw error;
+    }
   },
-  formMitra: (formData: any, componentId?: string | null) => {
-    messageService.sendInteraction('form', formData, componentId);
-    console.log(`formMitra(${JSON.stringify(formData)})`);
+  formMitra: async (formData: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`formMitra(${JSON.stringify(formData)})`);
+      const result = await messageService.sendInteraction('form', formData, componentId);
+      console.log(`formMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar formMitra:`, error);
+      throw error;
+    }
   },
   detailMitra: (id: string | number, entity?: string, componentId?: string | null) => {
     messageService.sendInteraction('detail', { id, entity }, componentId);
     console.log(`detailMitra(${id}, '${entity || ''}')`);
   },
-  dbactionMitra: (action: string, params?: any, componentId?: string | null) => {
-    messageService.sendInteraction('dbaction', { action, params }, componentId);
-    console.log(`dbactionMitra('${action}', ${JSON.stringify(params)})`);
+  dbactionMitra: async (action: string, params?: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`dbactionMitra('${action}', ${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('dbaction', { action, params }, componentId);
+      console.log(`dbactionMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar dbactionMitra:`, error);
+      throw error;
+    }
   },
   modalMitra: (modal: string, params?: any, componentId?: string | null) => {
     messageService.sendInteraction('modal', { modal, params }, componentId);
     console.log(`modalMitra('${modal}', ${JSON.stringify(params)})`);
   },
-  variableMitra: (name: string, value: any, componentId?: string | null) => {
-    messageService.sendInteraction('variable', { name, value }, componentId);
-    console.log(`variableMitra('${name}', ${JSON.stringify(value)})`);
+  variableMitra: async (name: string, value: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`variableMitra('${name}', ${JSON.stringify(value)})`);
+      const result = await messageService.sendInteraction('variable', { name, value }, componentId);
+      console.log(`variableMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar variableMitra:`, error);
+      throw error;
+    }
   },
   queryMitra: async (query: string, jdbcId: number = 1, componentId?: string | null): Promise<any> => {
     try {
@@ -273,9 +301,16 @@ const componentRegistry = {
       throw error; // Re-lançar o erro para que o chamador possa tratá-lo
     }
   },
-  goToScreenMitra: (screen: string, params?: any, componentId?: string | null) => {
-    messageService.sendInteraction('goToScreen', { screen, params }, componentId);
-    console.log(`goToScreenMitra('${screen}', ${JSON.stringify(params)})`);
+  goToScreenMitra: async (screen: string, params?: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`goToScreenMitra('${screen}', ${JSON.stringify(params)})`);
+      const result = await messageService.sendInteraction('goToScreen', { screen, params }, componentId);
+      console.log(`goToScreenMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar goToScreenMitra:`, error);
+      throw error;
+    }
   },
 
   // Adicione outros componentes/utilitários que você quer expor

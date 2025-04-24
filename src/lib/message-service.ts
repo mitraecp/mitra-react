@@ -7,7 +7,12 @@ export type MessageType =
   | 'LOG'
   | 'READY'
   | 'INTERACTIONS_MITRA'
-  | 'QUERY_RESPONSE';
+  | 'QUERY_RESPONSE'
+  | 'ACTION_RESPONSE'
+  | 'FORM_RESPONSE'
+  | 'DBACTION_RESPONSE'
+  | 'VARIABLE_RESPONSE'
+  | 'GOTOSCREEN_RESPONSE';
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {
@@ -17,6 +22,10 @@ export interface IFrameMessage {
   componentData?: any | null;
   payload?: any | null;
   requestId?: string | null; // ID para correlacionar requisições e respostas
+  error?: {
+    message: string;
+    stack?: string;
+  } | null; // Informações de erro para respostas de erro
 }
 
 // Classe para gerenciar a comunicação postMessage
@@ -89,9 +98,12 @@ export class MessageService {
     // Usar o componentId passado como parâmetro ou obter do componentData global como fallback
     const actualComponentId = componentId || window.componentData?.id;
 
-    // Se for uma consulta, retornar uma Promise
-    if (interactionType === 'query') {
-      return this.sendQueryInteraction(interactionData, actualComponentId);
+    // Lista de tipos de interações que são assíncronas
+    const asyncInteractions = ['query', 'action', 'form', 'dbaction', 'variable', 'goToScreen'];
+
+    // Se for uma interação assíncrona, retornar uma Promise
+    if (asyncInteractions.includes(interactionType)) {
+      return this.sendAsyncInteraction(interactionType, interactionData, actualComponentId);
     }
 
     // Para outros tipos de interações, manter o comportamento atual
@@ -109,32 +121,31 @@ export class MessageService {
     this.sendToGrandparent(mitraMessage);
   }
 
-  // Método específico para enviar consultas e retornar uma Promise
-  private sendQueryInteraction(queryData: any, componentId?: string | null): Promise<any> {
+  // Método específico para enviar interações assíncronas e retornar uma Promise
+  private sendAsyncInteraction(interactionType: string, interactionData: any, componentId?: string | null): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
-        // Gerar um ID único para a consulta
-        const requestId = `query_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        // Gerar um ID único para a interação
+        const requestId = `${interactionType}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-        // Estruturar a mensagem de consulta
-        const queryMessage: IFrameMessage = {
+        // Estruturar a mensagem de interação
+        const asyncMessage: IFrameMessage = {
           type: 'INTERACTIONS_MITRA',
           payload: {
-            type: 'query',
-            ...queryData,
+            type: interactionType,
+            ...interactionData,
             requestId // Incluir o ID da requisição no payload
           },
           componentId,
           requestId // Incluir o ID da requisição na mensagem principal também
         };
 
-        // Configurar um timeout para a consulta
+        // Configurar um timeout para a interação
         const timeout = setTimeout(() => {
-          // Se a consulta não for respondida dentro do tempo limite, remover a promessa pendente
+          // Se a interação não for respondida dentro do tempo limite, remover a promessa pendente
           if (this.pendingQueries.has(requestId)) {
-            // const pendingQuery = this.pendingQueries.get(requestId);
             this.pendingQueries.delete(requestId);
-            reject(new Error(`Timeout ao aguardar resposta da consulta (ID: ${requestId})`));
+            reject(new Error(`Timeout ao aguardar resposta da interação ${interactionType} (ID: ${requestId})`));
           }
         }, this.queryTimeoutMs);
 
@@ -146,11 +157,11 @@ export class MessageService {
         });
 
         // Enviar a mensagem
-        console.log(`Enviando consulta (ID: ${requestId}):`, queryData);
-        this.sendToGrandparent(queryMessage);
+        console.log(`Enviando interação assíncrona ${interactionType} (ID: ${requestId}):`, interactionData);
+        this.sendToGrandparent(asyncMessage);
 
       } catch (error) {
-        // Se ocorrer algum erro ao enviar a consulta, rejeitar a promessa
+        // Se ocorrer algum erro ao enviar a interação, rejeitar a promessa
         reject(error);
       }
     });
@@ -186,18 +197,30 @@ export class MessageService {
 
     console.log('Mensagem recebida do pai:', message);
 
-    // Verificar se é uma resposta de consulta
-    if (message.type === 'QUERY_RESPONSE' && message.requestId) {
-      this.handleQueryResponse(message);
+    // Verificar se é uma resposta de interação assíncrona (formato padrão)
+    if (message.requestId && (
+        message.type === 'QUERY_RESPONSE' ||
+        message.type === 'ACTION_RESPONSE' ||
+        message.type === 'FORM_RESPONSE' ||
+        message.type === 'DBACTION_RESPONSE' ||
+        message.type === 'VARIABLE_RESPONSE' ||
+        message.type === 'GOTOSCREEN_RESPONSE'
+      )) {
+      this.handleAsyncResponse(message);
       return;
     }
 
-    // Verificar se é uma resposta de consulta no formato INTERACTIONS_MITRA
+    // Verificar se é uma resposta no formato INTERACTIONS_MITRA
     if (message.type === 'INTERACTIONS_MITRA' &&
         message.payload &&
-        message.payload.type === 'query_response' &&
-        message.payload.requestId) {
-      this.handleQueryResponseLegacy(message);
+        message.payload.requestId &&
+        (message.payload.type === 'query_response' ||
+         message.payload.type === 'action_response' ||
+         message.payload.type === 'form_response' ||
+         message.payload.type === 'dbaction_response' ||
+         message.payload.type === 'variable_response' ||
+         message.payload.type === 'goToScreen_response')) {
+      this.handleAsyncResponseLegacy(message);
       return;
     }
 
@@ -223,11 +246,11 @@ export class MessageService {
     }
   }
 
-  // Processar respostas de consultas
-  private handleQueryResponse(message: IFrameMessage): void {
+  // Processar respostas de interações assíncronas
+  private handleAsyncResponse(message: IFrameMessage): void {
     const requestId = message.requestId;
     if (!requestId || !this.pendingQueries.has(requestId)) {
-      console.warn(`Resposta de consulta recebida para ID desconhecido: ${requestId}`);
+      console.warn(`Resposta assíncrona recebida para ID desconhecido: ${requestId}`);
       return;
     }
 
@@ -239,20 +262,27 @@ export class MessageService {
     // Remover a consulta pendente
     this.pendingQueries.delete(requestId);
 
+    // Verificar se a resposta contém um erro
+    if (message.error) {
+      console.error(`Erro na resposta assíncrona (ID: ${requestId}):`, message.error);
+      pendingQuery.reject(new Error(message.error.message || 'Erro na interação assíncrona'));
+      return;
+    }
+
     // Resolver a promessa com os dados da resposta
-    console.log(`Resposta de consulta recebida (ID: ${requestId}):`, message.payload);
+    console.log(`Resposta assíncrona recebida (ID: ${requestId}):`, message.payload);
     pendingQuery.resolve(message.payload);
   }
 
-  // Processar respostas de consultas no formato legacy (INTERACTIONS_MITRA)
-  private handleQueryResponseLegacy(message: IFrameMessage): void {
+  // Processar respostas de interações assíncronas no formato legacy (INTERACTIONS_MITRA)
+  private handleAsyncResponseLegacy(message: IFrameMessage): void {
     if (!message.payload || !message.payload.requestId) {
       return;
     }
 
     const requestId = message.payload.requestId;
     if (!this.pendingQueries.has(requestId)) {
-      console.warn(`Resposta de consulta legacy recebida para ID desconhecido: ${requestId}`);
+      console.warn(`Resposta assíncrona legacy recebida para ID desconhecido: ${requestId}`);
       return;
     }
 
@@ -264,8 +294,15 @@ export class MessageService {
     // Remover a consulta pendente
     this.pendingQueries.delete(requestId);
 
+    // Verificar se a resposta contém um erro
+    if (message.payload.error) {
+      console.error(`Erro na resposta assíncrona legacy (ID: ${requestId}):`, message.payload.error);
+      pendingQuery.reject(new Error(message.payload.error.message || 'Erro na interação assíncrona'));
+      return;
+    }
+
     // Resolver a promessa com os dados da resposta
-    console.log(`Resposta de consulta legacy recebida (ID: ${requestId}):`, message.payload);
+    console.log(`Resposta assíncrona legacy recebida (ID: ${requestId}):`, message.payload);
     pendingQuery.resolve(message.payload.data || message.payload.result || message.payload);
   }
 
