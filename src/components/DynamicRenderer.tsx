@@ -477,7 +477,7 @@ const DynamicRenderer: React.FC = () => {
 
           // Garante que ReactComponentMitra seja retornado
           if (typeof ReactComponentMitra !== 'function') {
-            throw new Error('O código deve definir uma função React chamada "ReactComponentMitra".');
+            throw new Error('O código deve definir e retornar uma função ou arrow function React chamada "ReactComponentMitra".');
           }
           return ReactComponentMitra;
         `
