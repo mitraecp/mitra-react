@@ -410,18 +410,18 @@ const DynamicRenderer: React.FC = () => {
         // Verificar se é uma chave pré-definida
         if (predefinedComponentsMap.has(trimmedCode)) {
           setSelectedPredefinedKey(trimmedCode);
-          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'predefined', key: trimmedCode });
+          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'predefined', key: trimmedCode } as any);
 
         } else {
           // Se não for pré-definido, trata como código JSX
           setComponentCode(trimmedCode);
-          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'dynamic' });
+          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'dynamic' } as any);
         }
 
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao processar payload';
         setError(errorMessage);
-        messageService.sendMessage('ERROR', null, null, { message: errorMessage });
+        messageService.sendMessage('ERROR', null, null, { message: errorMessage } as any);
       }
     });
 
@@ -462,7 +462,7 @@ const DynamicRenderer: React.FC = () => {
       // A função recebe UM argumento: `scope` (nosso registro)
       // Dentro da função, desestruturamos o `scope` para ter acesso fácil
       // aos componentes e utilitários.
-      // Ela DEVE definir e retornar uma função chamada `Component`.
+      // Ela DEVE definir e retornar uma função chamada `ReactComponentMitra`.
       const defineComponent = new Function(
         'scope', // O nome do argumento que receberá o registro
         `
@@ -472,14 +472,14 @@ const DynamicRenderer: React.FC = () => {
           // Acesso aos dados do componente via variável global
           const componentData = window.componentData || {};
 
-          // O código do usuário vem aqui. Ele deve definir 'Component'.
+          // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${transpiledCode}
 
-          // Garante que Component seja retornado
-          if (typeof Component !== 'function') {
-            throw new Error('O código deve definir uma função React chamada "Component".');
+          // Garante que ReactComponentMitra seja retornado
+          if (typeof ReactComponentMitra !== 'function') {
+            throw new Error('O código deve definir uma função React chamada "ReactComponentMitra".');
           }
-          return Component;
+          return ReactComponentMitra;
         `
       );
 
@@ -494,7 +494,7 @@ const DynamicRenderer: React.FC = () => {
       console.error('Erro no processamento do componente dinâmico:', err);
       setError(errorMessage);
       setRenderedComponent(null);
-      messageService.sendMessage('ERROR', null, null, { message: `Erro ao renderizar: ${errorMessage}` });
+      messageService.sendMessage('ERROR', null, null, { message: `Erro ao renderizar: ${errorMessage}` } as any);
     }
 
   }, [componentCode]); // Dependência: re-executa SÓ quando o código mudar

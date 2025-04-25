@@ -59,7 +59,7 @@ export class MessageService {
   }
 
   // Enviar mensagem para o pai
-  public sendMessage(type: MessageType, code?: string | null, componentId?: string | null, componentData?: any | null, payload?: any | null): void {
+  public sendMessage(type: MessageType, code?: string | null, componentData?: any | null, componentId?: string | null, payload?: any | null): void {
     const message: IFrameMessage = {
       type,
       code,
@@ -68,26 +68,60 @@ export class MessageService {
       payload
     };
 
-    // Usar a função que envia para o avô
-    this.sendToGrandparent(message);
+    // Usar a função que envia para qualquer nível de pai possível ou irmão
+    this.sendToParentOrSibling(message);
   }
 
-  // Função para enviar mensagem apenas para o avô (parent.parent)
-  private sendToGrandparent(message: any): void {
+  // Função para enviar mensagem para qualquer nível de pai possível ou irmão
+  private sendToParentOrSibling(message: any): void {
     try {
       // Adicionar um ID único para a mensagem para rastreamento
       const messageWithId = {
         ...message,
       };
 
-      // Enviar apenas para o avô (parent.parent)
-      if (window.parent && window.parent.parent && window.parent.parent !== window.parent) {
-        window.parent.parent.postMessage(messageWithId, '*');
-        console.log('Mensagem enviada para window.parent.parent:', messageWithId);
-        return; // Sucesso, sair da função
+      // Primeiro tentar enviar para o pai direto (window.parent)
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(messageWithId, '*');
+        console.log('Mensagem enviada para window.parent (pai direto):', messageWithId);
+
+        // Continuar tentando outros alvos para garantir que a mensagem chegue
       }
 
-      console.log('Não foi possível enviar mensagem: window.parent.parent não está disponível');
+      // Tentar enviar para window.top (nível mais alto)
+      if (window.top && window.top !== window && window.top !== window.parent) {
+        window.top.postMessage(messageWithId, '*');
+        console.log('Mensagem enviada para window.top:', messageWithId);
+      }
+
+      // Tentar enviar para qualquer nível de pai disponível
+      let currentParent = window.parent;
+      let level = 1;
+
+      while (currentParent && currentParent !== window) {
+        // Já enviamos para window.parent no início, então só enviamos para os pais de nível superior
+        if (level > 1) {
+          currentParent.postMessage(messageWithId, '*');
+          console.log(`Mensagem enviada para window.parent (nível ${level}):`, messageWithId);
+        }
+
+        // Tentar ir para o próximo nível de pai, se existir
+        level++;
+        try {
+          // Algumas vezes, acessar parent pode lançar erro de segurança
+          const nextParent = currentParent.parent;
+          if (!nextParent || nextParent === currentParent) break;
+          currentParent = nextParent;
+        } catch {
+          // Se não conseguir acessar o próximo nível, parar
+          break;
+        }
+      }
+
+      // Se chegamos aqui e não enviamos para nenhum pai, registrar um aviso
+      if (level === 1 && (!window.parent || window.parent === window) && (!window.top || window.top === window)) {
+        console.log('Não foi possível enviar mensagem: nenhum frame pai está disponível');
+      }
     } catch (error) {
       console.error('Erro ao tentar enviar mensagem:', error);
     }
@@ -96,7 +130,12 @@ export class MessageService {
   // Método específico para enviar interações para o componente pai Vue
   public sendInteraction(interactionType: string, interactionData: any, componentId?: string | null): void | Promise<any> {
     // Usar o componentId passado como parâmetro ou obter do componentData global como fallback
-    const actualComponentId = componentId || window.componentData?.id;
+    const actualComponentId = componentId || window.componentId || window.componentData?.id;
+
+    // Verificar se temos um componentId válido
+    if (!actualComponentId) {
+      console.warn('Aviso: Tentando enviar interação sem componentId. A mensagem pode não ser processada pelo Vue.');
+    }
 
     // Lista de tipos de interações que são assíncronas
     const asyncInteractions = ['query', 'action', 'form', 'dbaction', 'variable', 'goToScreen'];
@@ -117,14 +156,22 @@ export class MessageService {
       componentId: actualComponentId
     };
 
-    // Enviar a mensagem apenas para o avô (parent.parent)
-    this.sendToGrandparent(mitraMessage);
+    // Registrar a mensagem que está sendo enviada para debug
+    console.log(`Enviando interação ${interactionType} para componentId: ${actualComponentId}`, mitraMessage);
+
+    // Enviar a mensagem para qualquer nível de pai possível ou irmão
+    this.sendToParentOrSibling(mitraMessage);
   }
 
   // Método específico para enviar interações assíncronas e retornar uma Promise
   private sendAsyncInteraction(interactionType: string, interactionData: any, componentId?: string | null): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
+        // Verificar se temos um componentId válido
+        if (!componentId) {
+          console.warn('Aviso: Tentando enviar interação assíncrona sem componentId. A mensagem pode não ser processada pelo Vue.');
+        }
+
         // Gerar um ID único para a interação
         const requestId = `${interactionType}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
@@ -157,8 +204,8 @@ export class MessageService {
         });
 
         // Enviar a mensagem
-        console.log(`Enviando interação assíncrona ${interactionType} (ID: ${requestId}):`, interactionData);
-        this.sendToGrandparent(asyncMessage);
+        console.log(`Enviando interação assíncrona ${interactionType} para componentId: ${componentId} (ID: ${requestId}):`, asyncMessage);
+        this.sendToParentOrSibling(asyncMessage);
 
       } catch (error) {
         // Se ocorrer algum erro ao enviar a interação, rejeitar a promessa
@@ -168,7 +215,7 @@ export class MessageService {
   }
 
   // Adicionar um listener para um tipo específico de mensagem
-  public addListener(type: MessageType, callback: (code: string | null, componentData?: any | null) => void): () => void {
+  public addListener(type: MessageType, callback: (code: string | null, componentData?: any | null, componentId?: string | null) => void): () => void {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, []);
     }
@@ -195,7 +242,10 @@ export class MessageService {
       return;
     }
 
-    console.log('Mensagem recebida do pai:', message);
+    // Registrar a origem da mensagem para debug
+    const origin = event.origin || 'desconhecida';
+    const source = event.source ? 'window' : 'desconhecido';
+    console.log(`Mensagem recebida de ${source} (origem: ${origin}):`, message);
 
     // Verificar se é uma resposta de interação assíncrona (formato padrão)
     if (message.requestId && (
@@ -312,11 +362,15 @@ export class MessageService {
 
     // Pequeno delay para garantir que o aplicativo esteja totalmente carregado
     setTimeout(() => {
-      // Enviar apenas para o avô (parent.parent)
-      const readyMessage: IFrameMessage = { type: 'READY' };
-      this.sendToGrandparent(readyMessage);
+      // Enviar mensagem READY para qualquer nível de pai possível
+      const readyMessage: IFrameMessage = {
+        type: 'READY',
+        // Incluir o componentId se disponível para garantir que o Vue possa identificar o componente
+        componentId: window.componentData?.id || null
+      };
+      this.sendToParentOrSibling(readyMessage);
       this.ready = true;
-      console.log('Mensagem READY enviada');
+      console.log('Mensagem READY enviada', readyMessage);
     }, 500);
   }
 }

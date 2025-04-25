@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 // import { Dashboard } from "@/components/Dashboard";
 // import { Button } from "@/components/ui/button";
@@ -24,13 +25,18 @@ function App() {
 
       // Configurar o objeto componentData global
       window.componentData = {};
+      window.componentId = {};
 
       // Adicionar listener para mensagens RENDER_COMPONENT
-      messageService.addListener('RENDER_COMPONENT', (code, componentData) => {
+      messageService.addListener('RENDER_COMPONENT', (code, componentData, componentId) => {
         // Atualizar a variável global componentData
         if (componentData) {
           window.componentData = componentData;
           console.log('Dados do componente recebidos:', window.componentData);
+        }
+        if (componentId) {
+          window.componentId = componentId;
+          console.log('ID do componente recebido:', window.componentId);
         }
 
         // Se o code for uma string, é código de componente
@@ -42,7 +48,7 @@ function App() {
 
     // Enviar mensagem de que estamos prontos
     if (isInIframe) {
-      messageService.sendMessage('READY', null, null, { timestamp: Date.now() });
+      messageService.sendMessage('READY', null, null, { timestamp: Date.now()} as any);
     }
 
 
