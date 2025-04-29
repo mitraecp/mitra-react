@@ -478,10 +478,22 @@ const DynamicRenderer: React.FC = () => {
       // 3. Transpilar o código com suporte a TypeScript
       const transpiledCode = transformJSX(processedCode);
 
-      // 4. Remover declarações import e diretivas do código transpilado
+      // 4. Remover declarações import, export e diretivas do código transpilado
       let cleanedCode = transpiledCode.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
       // Remover diretiva "use client"
       cleanedCode = cleanedCode.replace(/"use client";?\s*/g, '');
+      // Remover declarações export function
+      cleanedCode = cleanedCode.replace(/export\s+function\s+(\w+)/g, 'function $1');
+      // Remover declarações export default function
+      cleanedCode = cleanedCode.replace(/export\s+default\s+function\s+(\w+)/g, 'function $1');
+      // Remover declarações export const
+      cleanedCode = cleanedCode.replace(/export\s+const\s+(\w+)/g, 'const $1');
+      // Remover declarações export default const
+      cleanedCode = cleanedCode.replace(/export\s+default\s+const\s+(\w+)/g, 'const $1');
+      // Remover declarações export default
+      cleanedCode = cleanedCode.replace(/export\s+default\s+(\w+);?/g, '');
+      // Remover declarações export { ... }
+      cleanedCode = cleanedCode.replace(/export\s+{[^}]*};?/g, '');
 
       // 5. Criar um wrapper para o componente transpilado
       const processedComponentCode = `
