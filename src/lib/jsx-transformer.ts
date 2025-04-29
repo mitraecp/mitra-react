@@ -8,18 +8,26 @@ import * as Babel from '@babel/standalone';
  */
 export function transformJSX(code: string): string {
   try {
-    // Configurar o Babel para transpilar JSX
+    // Configurar o Babel para transpilar JSX com suporte a TypeScript
     const result = Babel.transform(code, {
-      presets: ['react'],
-      filename: 'dynamic-component.jsx',
+      presets: [
+        'react',
+        ['typescript', {
+          isTSX: true,
+          allExtensions: true
+        }]
+      ],
+      plugins: ['transform-typescript'],
+      filename: 'dynamic-component.tsx', // Mudamos para .tsx para indicar TypeScript + JSX
       ast: false,
       retainLines: true,
+      sourceType: 'module', // Importante para suportar imports/exports
     });
 
     // Retornar o código transpilado
     return result.code || code;
   } catch (error) {
-    console.error("Erro ao transpilar JSX com Babel:", error);
+    console.error("Erro ao transpilar TSX com Babel:", error);
     throw error; // Propagar o erro para tratamento adequado
   }
 }

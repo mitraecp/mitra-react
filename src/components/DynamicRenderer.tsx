@@ -451,109 +451,74 @@ const DynamicRenderer: React.FC = () => {
 
     let Comp: React.FC | null = null;
     try {
-      // console.log('Recebido código JSX:', componentCode);
+      // Abordagem simplificada para processar o código
+      // 1. Identificar o nome do componente
+      let componentName = 'MitraReactComponent';
+
+      // Procurar por padrões de definição de componente no código original
+      const exportedFunctionMatch = componentCode.match(/export\s+function\s+(\w+)/);
+      const exportDefaultMatch = componentCode.match(/export\s+default\s+function\s+(\w+)/);
+      const functionMatch = componentCode.match(/function\s+(\w+)/);
+      const constArrowMatch = componentCode.match(/const\s+(\w+)\s*=\s*(?:\([^)]*\)|)\s*=>/);
+
+      if (exportedFunctionMatch) {
+        componentName = exportedFunctionMatch[1];
+      } else if (exportDefaultMatch) {
+        componentName = exportDefaultMatch[1];
+      } else if (functionMatch) {
+        componentName = functionMatch[1];
+      } else if (constArrowMatch) {
+        componentName = constArrowMatch[1];
+      }
+
+      // 2. Sanitizar e processar o código
       const sanitizedCode = sanitizeJSXCode(componentCode);
       const processedCode = processArbitraryValues(sanitizedCode);
-      // console.log('Código processado:', processedCode);
+
+      // 3. Transpilar o código com suporte a TypeScript
       const transpiledCode = transformJSX(processedCode);
-      // console.log('Código transpilado:', transpiledCode);
 
-      // Extrair o componente principal do código transpilado
-      // Ignorar imports e outras declarações, focar no componente exportado
-      const extractComponentCode = (code: string): string => {
-        // Remover imports - eles já estão disponíveis no registro
-        let processedCode = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+      // 4. Criar um wrapper para o componente transpilado
+      const processedComponentCode = `
+        // Código do usuário transpilado
+        ${transpiledCode}
 
-        // Remover diretivas como "use client"
-        processedCode = processedCode.replace(/"use client";\s*/g, '');
+        // Componente wrapper que expõe o componente do usuário como ReactComponentMitra
+        function ReactComponentMitra(props) {
+          // Componentes disponíveis
+          const components = props.components || {};
 
-        // Procurar por padrões de definição de componente
-        // 1. Função nomeada exportada diretamente
-        const exportedFunctionMatch = processedCode.match(/export\s+function\s+(\w+)/);
-        // 2. Função nomeada
-        const functionMatch = processedCode.match(/function\s+(\w+)/);
-        // 3. Const com arrow function
-        const constArrowMatch = processedCode.match(/const\s+(\w+)\s*=\s*(?:\([^)]*\)|)\s*=>/);
-        // 4. Classe de componente
-        const classMatch = processedCode.match(/class\s+(\w+)\s+extends\s+React\.Component/);
-        // 5. Exportação default de função
-        const exportDefaultMatch = processedCode.match(/export\s+default\s+function\s+(\w+)/);
-        // 6. Exportação default de constante
-        const exportDefaultConstMatch = processedCode.match(/export\s+default\s+const\s+(\w+)/);
-        // 7. Exportação nomeada
-        const namedExportMatch = processedCode.match(/export\s+{\s*(\w+)(?:\s+as\s+\w+)?\s*}/);
+          // Criar um objeto com todos os componentes disponíveis no escopo global
+          // para que o código do usuário possa acessá-los diretamente
+          Object.keys(components).forEach(key => {
+            window[key] = components[key];
+          });
 
-        // Determinar o nome do componente
-        let componentName = 'MitraReactComponent';
-        let hasExportedComponent = false;
-
-        // Remover todas as declarações de export
-        if (exportedFunctionMatch) {
-          componentName = exportedFunctionMatch[1];
-          hasExportedComponent = true;
-          // Substituir "export function X" por "function X"
-          processedCode = processedCode.replace(/export\s+function\s+(\w+)/, 'function $1');
+          // Renderizar o componente do usuário
+          return React.createElement(${componentName}, props);
         }
-
-        if (exportDefaultMatch) {
-          componentName = exportDefaultMatch[1];
-          hasExportedComponent = true;
-          // Substituir "export default function X" por "function X"
-          processedCode = processedCode.replace(/export\s+default\s+function\s+(\w+)/, 'function $1');
-        }
-
-        if (exportDefaultConstMatch) {
-          componentName = exportDefaultConstMatch[1];
-          hasExportedComponent = true;
-          // Substituir "export default const X" por "const X"
-          processedCode = processedCode.replace(/export\s+default\s+const\s+(\w+)/, 'const $1');
-        }
-
-        if (namedExportMatch) {
-          componentName = namedExportMatch[1];
-          hasExportedComponent = true;
-          // Remover "export { X }" completamente
-          processedCode = processedCode.replace(/export\s+{\s*(\w+)(?:\s+as\s+\w+)?\s*}/, '');
-        }
-
-        // Remover qualquer outra declaração export default
-        processedCode = processedCode.replace(/export\s+default\s+(\w+);?/, '');
-
-        // Se não encontrou um componente exportado, verificar se há uma função ou componente não exportado
-        if (!hasExportedComponent) {
-          if (functionMatch) {
-            componentName = functionMatch[1];
-          } else if (constArrowMatch) {
-            componentName = constArrowMatch[1];
-          } else if (classMatch) {
-            componentName = classMatch[1];
-          }
-        }
-
-        // Retornar o código com uma atribuição para ReactComponentMitra
-        return `
-          ${processedCode}
-
-          // Atribuir o componente exportado para ReactComponentMitra
-          const ReactComponentMitra = ${componentName};
-        `;
-      };
-
-      const processedComponentCode = extractComponentCode(transpiledCode);
+      `;
 
       // --- 4. Usar `new Function` com o registro ---
       // A função recebe UM argumento: `scope` (nosso registro)
       // Dentro da função, desestruturamos o `scope` para ter acesso fácil
       // aos componentes e utilitários.
       // Ela DEVE definir e retornar uma função chamada `ReactComponentMitra`.
+      // Adicionar suporte para objetos globais como Date, Array, etc.
+      const globalObjects = [
+        'Date', 'Array', 'Object', 'String', 'Number', 'Boolean', 'RegExp', 'Math', 'JSON',
+        'Map', 'Set', 'Promise', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'
+      ];
+
       const defineComponent = new Function(
         'scope', // O nome do argumento que receberá o registro
+        'React', // React global
         `
-          // Desestruturação para acesso fácil dentro do código do usuário
-          const { ${Object.keys(componentRegistry).join(', ')} } = scope;
-
           // Acesso aos dados do componente via variável global
           const componentData = window.componentData || {};
+
+          // Acesso a objetos globais
+          const { ${globalObjects.join(', ')} } = window;
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${processedComponentCode}
@@ -562,12 +527,16 @@ const DynamicRenderer: React.FC = () => {
           if (typeof ReactComponentMitra !== 'function') {
             throw new Error('O código deve definir e retornar uma função ou arrow function React chamada "ReactComponentMitra".');
           }
-          return ReactComponentMitra;
+
+          // Criar um componente que passa os componentes registrados como props
+          return (props) => {
+            return ReactComponentMitra({ ...props, components: scope });
+          };
         `
       );
 
-      // Executa a função, passando o registro como argumento 'scope'
-      Comp = defineComponent(componentRegistry);
+      // Executa a função, passando o registro como argumento 'scope' e React como segundo argumento
+      Comp = defineComponent(componentRegistry, React);
 
       setRenderedComponent(() => Comp); // Define o estado com a função do componente
       setError(null); // Limpa erro se compilação foi bem sucedida
