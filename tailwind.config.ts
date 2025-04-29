@@ -1,7 +1,6 @@
 import tailwindAnimate from "tailwindcss-animate";
 import tailwindForms from "@tailwindcss/forms";
 import tailwindTypography from "@tailwindcss/typography";
-import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
