@@ -18,6 +18,7 @@ export type MessageType =
   | 'IDE_FILE_DELETED'
   | 'IDE_FILE_UPDATED'
   | 'TOGGLE_VIEW_MODE'
+  | 'REFRESH_PREVIEW'
   | 'SAVE_PROJECT';
 
 // Interface para as mensagens trocadas

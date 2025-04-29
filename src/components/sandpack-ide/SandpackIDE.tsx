@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import { messageService } from '@/lib/message-service';
 import { FileToolbar } from './FileToolbar';
 import { ProjectSettings } from './ProjectSettings';
+import { CustomPreview } from './CustomPreview';
 import { defaultFiles } from './defaultFiles';
 
 // Custom hook to handle file operations
@@ -56,6 +57,7 @@ const SandpackIDE: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('editor');
   const [isReady, setIsReady] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'code' | 'preview'>('code');
+  const [previewKey, setPreviewKey] = useState<number>(Date.now());
 
   useEffect(() => {
     // Notify parent that the IDE is ready
@@ -70,6 +72,9 @@ const SandpackIDE: React.FC = () => {
         case 'TOGGLE_VIEW_MODE':
           toggleViewMode();
           break;
+        case 'REFRESH_PREVIEW':
+          setPreviewKey(Date.now());
+          break;
         case 'SAVE_PROJECT':
           handleSaveProject();
           break;
@@ -83,6 +88,20 @@ const SandpackIDE: React.FC = () => {
       window.removeEventListener('message', handleMessages);
     };
   }, []);
+
+  // Atualizar a chave do preview quando a aba ativa muda para 'preview'
+  useEffect(() => {
+    if (activeTab === 'preview') {
+      setPreviewKey(Date.now());
+    }
+  }, [activeTab]);
+
+  // Atualizar a chave do preview quando o modo muda
+  useEffect(() => {
+    if (viewMode === 'preview') {
+      setPreviewKey(Date.now());
+    }
+  }, [viewMode]);
 
   // Function to handle saving the project
   const handleSaveProject = () => {
@@ -101,7 +120,16 @@ const SandpackIDE: React.FC = () => {
   };
 
   const toggleViewMode = () => {
-    setViewMode(prevMode => prevMode === 'code' ? 'preview' : 'code');
+    setViewMode(prevMode => {
+      const newMode = prevMode === 'code' ? 'preview' : 'code';
+
+      // Gerar uma nova chave para o preview quando alternar para o modo preview
+      if (newMode === 'preview') {
+        setPreviewKey(Date.now());
+      }
+
+      return newMode;
+    });
   };
 
   return (
@@ -124,6 +152,14 @@ const SandpackIDE: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => setPreviewKey(Date.now())}
+                  className="bg-gray-800 text-white hover:bg-gray-700"
+                >
+                  Refresh Preview
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={toggleViewMode}
                   className="bg-gray-800 text-white hover:bg-gray-700"
                 >
@@ -136,22 +172,50 @@ const SandpackIDE: React.FC = () => {
               <div className="flex-grow flex flex-col h-full">
                 <div className="bg-gray-800 p-2 flex justify-between items-center">
                   <div className="text-white font-medium">Preview Mode</div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleViewMode}
-                    className="bg-gray-700 text-white hover:bg-gray-600"
-                  >
-                    Back to Editor
-                  </Button>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setPreviewKey(Date.now());
+                        setPreviewVisible(false);
+                        setTimeout(() => {
+                          setPreviewVisible(true);
+                        }, 100);
+                      }}
+                      className="bg-gray-700 text-white hover:bg-gray-600"
+                    >
+                      Refresh
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleViewMode}
+                      className="bg-gray-700 text-white hover:bg-gray-600"
+                    >
+                      Back to Editor
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex-grow h-full">
+                  {/* Tentar usar o SandpackPreview primeiro */}
                   <SandpackPreview
+                    key={`preview-fullscreen-${previewKey}`}
                     showNavigator={true}
                     showRefreshButton={true}
                     className="h-full"
                     style={{ height: 'calc(100vh - 90px)' }}
                   />
+
+                  {/* Fallback para um iframe simples caso o SandpackPreview não funcione */}
+                  {/* Isso é apenas um placeholder e não será visível a menos que o SandpackPreview falhe */}
+                  <div className="hidden">
+                    <iframe
+                      src="about:blank"
+                      className="w-full h-full border-0"
+                      style={{ height: 'calc(100vh - 90px)' }}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -180,7 +244,27 @@ const SandpackIDE: React.FC = () => {
                           />
                         </TabsContent>
                         <TabsContent value="preview" className="flex-grow h-full m-0 p-0 data-[state=active]:flex-grow">
-                          <SandpackPreview showNavigator={true} showRefreshButton={true} />
+                          <div className="flex flex-col h-full">
+                            {activeTab === 'preview' && (
+                              <div className="bg-gray-800 p-2 flex justify-end">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPreviewKey(Date.now())}
+                                  className="bg-gray-700 text-white hover:bg-gray-600"
+                                >
+                                  Refresh Preview
+                                </Button>
+                              </div>
+                            )}
+                            <div className="flex-grow">
+                              <SandpackPreview
+                                key={`preview-tab-${previewKey}`}
+                                showNavigator={true}
+                                showRefreshButton={true}
+                              />
+                            </div>
+                          </div>
                         </TabsContent>
                         <TabsContent value="console" className="flex-grow h-full m-0 p-0 data-[state=active]:flex-grow">
                           <SandpackConsole className="h-full" />
