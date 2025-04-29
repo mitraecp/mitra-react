@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@babel/standalone": "^7.27.0",
+    "@codesandbox/sandpack-react": "^2.20.0",
+    "@codesandbox/sandpack-themes": "^2.0.21",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",

@@ -12,7 +12,11 @@ export type MessageType =
   | 'FORM_RESPONSE'
   | 'DBACTION_RESPONSE'
   | 'VARIABLE_RESPONSE'
-  | 'GOTOSCREEN_RESPONSE';
+  | 'GOTOSCREEN_RESPONSE'
+  | 'IDE_READY'
+  | 'IDE_FILE_CREATED'
+  | 'IDE_FILE_DELETED'
+  | 'IDE_FILE_UPDATED';
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mitra React IDE</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .header {
+      background-color: #1a1a1a;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    iframe {
+      flex: 1;
+      border: none;
+      height: 100%;
+      width: 100%;
+    }
+    .logo {
+      font-weight: bold;
+      color: #0070f3;
+    }
+    .actions {
+      display: flex;
+      gap: 1rem;
+    }
+    .button {
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .button:hover {
+      background-color: #0051a2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span class="logo">Mitra</span> React IDE</h1>
+      <div class="actions">
+        <button class="button" id="saveButton">Save Project</button>
+        <button class="button" id="shareButton">Share</button>
+      </div>
+    </div>
+    <div class="content">
+      <iframe src="/?mode=ide" id="ideFrame"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Handle messages from the iframe
+    window.addEventListener('message', (event) => {
+      const { type, payload } = event.data;
+      
+      if (type === 'IDE_READY') {
+        console.log('IDE is ready!');
+      } else if (type === 'IDE_FILE_CREATED') {
+        console.log('File created:', payload.path);
+      } else if (type === 'IDE_FILE_UPDATED') {
+        console.log('File updated:', payload.path);
+      } else if (type === 'IDE_FILE_DELETED') {
+        console.log('File deleted:', payload.path);
+      }
+    });
+
+    // Handle button clicks
+    document.getElementById('saveButton').addEventListener('click', () => {
+      // Send message to save the project
+      const ideFrame = document.getElementById('ideFrame');
+      ideFrame.contentWindow.postMessage({
+        type: 'SAVE_PROJECT',
+        payload: {}
+      }, '*');
+    });
+
+    document.getElementById('shareButton').addEventListener('click', () => {
+      // Generate a shareable link
+      alert('Share link: ' + window.location.href);
+    });
+  </script>
+</body>
+</html>
