@@ -462,59 +462,77 @@ const DynamicRenderer: React.FC = () => {
       // Ignorar imports e outras declarações, focar no componente exportado
       const extractComponentCode = (code: string): string => {
         // Remover imports - eles já estão disponíveis no registro
-        const codeWithoutImports = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+        let processedCode = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+
+        // Remover diretivas como "use client"
+        processedCode = processedCode.replace(/"use client";\s*/g, '');
 
         // Procurar por padrões de definição de componente
         // 1. Função nomeada exportada diretamente
-        const exportedFunctionMatch = codeWithoutImports.match(/export\s+function\s+(\w+)/);
+        const exportedFunctionMatch = processedCode.match(/export\s+function\s+(\w+)/);
         // 2. Função nomeada
-        const functionMatch = codeWithoutImports.match(/function\s+(\w+)/);
+        const functionMatch = processedCode.match(/function\s+(\w+)/);
         // 3. Const com arrow function
-        const constArrowMatch = codeWithoutImports.match(/const\s+(\w+)\s*=\s*(?:\([^)]*\)|)\s*=>/);
+        const constArrowMatch = processedCode.match(/const\s+(\w+)\s*=\s*(?:\([^)]*\)|)\s*=>/);
         // 4. Classe de componente
-        const classMatch = codeWithoutImports.match(/class\s+(\w+)\s+extends\s+React\.Component/);
+        const classMatch = processedCode.match(/class\s+(\w+)\s+extends\s+React\.Component/);
         // 5. Exportação default de função
-        const exportDefaultMatch = codeWithoutImports.match(/export\s+default\s+function\s+(\w+)/);
+        const exportDefaultMatch = processedCode.match(/export\s+default\s+function\s+(\w+)/);
         // 6. Exportação default de constante
-        const exportDefaultConstMatch = codeWithoutImports.match(/export\s+default\s+const\s+(\w+)/);
+        const exportDefaultConstMatch = processedCode.match(/export\s+default\s+const\s+(\w+)/);
         // 7. Exportação nomeada
-        const namedExportMatch = codeWithoutImports.match(/export\s+{\s*(\w+)(?:\s+as\s+\w+)?\s*}/);
+        const namedExportMatch = processedCode.match(/export\s+{\s*(\w+)(?:\s+as\s+\w+)?\s*}/);
 
         // Determinar o nome do componente
         let componentName = 'MitraReactComponent';
         let hasExportedComponent = false;
 
+        // Remover todas as declarações de export
         if (exportedFunctionMatch) {
           componentName = exportedFunctionMatch[1];
           hasExportedComponent = true;
-        } else if (exportDefaultMatch) {
-          componentName = exportDefaultMatch[1];
-          hasExportedComponent = true;
-        } else if (exportDefaultConstMatch) {
-          componentName = exportDefaultConstMatch[1];
-          hasExportedComponent = true;
-        } else if (namedExportMatch) {
-          componentName = namedExportMatch[1];
-          hasExportedComponent = true;
-        } else if (functionMatch) {
-          componentName = functionMatch[1];
-        } else if (constArrowMatch) {
-          componentName = constArrowMatch[1];
-        } else if (classMatch) {
-          componentName = classMatch[1];
+          // Substituir "export function X" por "function X"
+          processedCode = processedCode.replace(/export\s+function\s+(\w+)/, 'function $1');
         }
 
+        if (exportDefaultMatch) {
+          componentName = exportDefaultMatch[1];
+          hasExportedComponent = true;
+          // Substituir "export default function X" por "function X"
+          processedCode = processedCode.replace(/export\s+default\s+function\s+(\w+)/, 'function $1');
+        }
+
+        if (exportDefaultConstMatch) {
+          componentName = exportDefaultConstMatch[1];
+          hasExportedComponent = true;
+          // Substituir "export default const X" por "const X"
+          processedCode = processedCode.replace(/export\s+default\s+const\s+(\w+)/, 'const $1');
+        }
+
+        if (namedExportMatch) {
+          componentName = namedExportMatch[1];
+          hasExportedComponent = true;
+          // Remover "export { X }" completamente
+          processedCode = processedCode.replace(/export\s+{\s*(\w+)(?:\s+as\s+\w+)?\s*}/, '');
+        }
+
+        // Remover qualquer outra declaração export default
+        processedCode = processedCode.replace(/export\s+default\s+(\w+);?/, '');
+
         // Se não encontrou um componente exportado, verificar se há uma função ou componente não exportado
-        if (!hasExportedComponent && (functionMatch || constArrowMatch || classMatch)) {
-          // Usar o primeiro componente encontrado
-          if (functionMatch) componentName = functionMatch[1];
-          else if (constArrowMatch) componentName = constArrowMatch[1];
-          else if (classMatch) componentName = classMatch[1];
+        if (!hasExportedComponent) {
+          if (functionMatch) {
+            componentName = functionMatch[1];
+          } else if (constArrowMatch) {
+            componentName = constArrowMatch[1];
+          } else if (classMatch) {
+            componentName = classMatch[1];
+          }
         }
 
         // Retornar o código com uma atribuição para ReactComponentMitra
         return `
-          ${codeWithoutImports}
+          ${processedCode}
 
           // Atribuir o componente exportado para ReactComponentMitra
           const ReactComponentMitra = ${componentName};
