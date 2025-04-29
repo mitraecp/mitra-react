@@ -479,7 +479,26 @@ const DynamicRenderer: React.FC = () => {
       const transpiledCode = transformJSX(processedCode);
 
       // 4. Remover declarações import, export e diretivas do código transpilado
-      let cleanedCode = transpiledCode.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+      // Função para remover todas as declarações import
+      const removeImports = (code: string): string => {
+        // Primeiro, tentamos remover imports simples
+        let result = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+
+        // Depois, tentamos remover imports com múltiplas linhas
+        result = result.replace(/import\s+[\s\S]*?from\s+['"].*?['"];?\s*/g, '');
+
+        // Finalmente, verificamos se ainda há alguma declaração import
+        if (result.includes('import ')) {
+          // Se ainda houver, removemos linha por linha
+          const lines = result.split('\n');
+          const filteredLines = lines.filter(line => !line.trim().startsWith('import '));
+          result = filteredLines.join('\n');
+        }
+
+        return result;
+      };
+
+      let cleanedCode = removeImports(transpiledCode);
       // Remover diretiva "use client"
       cleanedCode = cleanedCode.replace(/"use client";?\s*/g, '');
       // Remover declarações export function
