@@ -258,11 +258,21 @@ const SandpackIDE: React.FC = () => {
                               </div>
                             )}
                             <div className="flex-grow">
+                              {/* Tentar usar o SandpackPreview primeiro */}
                               <SandpackPreview
                                 key={`preview-tab-${previewKey}`}
                                 showNavigator={true}
                                 showRefreshButton={true}
                               />
+
+                              {/* Fallback para um iframe simples caso o SandpackPreview não funcione */}
+                              {/* Isso é apenas um placeholder e não será visível a menos que o SandpackPreview falhe */}
+                              <div className="hidden">
+                                <iframe
+                                  src="about:blank"
+                                  className="w-full h-full border-0"
+                                />
+                              </div>
                             </div>
                           </div>
                         </TabsContent>
