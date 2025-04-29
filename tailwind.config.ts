@@ -3,8 +3,7 @@ import tailwindForms from "@tailwindcss/forms";
 import tailwindTypography from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
 
-const config: Config = {
-  mode: 'jit',
+const config = {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {

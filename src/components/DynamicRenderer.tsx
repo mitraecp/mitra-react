@@ -11,7 +11,6 @@ import '@/styles/globals.css';
 import '@/styles/custom.css';
 import '@/styles/arbitrary-values.css';
 import '@/styles/button-colors.css';
-import '@/styles/tailwind-fix.css';
 
 // --- 1. Importar TODOS os componentes necessários UMA VEZ ---
 // Componentes básicos
@@ -540,7 +539,14 @@ const DynamicRenderer: React.FC = () => {
           // Renderizar o componente do usuário com um wrapper para garantir que as classes do Tailwind sejam aplicadas
           return React.createElement(
             'div',
-            { className: 'tailwind-wrapper bg-background text-foreground' },
+            {
+              className: 'bg-background text-foreground p-4 rounded-lg border border-border',
+              style: {
+                backgroundColor: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                borderColor: 'hsl(var(--border))'
+              }
+            },
             React.createElement(${componentName}, props)
           );
         }
