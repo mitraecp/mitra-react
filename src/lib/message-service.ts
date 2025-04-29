@@ -16,7 +16,9 @@ export type MessageType =
   | 'IDE_READY'
   | 'IDE_FILE_CREATED'
   | 'IDE_FILE_DELETED'
-  | 'IDE_FILE_UPDATED';
+  | 'IDE_FILE_UPDATED'
+  | 'TOGGLE_VIEW_MODE'
+  | 'SAVE_PROJECT';
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {

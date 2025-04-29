@@ -68,6 +68,7 @@
     <div class="header">
       <h1><span class="logo">Mitra</span> React IDE</h1>
       <div class="actions">
+        <button class="button" id="toggleViewButton">Toggle View</button>
         <button class="button" id="saveButton">Save Project</button>
         <button class="button" id="shareButton">Share</button>
       </div>
@@ -81,7 +82,7 @@
     // Handle messages from the iframe
     window.addEventListener('message', (event) => {
       const { type, payload } = event.data;
-      
+
       if (type === 'IDE_READY') {
         console.log('IDE is ready!');
       } else if (type === 'IDE_FILE_CREATED') {
@@ -94,6 +95,15 @@
     });
 
     // Handle button clicks
+    document.getElementById('toggleViewButton').addEventListener('click', () => {
+      // Send message to toggle view mode
+      const ideFrame = document.getElementById('ideFrame');
+      ideFrame.contentWindow.postMessage({
+        type: 'TOGGLE_VIEW_MODE',
+        payload: {}
+      }, '*');
+    });
+
     document.getElementById('saveButton').addEventListener('click', () => {
       // Send message to save the project
       const ideFrame = document.getElementById('ideFrame');

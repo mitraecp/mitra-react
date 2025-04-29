@@ -7,6 +7,7 @@ This is a Replit/StackBlitz-like code editor environment for Mitra React, allowi
 - **File Management**: Create, edit, and delete files in a directory structure
 - **Code Editing**: Full-featured code editor with syntax highlighting and error checking
 - **Live Preview**: See your changes in real-time
+- **Preview Mode**: Toggle between code editor and full-screen preview
 - **Console Output**: View console logs and errors
 - **Dependency Management**: Add and remove npm dependencies
 - **Project Settings**: Configure your project name and settings
@@ -21,7 +22,8 @@ This is a Replit/StackBlitz-like code editor environment for Mitra React, allowi
 5. Edit files in the code editor
 6. See the live preview in the "Preview" tab
 7. View console output in the "Console" tab
-8. Manage project settings, dependencies, and sharing options using the toolbar buttons
+8. Toggle between code editor and full-screen preview using the "Preview Mode" button
+9. Manage project settings, dependencies, and sharing options using the toolbar buttons
 
 ## File Structure
 
