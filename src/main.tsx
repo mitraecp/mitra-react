@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 import "@/styles/custom.css";
 import "@/styles/arbitrary-values.css";
 import "@/styles/button-colors.css";
+import "@/styles/tailwind-fix.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

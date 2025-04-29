@@ -6,6 +6,13 @@ import { messageService } from '@/lib/message-service';
 import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
 import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
 
+// Importar estilos globais explicitamente
+import '@/styles/globals.css';
+import '@/styles/custom.css';
+import '@/styles/arbitrary-values.css';
+import '@/styles/button-colors.css';
+import '@/styles/tailwind-fix.css';
+
 // --- 1. Importar TODOS os componentes necessários UMA VEZ ---
 // Componentes básicos
 import { Button } from '@/components/ui/button';
@@ -530,8 +537,12 @@ const DynamicRenderer: React.FC = () => {
             window[key] = components[key];
           });
 
-          // Renderizar o componente do usuário
-          return React.createElement(${componentName}, props);
+          // Renderizar o componente do usuário com um wrapper para garantir que as classes do Tailwind sejam aplicadas
+          return React.createElement(
+            'div',
+            { className: 'tailwind-wrapper bg-background text-foreground' },
+            React.createElement(${componentName}, props)
+          );
         }
       `;
 
