@@ -478,10 +478,15 @@ const DynamicRenderer: React.FC = () => {
       // 3. Transpilar o código com suporte a TypeScript
       const transpiledCode = transformJSX(processedCode);
 
-      // 4. Criar um wrapper para o componente transpilado
+      // 4. Remover declarações import e diretivas do código transpilado
+      let cleanedCode = transpiledCode.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+      // Remover diretiva "use client"
+      cleanedCode = cleanedCode.replace(/"use client";?\s*/g, '');
+
+      // 5. Criar um wrapper para o componente transpilado
       const processedComponentCode = `
-        // Código do usuário transpilado
-        ${transpiledCode}
+        // Código do usuário transpilado (sem imports)
+        ${cleanedCode}
 
         // Componente wrapper que expõe o componente do usuário como ReactComponentMitra
         function ReactComponentMitra(props) {
