@@ -458,6 +458,71 @@ const DynamicRenderer: React.FC = () => {
       const transpiledCode = transformJSX(processedCode);
       // console.log('Código transpilado:', transpiledCode);
 
+      // Extrair o componente principal do código transpilado
+      // Ignorar imports e outras declarações, focar no componente exportado
+      const extractComponentCode = (code: string): string => {
+        // Remover imports - eles já estão disponíveis no registro
+        const codeWithoutImports = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+
+        // Procurar por padrões de definição de componente
+        // 1. Função nomeada exportada diretamente
+        const exportedFunctionMatch = codeWithoutImports.match(/export\s+function\s+(\w+)/);
+        // 2. Função nomeada
+        const functionMatch = codeWithoutImports.match(/function\s+(\w+)/);
+        // 3. Const com arrow function
+        const constArrowMatch = codeWithoutImports.match(/const\s+(\w+)\s*=\s*(?:\([^)]*\)|)\s*=>/);
+        // 4. Classe de componente
+        const classMatch = codeWithoutImports.match(/class\s+(\w+)\s+extends\s+React\.Component/);
+        // 5. Exportação default de função
+        const exportDefaultMatch = codeWithoutImports.match(/export\s+default\s+function\s+(\w+)/);
+        // 6. Exportação default de constante
+        const exportDefaultConstMatch = codeWithoutImports.match(/export\s+default\s+const\s+(\w+)/);
+        // 7. Exportação nomeada
+        const namedExportMatch = codeWithoutImports.match(/export\s+{\s*(\w+)(?:\s+as\s+\w+)?\s*}/);
+
+        // Determinar o nome do componente
+        let componentName = 'MitraReactComponent';
+        let hasExportedComponent = false;
+
+        if (exportedFunctionMatch) {
+          componentName = exportedFunctionMatch[1];
+          hasExportedComponent = true;
+        } else if (exportDefaultMatch) {
+          componentName = exportDefaultMatch[1];
+          hasExportedComponent = true;
+        } else if (exportDefaultConstMatch) {
+          componentName = exportDefaultConstMatch[1];
+          hasExportedComponent = true;
+        } else if (namedExportMatch) {
+          componentName = namedExportMatch[1];
+          hasExportedComponent = true;
+        } else if (functionMatch) {
+          componentName = functionMatch[1];
+        } else if (constArrowMatch) {
+          componentName = constArrowMatch[1];
+        } else if (classMatch) {
+          componentName = classMatch[1];
+        }
+
+        // Se não encontrou um componente exportado, verificar se há uma função ou componente não exportado
+        if (!hasExportedComponent && (functionMatch || constArrowMatch || classMatch)) {
+          // Usar o primeiro componente encontrado
+          if (functionMatch) componentName = functionMatch[1];
+          else if (constArrowMatch) componentName = constArrowMatch[1];
+          else if (classMatch) componentName = classMatch[1];
+        }
+
+        // Retornar o código com uma atribuição para ReactComponentMitra
+        return `
+          ${codeWithoutImports}
+
+          // Atribuir o componente exportado para ReactComponentMitra
+          const ReactComponentMitra = ${componentName};
+        `;
+      };
+
+      const processedComponentCode = extractComponentCode(transpiledCode);
+
       // --- 4. Usar `new Function` com o registro ---
       // A função recebe UM argumento: `scope` (nosso registro)
       // Dentro da função, desestruturamos o `scope` para ter acesso fácil
@@ -473,7 +538,7 @@ const DynamicRenderer: React.FC = () => {
           const componentData = window.componentData || {};
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
-          ${transpiledCode}
+          ${processedComponentCode}
 
           // Garante que ReactComponentMitra seja retornado
           if (typeof ReactComponentMitra !== 'function') {

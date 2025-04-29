@@ -49,6 +49,9 @@ export function sanitizeJSXCode(code: string): string {
   // Garante que onClick esteja correto
   sanitized = sanitized.replace(/onclick=/g, 'onClick=');
 
+  // Preserva imports e diretivas como "use client"
+  // Eles serão processados posteriormente no DynamicRenderer
+
   return sanitized;
 }
 
