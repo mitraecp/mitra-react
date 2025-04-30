@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { DatePicker, DatePickerDemo } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImageRoot, Image, ImageFallback } from '@/components/ui/image';
@@ -162,7 +163,7 @@ const componentRegistry = {
   // Componentes UI (Shadcn UI)
   Button,
   Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter,
-  Input, Label, Checkbox,
+  Input, InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator, Label, Checkbox,
   ImageRoot, Image, ImageFallback,
   LabelTag, LabelList,
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
@@ -607,6 +608,7 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/combobox',
         '@/components/ui/data-table',
         '@/components/ui/image',
+        '@/components/ui/input-otp',
         '@/components/ui/label-list',
         'recharts'
       ];
