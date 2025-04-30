@@ -20,6 +20,7 @@ import { DatePicker, DatePickerDemo } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ImageRoot, Image, ImageFallback } from '@/components/ui/image';
 // Componentes de layout
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -109,6 +110,7 @@ import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
 import { BarChartExample } from './BarChartExample';
 import { SimpleBarChart } from './SimpleBarChart';
+import { ImageExample } from './ImageExample';
 
 const SimpleButton = () => {
   const [count, setCount] = React.useState(0); // Usar React.useState aqui
@@ -157,6 +159,7 @@ const componentRegistry = {
   Button,
   Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter,
   Input, Label, Checkbox,
+  ImageRoot, Image, ImageFallback,
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
   Alert, AlertDescription, AlertTitle,
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -249,6 +252,7 @@ const componentRegistry = {
   SimpleBarChart,
   DatePicker,
   DatePickerDemo,
+  ImageExample,
 
   // Funções de interação para comunicação com o componente pai Vue
   actionMitra: async (params: any, componentId?: string | null): Promise<any> => {
@@ -377,6 +381,7 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['BAR_CHART', BarChartExample],
   ['SIMPLE_BAR_CHART', SimpleBarChart],
   ['DATE_PICKER', DatePickerDemo],
+  ['IMAGE_EXAMPLE', ImageExample],
 ]);
 
 // --- Componente Renderer Principal ---
@@ -592,6 +597,7 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/button',
         '@/components/ui/calendar',
         '@/components/ui/chart',
+        '@/components/ui/image',
         'recharts'
       ];
 
