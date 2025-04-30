@@ -67,6 +67,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from '@/components/ui/toast';
 // Componentes de gráficos do Shadcn UI
 import {
   ChartContainer,
@@ -205,6 +206,7 @@ const componentRegistry = {
   Tabs, TabsContent, TabsList, TabsTrigger,
   Textarea,
   Toggle,
+  Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport,
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 
   // Biblioteca de Ícones
@@ -613,6 +615,7 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/input-otp',
         '@/components/ui/label-list',
         '@/components/ui/sidebar',
+        '@/components/ui/toast',
         'recharts'
       ];
 
