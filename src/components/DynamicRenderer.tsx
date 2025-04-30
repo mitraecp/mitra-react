@@ -41,6 +41,14 @@ import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, Comma
 import { ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuRadioGroup, ContextMenuRadioItem, ContextMenuSeparator, ContextMenuShortcut, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from '@/components/ui/context-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/data-table';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 // Componentes de formulário
@@ -217,6 +225,14 @@ const componentRegistry = {
   Toaster,
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
   useToast, toast,
+
+  // Hooks e funções do @tanstack/react-table
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
 
   // Biblioteca de Ícones
   LucideReact, // Expõe todo o objeto LucideReact
@@ -631,6 +647,7 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/toaster',
         '@/components/ui/toggle-group',
         '@/hooks/use-toast',
+        '@tanstack/react-table',
         'recharts'
       ];
 
