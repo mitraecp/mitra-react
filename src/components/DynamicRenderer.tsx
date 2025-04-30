@@ -61,6 +61,7 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarNav, SidebarNavItem, SidebarSection } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
+import { Toaster } from '@/components/ui/sonner';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -201,6 +202,7 @@ const componentRegistry = {
   Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarNav, SidebarNavItem, SidebarSection,
   Skeleton,
   Slider,
+  Toaster,
   Switch,
   Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
   Tabs, TabsContent, TabsList, TabsTrigger,
@@ -615,6 +617,7 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/input-otp',
         '@/components/ui/label-list',
         '@/components/ui/sidebar',
+        '@/components/ui/sonner',
         '@/components/ui/toast',
         'recharts'
       ];
