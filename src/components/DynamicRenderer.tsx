@@ -407,6 +407,49 @@ const componentRegistry = {
     // A implementação depende do contexto específico da aplicação
   },
 
+  // Função para executar consultas diretamente na API Mitra sem usar postMessage
+  queryMitraWidget: async (params: any): Promise<any> => {
+    try {
+      console.log(`queryMitraWidget(${JSON.stringify(params)})`);
+
+      // Implementação direta para evitar dependência circular
+      const {
+        query = "SELECT p.DESCR AS Produto, v.DESCR AS Vendedor, par.DESCR AS Parceiro, DATE_FORMAT(STR_TO_DATE(cc.ID_CALENDARIO, '%Y%m%d'), '%d/%m/%Y') AS Data, ROUND(cc.VENDAS, 2) AS ValorVenda FROM CC_VENDAS cc JOIN CAD_PRODUTO p ON cc.ID_PRODUTO = p.ID JOIN CAD_VENDEDOR v ON cc.ID_VENDEDOR = v.ID JOIN CAD_PARCEIRO par ON cc.ID_PARCEIRO = par.ID WHERE cc.VENDAS > 0 ORDER BY cc.ID_CALENDARIO DESC LIMIT 50",
+        screenComponentId = 2783,
+        jdbcConnectionConfigId = 1,
+        baseUrl = 'https://api0.mitraecp.com:1004',
+        token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50Xzg5MTYifQ.LBSj0M3RE2iFUSIK8pwqIBitJlwME_Rdp_H745IDuDZQaH38_KyKD0PQ7g9G1KmBTWL2D1w3widvzW22zBXzwg'
+      } = params;
+
+      // Create form data
+      const formData = new FormData();
+      formData.append('screenComponentId', screenComponentId.toString());
+      formData.append('jdbcConnectionConfigId', jdbcConnectionConfigId.toString());
+      formData.append('query', query);
+
+      // Make the API request
+      const response = await fetch(`${baseUrl}/dives/queryPreview?limited=false`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log(`queryMitraWidget result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar queryMitraWidget:`, error);
+      throw error;
+    }
+  },
+
   // Adicione outros componentes/utilitários que você quer expor
   // Ex: Alguma lib de gráficos, helpers, etc.
 };
