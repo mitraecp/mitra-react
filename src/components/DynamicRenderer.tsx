@@ -61,7 +61,7 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarNav, SidebarNavItem, SidebarSection } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster as SonnerToaster } from '@/components/ui/sonner';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -70,6 +70,8 @@ import { Toggle } from '@/components/ui/toggle';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from '@/components/ui/toast';
+import { useToast, toast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 // Componentes de gráficos do Shadcn UI
 import {
   ChartContainer,
@@ -119,6 +121,7 @@ import { Dashboard } from './Dashboard'; // Assumindo que você tem esse compone
 import { BarChartExample } from './BarChartExample';
 import { SimpleBarChart } from './SimpleBarChart';
 import { ImageExample } from './ImageExample';
+import { ToastDemo } from './ToastDemo';
 // import { LabelListExample } from './LabelListExample';
 
 const SimpleButton = () => {
@@ -203,7 +206,7 @@ const componentRegistry = {
   Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarNav, SidebarNavItem, SidebarSection,
   Skeleton,
   Slider,
-  Toaster,
+  SonnerToaster,
   Switch,
   Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
   Tabs, TabsContent, TabsList, TabsTrigger,
@@ -211,7 +214,9 @@ const componentRegistry = {
   Toggle,
   ToggleGroup, ToggleGroupItem,
   Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport,
+  Toaster,
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+  useToast, toast,
 
   // Biblioteca de Ícones
   LucideReact, // Expõe todo o objeto LucideReact
@@ -269,6 +274,7 @@ const componentRegistry = {
   DatePicker,
   DatePickerDemo,
   ImageExample,
+  ToastDemo,
 
   // Funções de interação para comunicação com o componente pai Vue
   actionMitra: async (params: any, componentId?: string | null): Promise<any> => {
@@ -397,7 +403,8 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['BAR_CHART', BarChartExample],
   ['SIMPLE_BAR_CHART', SimpleBarChart],
   ['DATE_PICKER', DatePickerDemo],
-  ['IMAGE_EXAMPLE', ImageExample]
+  ['IMAGE_EXAMPLE', ImageExample],
+  ['TOAST_DEMO', ToastDemo]
 ]);
 
 // --- Componente Renderer Principal ---
@@ -621,7 +628,9 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/sidebar',
         '@/components/ui/sonner',
         '@/components/ui/toast',
+        '@/components/ui/toaster',
         '@/components/ui/toggle-group',
+        '@/hooks/use-toast',
         'recharts'
       ];
 
@@ -761,6 +770,7 @@ const DynamicRenderer: React.FC = () => {
   return (
     <>
       {renderContent()}
+      <Toaster />
     </>
   );
 };
