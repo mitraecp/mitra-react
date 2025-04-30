@@ -666,12 +666,7 @@ const DynamicRenderer: React.FC = () => {
           return React.createElement(
             'div',
             {
-              className: 'bg-background text-foreground',
-              style: {
-                backgroundColor: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                borderColor: 'hsl(var(--border))'
-              }
+              className: 'h-[100vh] p-.5 pb-1',
             },
             React.createElement(${componentName}, props)
           );
