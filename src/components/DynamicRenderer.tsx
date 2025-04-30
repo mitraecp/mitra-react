@@ -112,7 +112,7 @@ import { Dashboard } from './Dashboard'; // Assumindo que você tem esse compone
 import { BarChartExample } from './BarChartExample';
 import { SimpleBarChart } from './SimpleBarChart';
 import { ImageExample } from './ImageExample';
-import { LabelListExample } from './LabelListExample';
+// import { LabelListExample } from './LabelListExample';
 
 const SimpleButton = () => {
   const [count, setCount] = React.useState(0); // Usar React.useState aqui
@@ -256,7 +256,6 @@ const componentRegistry = {
   DatePicker,
   DatePickerDemo,
   ImageExample,
-  LabelListExample,
 
   // Funções de interação para comunicação com o componente pai Vue
   actionMitra: async (params: any, componentId?: string | null): Promise<any> => {
@@ -385,8 +384,7 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['BAR_CHART', BarChartExample],
   ['SIMPLE_BAR_CHART', SimpleBarChart],
   ['DATE_PICKER', DatePickerDemo],
-  ['IMAGE_EXAMPLE', ImageExample],
-  ['LABEL_LIST_EXAMPLE', LabelListExample],
+  ['IMAGE_EXAMPLE', ImageExample]
 ]);
 
 // --- Componente Renderer Principal ---

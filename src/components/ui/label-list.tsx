@@ -23,58 +23,60 @@ const Label = React.forwardRef<
   HTMLDivElement,
   LabelProps & { variant?: "default" | "outline" | "secondary" | "destructive", size?: "default" | "sm" }
 >(({ text, color, onRemove, className, variant = "default", size = "default" }, ref) => {
+  // Criamos um div com ref em vez de passar a ref para o Badge
   return (
-    <Badge
-      ref={ref}
-      variant={variant}
-      className={cn(
-        "inline-flex items-center gap-1",
-        size === "sm" ? "text-xs px-2 py-0" : "text-sm",
-        color && `bg-[${color}]`,
-        className
-      )}
-    >
-      {text}
-      {onRemove && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemove()
-          }}
-          className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-        >
-          <X className={cn("h-3 w-3", size === "sm" ? "h-2 w-2" : "h-3 w-3")} />
-          <span className="sr-only">Remove {text}</span>
-        </button>
-      )}
-    </Badge>
+    <div ref={ref}>
+      <Badge
+        variant={variant}
+        className={cn(
+          "inline-flex items-center gap-1",
+          size === "sm" ? "text-xs px-2 py-0" : "text-sm",
+          color && `bg-[${color}]`,
+          className
+        )}
+      >
+        {text}
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onRemove()
+            }}
+            className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          >
+            <X className={cn("h-3 w-3", size === "sm" ? "h-2 w-2" : "h-3 w-3")} />
+            <span className="sr-only">Remove {text}</span>
+          </button>
+        )}
+      </Badge>
+    </div>
   )
 })
 Label.displayName = "Label"
 
 const LabelList = React.forwardRef<HTMLDivElement, LabelListProps>(
-  ({ 
-    labels, 
-    onRemoveLabel, 
-    className, 
-    variant = "default", 
-    size = "default", 
-    maxLabels, 
-    showMoreText = "mais", 
-    ...props 
+  ({
+    labels,
+    onRemoveLabel,
+    className,
+    variant = "default",
+    size = "default",
+    maxLabels,
+    showMoreText = "mais",
+    ...props
   }, ref) => {
     const [showAll, setShowAll] = React.useState(false)
-    
+
     const displayedLabels = React.useMemo(() => {
       if (!maxLabels || showAll || labels.length <= maxLabels) {
         return labels
       }
       return labels.slice(0, maxLabels)
     }, [labels, maxLabels, showAll])
-    
+
     const hasMore = maxLabels && labels.length > maxLabels && !showAll
-    
+
     return (
       <div
         ref={ref}
@@ -91,7 +93,7 @@ const LabelList = React.forwardRef<HTMLDivElement, LabelListProps>(
             onRemove={onRemoveLabel ? () => onRemoveLabel(index) : undefined}
           />
         ))}
-        
+
         {hasMore && (
           <Badge
             variant="outline"
