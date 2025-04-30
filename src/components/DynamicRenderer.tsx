@@ -196,6 +196,14 @@ const componentRegistry = {
 
   // Biblioteca de Ícones
   LucideReact, // Expõe todo o objeto LucideReact
+  // Adicionar ícones individuais do Lucide para acesso direto
+  ...Object.entries(LucideReact).reduce((acc, [key, value]) => {
+    // Adicionar apenas os componentes (funções/classes), não as propriedades
+    if (typeof value === 'function') {
+      acc[key] = value;
+    }
+    return acc;
+  }, {} as Record<string, any>),
 
   // Componentes de gráficos (Shadcn UI)
   ChartContainer,
@@ -479,34 +487,73 @@ const DynamicRenderer: React.FC = () => {
 
       // 2. Sanitizar e processar o código
       const sanitizedCode = sanitizeJSXCode(componentCode);
-      const processedCode = processArbitraryValues(sanitizedCode);
+      const processedArbitraryCode = processArbitraryValues(sanitizedCode);
 
       // 3. Transpilar o código com suporte a TypeScript
-      const transpiledCode = transformJSX(processedCode);
+      const transpiledCode = transformJSX(processedArbitraryCode);
 
-      // 4. Remover declarações import, export e diretivas do código transpilado
-      // Função para remover todas as declarações import
-      const removeImports = (code: string): string => {
-        // Primeiro, tentamos remover imports simples
-        let result = code.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+      // 4. Processar declarações import, export e diretivas do código transpilado
+      // Função para processar todas as declarações import
+      const processImports = (code: string): { processedCode: string, imports: Map<string, string[]> } => {
+        // Mapa para armazenar os imports (módulo -> [componentes])
+        const imports = new Map<string, string[]>();
 
-        // Depois, tentamos remover imports com múltiplas linhas
+        // Clonar o código para não modificar o original durante a iteração
+        let result = code;
+
+        // Regex para imports com chaves: import { X, Y } from 'module';
+        const importWithBracesRegex = /import\s+{\s*([\w\s,]+)\s*}\s+from\s+['"]([^'"]+)['"];?/g;
+        let match;
+
+        // Encontrar todos os imports com chaves
+        while ((match = importWithBracesRegex.exec(code)) !== null) {
+          const components = match[1].split(',').map(c => c.trim());
+          const module = match[2];
+
+          // Armazenar os componentes importados
+          if (!imports.has(module)) {
+            imports.set(module, []);
+          }
+
+          imports.get(module)?.push(...components);
+        }
+
+        // Regex para imports diretos: import X from 'module';
+        const importDirectRegex = /import\s+(\w+)\s+from\s+['"]([^'"]+)['"];?/g;
+
+        // Encontrar todos os imports diretos
+        while ((match = importDirectRegex.exec(code)) !== null) {
+          const component = match[1];
+          const module = match[2];
+
+          // Armazenar o componente importado
+          if (!imports.has(module)) {
+            imports.set(module, []);
+          }
+
+          imports.get(module)?.push(component);
+        }
+
+        // Remover todos os imports do código
+        result = result.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
         result = result.replace(/import\s+[\s\S]*?from\s+['"].*?['"];?\s*/g, '');
 
-        // Finalmente, verificamos se ainda há alguma declaração import
+        // Verificar se ainda há alguma declaração import
         if (result.includes('import ')) {
-          // Se ainda houver, removemos linha por linha
           const lines = result.split('\n');
           const filteredLines = lines.filter(line => !line.trim().startsWith('import '));
           result = filteredLines.join('\n');
         }
 
-        return result;
+        return { processedCode: result, imports };
       };
 
-      let cleanedCode = removeImports(transpiledCode);
+      // Processar imports e remover declarações
+      const { processedCode, imports } = processImports(transpiledCode);
+
       // Remover diretiva "use client"
-      cleanedCode = cleanedCode.replace(/"use client";?\s*/g, '');
+      let cleanedCode = processedCode.replace(/"use client";?\s*/g, '');
+
       // Remover declarações export function
       cleanedCode = cleanedCode.replace(/export\s+function\s+(\w+)/g, 'function $1');
       // Remover declarações export default function
@@ -520,10 +567,50 @@ const DynamicRenderer: React.FC = () => {
       // Remover declarações export { ... }
       cleanedCode = cleanedCode.replace(/export\s+{[^}]*};?/g, '');
 
-      // 5. Criar um wrapper para o componente transpilado
+      // 5. Processar os imports para disponibilizar os componentes
+      let importDeclarations = '';
+
+      // Processar imports do Lucide
+      if (imports.has('lucide-react')) {
+        const lucideComponents = imports.get('lucide-react') || [];
+        console.log('Componentes Lucide importados:', lucideComponents);
+
+        importDeclarations += `
+          // Importar componentes do Lucide
+          console.log('LucideReact disponível:', LucideReact);
+          ${lucideComponents.map(comp => {
+            // Remover espaços em branco e quebras de linha
+            const cleanComp = comp.trim();
+            return `const ${cleanComp} = LucideReact.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
+
+      // Processar outros imports conhecidos
+      const knownModules = [
+        '@/components/ui/card',
+        '@/components/ui/button',
+        '@/components/ui/calendar',
+        '@/components/ui/chart',
+        'recharts'
+      ];
+
+      knownModules.forEach(module => {
+        if (imports.has(module)) {
+          importDeclarations += `
+            // Componentes importados de ${module} já estão disponíveis no escopo global
+            // ${imports.get(module)?.join(', ')}
+          `;
+        }
+      });
+
+      // 6. Criar um wrapper para o componente transpilado
       const processedComponentCode = `
         // Código do usuário transpilado (sem imports)
         ${cleanedCode}
+
+        // Declarações de imports processados
+        ${importDeclarations}
 
         // Componente wrapper que expõe o componente do usuário como ReactComponentMitra
         function ReactComponentMitra(props) {
@@ -540,7 +627,7 @@ const DynamicRenderer: React.FC = () => {
           return React.createElement(
             'div',
             {
-              className: 'bg-background text-foreground p-4 rounded-lg border border-border',
+              className: 'bg-background text-foreground',
               style: {
                 backgroundColor: 'hsl(var(--background))',
                 color: 'hsl(var(--foreground))',
@@ -572,6 +659,9 @@ const DynamicRenderer: React.FC = () => {
 
           // Acesso a objetos globais
           const { ${globalObjects.join(', ')} } = window;
+
+          // Acesso ao objeto LucideReact
+          const LucideReact = scope.LucideReact;
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${processedComponentCode}
