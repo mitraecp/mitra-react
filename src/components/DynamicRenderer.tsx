@@ -67,6 +67,7 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from '@/components/ui/toast';
 // Componentes de gráficos do Shadcn UI
@@ -208,6 +209,7 @@ const componentRegistry = {
   Tabs, TabsContent, TabsList, TabsTrigger,
   Textarea,
   Toggle,
+  ToggleGroup, ToggleGroupItem,
   Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport,
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 
@@ -619,6 +621,7 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/sidebar',
         '@/components/ui/sonner',
         '@/components/ui/toast',
+        '@/components/ui/toggle-group',
         'recharts'
       ];
 
