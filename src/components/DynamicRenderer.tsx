@@ -408,17 +408,15 @@ const componentRegistry = {
   },
 
   // Função para executar consultas diretamente na API Mitra sem usar postMessage
-  queryMitraWidget: async (params: any): Promise<any> => {
+  queryMitraWidget: async (params: any, queryDireta: string ): Promise<any> => {
     try {
-      console.log(`queryMitraWidget(${JSON.stringify(params)})`);
-
       // Implementação direta para evitar dependência circular
       const {
-        query = "SELECT p.DESCR AS Produto, v.DESCR AS Vendedor, par.DESCR AS Parceiro, DATE_FORMAT(STR_TO_DATE(cc.ID_CALENDARIO, '%Y%m%d'), '%d/%m/%Y') AS Data, ROUND(cc.VENDAS, 2) AS ValorVenda FROM CC_VENDAS cc JOIN CAD_PRODUTO p ON cc.ID_PRODUTO = p.ID JOIN CAD_VENDEDOR v ON cc.ID_VENDEDOR = v.ID JOIN CAD_PARCEIRO par ON cc.ID_PARCEIRO = par.ID WHERE cc.VENDAS > 0 ORDER BY cc.ID_CALENDARIO DESC LIMIT 50",
+        query = queryDireta,
         screenComponentId = 2783,
         jdbcConnectionConfigId = 1,
         baseUrl = 'https://api0.mitraecp.com:1004',
-        token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50Xzg5MTYifQ.LBSj0M3RE2iFUSIK8pwqIBitJlwME_Rdp_H745IDuDZQaH38_KyKD0PQ7g9G1KmBTWL2D1w3widvzW22zBXzwg'
+        token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50Xzg5MTYifQ.LBSj0M3RE2iFUSIK8pwqIBitJlwME_Rdp_H745IDuDZQaH38_KyKD0PQ7g9G1KmBTWL2D1w3widvzW22zBXzwg',
       } = params;
 
       // Create form data
