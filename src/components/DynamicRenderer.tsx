@@ -397,8 +397,8 @@ const componentRegistry = {
       await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
-          'x-api-key': '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',
-          'anthropic-version': '2023-06-01',
+          'x-api-key': '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',
+          'Authorization': 'Bearer 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',
           'content-type': 'application/json',
           'accept': 'application/json'
         },
