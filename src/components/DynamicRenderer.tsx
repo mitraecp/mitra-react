@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { messageService } from '@/lib/message-service';
 import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
 import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
-import { explainQueryWithAI } from '@/lib/api-proxy';
 
 // Importar estilos globais explicitamente
 import '@/styles/globals.css';
