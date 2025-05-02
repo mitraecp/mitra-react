@@ -413,10 +413,10 @@ const componentRegistry = {
       // Implementação direta para evitar dependência circular
       const {
         query = queryDireta,
-        screenComponentId = 2783,
+        screenComponentId = 3,
         jdbcConnectionConfigId = 1,
         baseUrl = 'https://api0.mitraecp.com:1004',
-        token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50Xzg5MTYifQ.LBSj0M3RE2iFUSIK8pwqIBitJlwME_Rdp_H745IDuDZQaH38_KyKD0PQ7g9G1KmBTWL2D1w3widvzW22zBXzwg',
+        AuthorizationToken = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50XzkxNDYifQ.AhFZFk9B2HeAzG47PXnUPJDluknZVX3UOtoGfz5A06IlQ7ln_G2LLuPQei3ijG6rshW5TDnZXs65di_bbgJobQ',
       } = params;
 
       // Create form data
@@ -430,7 +430,7 @@ const componentRegistry = {
         method: 'POST',
         headers: {
           'Accept': 'application/json, text/plain, */*',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': AuthorizationToken
         },
         body: formData
       });

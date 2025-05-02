@@ -48,8 +48,8 @@ export function sanitizeJSXCode(code: string): string {
   // Remove espaços em branco extras
   let sanitized = code.trim();
 
-  // Normaliza aspas
-  sanitized = sanitized.replace(/'/g, '"');
+  // Não normaliza aspas para evitar problemas com strings
+  // sanitized = sanitized.replace(/'/g, '"');
 
   // Garante que className esteja correto
   sanitized = sanitized.replace(/class=/g, 'className=');
