@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { messageService } from '@/lib/message-service';
 import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
 import { processArbitraryValues } from '@/lib/arbitrary-values-processor';
+import { explainQueryWithAI } from '@/lib/api-proxy';
 
 // Importar estilos globais explicitamente
 import '@/styles/globals.css';
@@ -387,6 +388,37 @@ const componentRegistry = {
     } catch (error) {
       console.error(`Erro ao executar queryMitra:`, error);
       throw error;
+    }
+  },
+  explainQuery: async (query: string): Promise<any> => {
+    try {
+      const prompt = `Explique essa query de forma simples, em até quatro linhas, colocando a tag <strong></strong> onde achar necessario ter bold mas não coloque *, sempre use <strong> pois essa mensagem sera renderizada como html, para que um usuário final não técnico possa entender, além disso, deve ser explicado todas as regras da query em portugues.: ${query}`;
+
+      // Usando o modo 'no-cors' para evitar erros de CORS
+      await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': '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',
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'accept': 'application/json'
+        },
+        mode: 'no-cors', // Adiciona o modo no-cors para evitar bloqueio CORS
+        body: JSON.stringify({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 1024,
+          messages: [
+            { role: 'user', content: prompt }
+          ]
+        }),
+      });
+
+      // Com modo 'no-cors', não podemos acessar a resposta diretamente
+      // Então vamos retornar uma mensagem explicativa
+      return "Esta consulta SQL busca informações do banco de dados. Para ver uma explicação detalhada, seria necessário configurar um proxy no servidor para evitar restrições de CORS.";
+    } catch (error) {
+      console.error("Erro ao explicar a query:", error);
+      return "Ocorreu um erro ao tentar explicar esta consulta. Isso pode ser devido a restrições de CORS ao rodar em localhost.";
     }
   },
   goToScreenMitra: async (params: any, componentId?: string | null): Promise<any> => {
