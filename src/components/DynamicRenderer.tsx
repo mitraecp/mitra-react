@@ -413,26 +413,19 @@ const componentRegistry = {
       // Implementação direta para evitar dependência circular
       const {
         query = queryDireta,
-        screenComponentId = 3,
-        jdbcConnectionConfigId = 1,
         baseUrl = 'https://api0.mitraecp.com:1004',
         AuthorizationToken = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50XzkxNDYifQ.AhFZFk9B2HeAzG47PXnUPJDluknZVX3UOtoGfz5A06IlQ7ln_G2LLuPQei3ijG6rshW5TDnZXs65di_bbgJobQ',
       } = params;
 
-      // Create form data
-      const formData = new FormData();
-      formData.append('screenComponentId', screenComponentId.toString());
-      formData.append('jdbcConnectionConfigId', jdbcConnectionConfigId.toString());
-      formData.append('query', query);
-
       // Make the API request
-      const response = await fetch(`${baseUrl}/dives/queryPreview?limited=false`, {
+      const response = await fetch(`${baseUrl}/iaShortcuts/query`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json, text/plain, */*',
-          'Authorization': AuthorizationToken
+          'Authorization': AuthorizationToken,
+          'Content-Type': 'application/json'
         },
-        body: formData
+        body: JSON.stringify({ query })
       });
 
       if (!response.ok) {
@@ -446,10 +439,8 @@ const componentRegistry = {
       console.error(`Erro ao executar queryMitraWidget:`, error);
       throw error;
     }
-  },
+  }
 
-  // Adicione outros componentes/utilitários que você quer expor
-  // Ex: Alguma lib de gráficos, helpers, etc.
 };
 
 // --- 3. Mapa para Componentes Pré-definidos ---
