@@ -812,7 +812,7 @@ const DynamicRenderer: React.FC = () => {
   const renderContent = () => {
     if (error) {
       return (
-        <div className="p-4 bg-red-100 text-red-800 rounded">
+        <div className="p-4 bg-red-100 text-red-800 rounded rounded-t-none">
           <h3 className="font-bold">Erro ao renderizar componente:</h3>
           <pre className="mt-2 whitespace-pre-wrap">{error}</pre>
         </div>
