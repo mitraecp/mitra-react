@@ -41,6 +41,9 @@ import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, Comma
 import { ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuRadioGroup, ContextMenuRadioItem, ContextMenuSeparator, ContextMenuShortcut, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from '@/components/ui/context-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/data-table';
+
+import L from 'leaflet';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import {
   useReactTable,
   getCoreRowModel,
@@ -244,6 +247,14 @@ const componentRegistry = {
     }
     return acc;
   }, {} as Record<string, any>),
+
+  // Leaflet
+  L, // Expõe o objeto L do Leaflet
+  MapContainer, // Componente principal do mapa
+  Marker, // Marcador no mapa
+  Popup, // Popup para marcadores
+  TileLayer, // Camada de tiles do mapa
+  useMap, // Hook para acessar a instância do mapa
 
   // Componentes de gráficos (Shadcn UI)
   ChartContainer,
