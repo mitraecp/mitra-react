@@ -339,6 +339,9 @@ const componentRegistry = {
   },
   dbactionMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
+      if (typeof params === 'number') {
+        params = { id: params };
+      }
       console.log(`dbactionMitra(${JSON.stringify(params)})`);
       const result = await messageService.sendInteraction('dbaction', params, componentId);
       console.log(`dbactionMitra result:`, result);
@@ -390,6 +393,9 @@ const componentRegistry = {
   queryMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
       console.log(`queryMitra(${JSON.stringify(params)})`);
+      if (typeof params === 'string') {
+        params = { query: params };
+      }
       // Extrair query e jdbcId do objeto params
       const { query, jdbcId = 1 } = params;
       const result = await messageService.sendInteraction('query', { id: query, jdbcId }, componentId);
