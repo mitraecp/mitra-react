@@ -1,0 +1,3 @@
+Para resolver erros de ERR_PNPM_OUTDATED_LOCKFILE:
+
+rodar -> pnpm install --no-frozen-lockfile
