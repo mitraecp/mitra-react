@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import DynamicRenderer from "@/components/DynamicRenderer";
 import { messageService } from "@/lib/message-service";
 import "@/lib/window-types";
-import { Loader2 } from "lucide-react";
+// import { Loader2 } from "lucide-react";
 
 function App() {
   const [renderMode, setRenderMode] = useState<'default' | 'dynamic'>('default');
@@ -55,10 +55,7 @@ function App() {
   }, []);
 
   return renderMode === 'default' ? (
-    <div className='flex-grow flex items-center justify-center h-full text-muted-foreground'>
-    {Loader2 && <Loader2 className="h-6 w-6 mr-2 animate-spin" />}
-    Carregando dados...
- </div>
+    <div className='flex-grow flex items-center justify-center h-full text-muted-foreground'></div>
   ) : (
     <DynamicRenderer />
   );
