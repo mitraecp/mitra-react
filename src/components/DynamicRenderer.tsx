@@ -126,6 +126,37 @@ import {
 } from 'recharts';
 // Ícones
 import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
+import * as ReactIcons from 'react-icons'; // Importa todos os ícones do react-icons
+import * as AiIcons from 'react-icons/ai'; // Ant Design Icons
+import * as BiIcons from 'react-icons/bi'; // BoxIcons
+import * as BsIcons from 'react-icons/bs'; // Bootstrap Icons
+import * as CgIcons from 'react-icons/cg'; // css.gg
+import * as DiIcons from 'react-icons/di'; // Devicons
+import * as FaIcons from 'react-icons/fa'; // Font Awesome 5
+import * as Fa6Icons from 'react-icons/fa6'; // Font Awesome 6
+import * as FcIcons from 'react-icons/fc'; // Flat Color Icons
+import * as FiIcons from 'react-icons/fi'; // Feather
+import * as GiIcons from 'react-icons/gi'; // Game Icons
+import * as GoIcons from 'react-icons/go'; // Github Octicons
+import * as GrIcons from 'react-icons/gr'; // Grommet-Icons
+import * as HiIcons from 'react-icons/hi'; // Heroicons
+import * as Hi2Icons from 'react-icons/hi2'; // Heroicons 2
+import * as ImIcons from 'react-icons/im'; // IcoMoon Free
+import * as IoIcons from 'react-icons/io'; // Ionicons 4
+import * as Io5Icons from 'react-icons/io5'; // Ionicons 5
+import * as LiaIcons from 'react-icons/lia'; // Line Awesome
+import * as LuIcons from 'react-icons/lu'; // Lucide
+import * as MdIcons from 'react-icons/md'; // Material Design icons
+import * as PiIcons from 'react-icons/pi'; // Phosphor Icons
+import * as RiIcons from 'react-icons/ri'; // Remix Icon
+import * as RxIcons from 'react-icons/rx'; // Radix Icons
+import * as SiIcons from 'react-icons/si'; // Simple Icons
+import * as SlIcons from 'react-icons/sl'; // Simple Line Icons
+import * as TbIcons from 'react-icons/tb'; // Tabler Icons
+import * as TfiIcons from 'react-icons/tfi'; // Themify Icons
+import * as TiIcons from 'react-icons/ti'; // Typicons
+import * as VscIcons from 'react-icons/vsc'; // VS Code Icons
+import * as WiIcons from 'react-icons/wi'; // Weather Icons
 
 // --- Componentes pré-definidos (mantidos por simplicidade) ---
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
@@ -247,6 +278,39 @@ const componentRegistry = {
     }
     return acc;
   }, {} as Record<string, any>),
+
+  // Biblioteca React Icons - Expor todos os conjuntos de ícones
+  ReactIcons, // Objeto principal do react-icons
+  AiIcons, // Ant Design Icons
+  BiIcons, // BoxIcons
+  BsIcons, // Bootstrap Icons
+  CgIcons, // css.gg
+  DiIcons, // Devicons
+  FaIcons, // Font Awesome 5
+  Fa6Icons, // Font Awesome 6
+  FcIcons, // Flat Color Icons
+  FiIcons, // Feather
+  GiIcons, // Game Icons
+  GoIcons, // Github Octicons
+  GrIcons, // Grommet-Icons
+  HiIcons, // Heroicons
+  Hi2Icons, // Heroicons 2
+  ImIcons, // IcoMoon Free
+  IoIcons, // Ionicons 4
+  Io5Icons, // Ionicons 5
+  LiaIcons, // Line Awesome
+  LuIcons, // Lucide
+  MdIcons, // Material Design icons
+  PiIcons, // Phosphor Icons
+  RiIcons, // Remix Icon
+  RxIcons, // Radix Icons
+  SiIcons, // Simple Icons
+  SlIcons, // Simple Line Icons
+  TbIcons, // Tabler Icons
+  TfiIcons, // Themify Icons
+  TiIcons, // Typicons
+  VscIcons, // VS Code Icons
+  WiIcons, // Weather Icons
 
   // Leaflet
   L, // Expõe o objeto L do Leaflet
@@ -710,6 +774,35 @@ const DynamicRenderer: React.FC = () => {
         `;
       }
 
+      // Processar imports do React Icons
+      const reactIconsModules = [
+        'react-icons/ai', 'react-icons/bi', 'react-icons/bs', 'react-icons/cg', 'react-icons/di',
+        'react-icons/fa', 'react-icons/fa6', 'react-icons/fc', 'react-icons/fi', 'react-icons/gi',
+        'react-icons/go', 'react-icons/gr', 'react-icons/hi', 'react-icons/hi2', 'react-icons/im',
+        'react-icons/io', 'react-icons/io5', 'react-icons/lia', 'react-icons/lu', 'react-icons/md',
+        'react-icons/pi', 'react-icons/ri', 'react-icons/rx', 'react-icons/si', 'react-icons/sl',
+        'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi'
+      ];
+
+      reactIconsModules.forEach(module => {
+        if (imports.has(module)) {
+          const iconComponents = imports.get(module) || [];
+          const modulePrefix = module.split('/')[1].toUpperCase(); // ex: 'ai' -> 'AI'
+          const scopeName = `${modulePrefix.charAt(0).toUpperCase()}${modulePrefix.slice(1).toLowerCase()}Icons`; // ex: 'AiIcons'
+
+          console.log(`Componentes ${module} importados:`, iconComponents);
+
+          importDeclarations += `
+            // Importar componentes do ${module}
+            console.log('${scopeName} disponível:', ${scopeName});
+            ${iconComponents.map(comp => {
+              const cleanComp = comp.trim();
+              return `const ${cleanComp} = ${scopeName}.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+            }).join('\n            ')}
+          `;
+        }
+      });
+
       // Processar outros imports conhecidos
       const knownModules = [
         '@/components/ui/card',
@@ -728,7 +821,15 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/toggle-group',
         '@/hooks/use-toast',
         '@tanstack/react-table',
-        'recharts'
+        'recharts',
+        // Adicionar módulos do react-icons
+        'react-icons',
+        'react-icons/ai', 'react-icons/bi', 'react-icons/bs', 'react-icons/cg', 'react-icons/di',
+        'react-icons/fa', 'react-icons/fa6', 'react-icons/fc', 'react-icons/fi', 'react-icons/gi',
+        'react-icons/go', 'react-icons/gr', 'react-icons/hi', 'react-icons/hi2', 'react-icons/im',
+        'react-icons/io', 'react-icons/io5', 'react-icons/lia', 'react-icons/lu', 'react-icons/md',
+        'react-icons/pi', 'react-icons/ri', 'react-icons/rx', 'react-icons/si', 'react-icons/sl',
+        'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi'
       ];
 
       knownModules.forEach(module => {
@@ -793,6 +894,39 @@ const DynamicRenderer: React.FC = () => {
 
           // Acesso ao objeto LucideReact
           const LucideReact = scope.LucideReact;
+
+          // Acesso aos objetos React Icons
+          const ReactIcons = scope.ReactIcons;
+          const AiIcons = scope.AiIcons;
+          const BiIcons = scope.BiIcons;
+          const BsIcons = scope.BsIcons;
+          const CgIcons = scope.CgIcons;
+          const DiIcons = scope.DiIcons;
+          const FaIcons = scope.FaIcons;
+          const Fa6Icons = scope.Fa6Icons;
+          const FcIcons = scope.FcIcons;
+          const FiIcons = scope.FiIcons;
+          const GiIcons = scope.GiIcons;
+          const GoIcons = scope.GoIcons;
+          const GrIcons = scope.GrIcons;
+          const HiIcons = scope.HiIcons;
+          const Hi2Icons = scope.Hi2Icons;
+          const ImIcons = scope.ImIcons;
+          const IoIcons = scope.IoIcons;
+          const Io5Icons = scope.Io5Icons;
+          const LiaIcons = scope.LiaIcons;
+          const LuIcons = scope.LuIcons;
+          const MdIcons = scope.MdIcons;
+          const PiIcons = scope.PiIcons;
+          const RiIcons = scope.RiIcons;
+          const RxIcons = scope.RxIcons;
+          const SiIcons = scope.SiIcons;
+          const SlIcons = scope.SlIcons;
+          const TbIcons = scope.TbIcons;
+          const TfiIcons = scope.TfiIcons;
+          const TiIcons = scope.TiIcons;
+          const VscIcons = scope.VscIcons;
+          const WiIcons = scope.WiIcons;
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${processedComponentCode}
