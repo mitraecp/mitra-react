@@ -158,6 +158,34 @@ import * as TiIcons from 'react-icons/ti'; // Typicons
 import * as VscIcons from 'react-icons/vsc'; // VS Code Icons
 import * as WiIcons from 'react-icons/wi'; // Weather Icons
 
+// Date-fns - Biblioteca de manipulação de datas
+import * as dateFns from 'date-fns';
+import {
+  format,
+  parse,
+  parseISO,
+  addDays,
+  subDays,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  isToday,
+  isSameDay,
+  differenceInDays,
+  addMonths,
+  subMonths,
+  isValid,
+  formatISO,
+  getYear,
+  getMonth,
+  getDate,
+  setYear,
+  setMonth,
+  setDate
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
 // --- Componentes pré-definidos (mantidos por simplicidade) ---
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
 import { BarChartExample } from './BarChartExample';
@@ -311,6 +339,32 @@ const componentRegistry = {
   TiIcons, // Typicons
   VscIcons, // VS Code Icons
   WiIcons, // Weather Icons
+
+  // Date-fns - Biblioteca de manipulação de datas
+  dateFns, // Objeto principal do date-fns
+  format, // Formatar datas
+  parse, // Converter string para Date com formato específico
+  parseISO, // Converter string ISO para Date
+  addDays, // Adicionar dias
+  subDays, // Subtrair dias
+  startOfWeek, // Início da semana
+  endOfWeek, // Fim da semana
+  startOfMonth, // Início do mês
+  endOfMonth, // Fim do mês
+  isToday, // Verificar se é hoje
+  isSameDay, // Verificar se é o mesmo dia
+  differenceInDays, // Diferença em dias
+  addMonths, // Adicionar meses
+  subMonths, // Subtrair meses
+  isValid, // Verificar se a data é válida
+  formatISO, // Formatar para ISO
+  getYear, // Obter ano
+  getMonth, // Obter mês
+  getDate, // Obter dia
+  setYear, // Definir ano
+  setMonth, // Definir mês
+  setDate, // Definir dia
+  ptBR, // Locale português brasileiro
 
   // Leaflet
   L, // Expõe o objeto L do Leaflet
@@ -803,6 +857,36 @@ const DynamicRenderer: React.FC = () => {
         }
       });
 
+      // Processar imports do date-fns
+      if (imports.has('date-fns')) {
+        const dateFnsComponents = imports.get('date-fns') || [];
+        console.log('Componentes date-fns importados:', dateFnsComponents);
+
+        importDeclarations += `
+          // Importar funções do date-fns
+          console.log('dateFns disponível:', dateFns);
+          ${dateFnsComponents.map(comp => {
+            const cleanComp = comp.trim();
+            // Usar as funções diretamente do scope, que já estão disponíveis
+            return `const ${cleanComp} = scope.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
+
+      // Processar imports do date-fns/locale
+      if (imports.has('date-fns/locale')) {
+        const localeComponents = imports.get('date-fns/locale') || [];
+        console.log('Locales date-fns importados:', localeComponents);
+
+        importDeclarations += `
+          // Importar locales do date-fns
+          ${localeComponents.map(comp => {
+            const cleanComp = comp.trim();
+            return `const ${cleanComp} = ptBR; console.log('${cleanComp} importado:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
+
       // Processar outros imports conhecidos
       const knownModules = [
         '@/components/ui/card',
@@ -829,7 +913,10 @@ const DynamicRenderer: React.FC = () => {
         'react-icons/go', 'react-icons/gr', 'react-icons/hi', 'react-icons/hi2', 'react-icons/im',
         'react-icons/io', 'react-icons/io5', 'react-icons/lia', 'react-icons/lu', 'react-icons/md',
         'react-icons/pi', 'react-icons/ri', 'react-icons/rx', 'react-icons/si', 'react-icons/sl',
-        'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi'
+        'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi',
+        // Adicionar módulos do date-fns
+        'date-fns',
+        'date-fns/locale'
       ];
 
       knownModules.forEach(module => {
@@ -927,6 +1014,10 @@ const DynamicRenderer: React.FC = () => {
           const TiIcons = scope.TiIcons;
           const VscIcons = scope.VscIcons;
           const WiIcons = scope.WiIcons;
+
+          // Acesso aos objetos date-fns (disponíveis via scope)
+          const dateFns = scope.dateFns;
+          const ptBR = scope.ptBR;
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${processedComponentCode}
