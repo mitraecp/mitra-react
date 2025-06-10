@@ -1,6 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+// Polyfill para window.Image ANTES de qualquer import do Radix UI
+// Polyfill mais robusto para window.Image
+(function() {
+  if (typeof window !== 'undefined') {
+    console.log('Aplicando polyfill robusto para window.Image');
+
+    // Criar um constructor que funciona tanto com new quanto sem new
+    function ImagePolyfill(this: any, width?: number, height?: number): HTMLImageElement {
+      // Se chamado sem new, chamar com new
+      if (!(this instanceof ImagePolyfill)) {
+        return new (ImagePolyfill as any)(width, height);
+      }
+
+      // Criar elemento img
+      const img = document.createElement('img');
+
+      // Aplicar dimensões se fornecidas
+      if (typeof width === 'number') img.width = width;
+      if (typeof height === 'number') img.height = height;
+
+      // Retornar o elemento img diretamente
+      return img;
+    }
+
+    // Configurar prototype corretamente
+    ImagePolyfill.prototype = HTMLImageElement.prototype;
+    ImagePolyfill.prototype.constructor = ImagePolyfill;
+
+    // Substituir window.Image sempre
+    window.Image = ImagePolyfill as any;
+
+    // Garantir que HTMLImageElement esteja disponível
+    if (!window.HTMLImageElement) {
+      window.HTMLImageElement = HTMLImageElement;
+    }
+
+    console.log('Polyfill robusto aplicado. window.Image:', window.Image);
+    console.log('Teste new Image():', new window.Image());
+    console.log('Teste Image():', (window.Image as any)());
+  }
+})();
+
 import React, { useEffect, useState } from 'react';
 import { messageService } from '@/lib/message-service';
 import { sanitizeJSXCode, transformJSX } from '@/lib/jsx-transformer';
@@ -28,7 +70,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar-fallback-only';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, BreadcrumbEllipsis } from '@/components/ui/breadcrumb';
 // Componentes de data
@@ -903,6 +945,9 @@ const DynamicRenderer: React.FC = () => {
         '@/components/ui/toast',
         '@/components/ui/toaster',
         '@/components/ui/toggle-group',
+        '@/components/ui/avatar',
+        '@/components/ui/avatar-safe',
+        '@/components/ui/avatar-fallback-only',
         '@/hooks/use-toast',
         '@tanstack/react-table',
         'recharts',
@@ -938,6 +983,15 @@ const DynamicRenderer: React.FC = () => {
 
         // Componente wrapper que expõe o componente do usuário como ReactComponentMitra
         function ReactComponentMitra(props) {
+          // Polyfill para window.Image se não estiver disponível (necessário para Radix UI Avatar)
+          if (typeof window !== 'undefined' && !window.Image) {
+            window.Image = function() {
+              const img = document.createElement('img');
+              return img;
+            };
+            window.Image.prototype = HTMLImageElement.prototype;
+          }
+
           // Componentes disponíveis
           const components = props.components || {};
 
@@ -963,11 +1017,6 @@ const DynamicRenderer: React.FC = () => {
       // Dentro da função, desestruturamos o `scope` para ter acesso fácil
       // aos componentes e utilitários.
       // Ela DEVE definir e retornar uma função chamada `ReactComponentMitra`.
-      // Adicionar suporte para objetos globais como Date, Array, etc.
-      const globalObjects = [
-        'Date', 'Array', 'Object', 'String', 'Number', 'Boolean', 'RegExp', 'Math', 'JSON',
-        'Map', 'Set', 'Promise', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'
-      ];
 
       const defineComponent = new Function(
         'scope', // O nome do argumento que receberá o registro
@@ -976,8 +1025,102 @@ const DynamicRenderer: React.FC = () => {
           // Acesso aos dados do componente via variável global
           const componentData = window.componentData || {};
 
-          // Acesso a objetos globais
-          const { ${globalObjects.join(', ')} } = window;
+          // Acesso a objetos globais de forma segura PRIMEIRO
+          const Date = window.Date || globalThis.Date;
+          const Array = window.Array || globalThis.Array;
+          const Object = window.Object || globalThis.Object;
+          const String = window.String || globalThis.String;
+          const Number = window.Number || globalThis.Number;
+          const Boolean = window.Boolean || globalThis.Boolean;
+          const RegExp = window.RegExp || globalThis.RegExp;
+          const Math = window.Math || globalThis.Math;
+          const JSON = window.JSON || globalThis.JSON;
+          const Map = window.Map || globalThis.Map;
+          const Set = window.Set || globalThis.Set;
+          const Promise = window.Promise || globalThis.Promise;
+          const setTimeout = window.setTimeout || globalThis.setTimeout;
+          const clearTimeout = window.clearTimeout || globalThis.clearTimeout;
+          const setInterval = window.setInterval || globalThis.setInterval;
+          const clearInterval = window.clearInterval || globalThis.clearInterval;
+
+          // Polyfill robusto para APIs do browser necessárias para componentes Radix UI
+          (function() {
+            if (typeof window !== 'undefined') {
+              console.log('Aplicando polyfill no defineComponent...');
+
+              // Verificar se window.Image já existe e funciona
+              let needsPolyfill = false;
+              let canRedefine = false;
+
+              try {
+                if (!window.Image || typeof window.Image !== 'function') {
+                  needsPolyfill = true;
+                  canRedefine = true;
+                } else {
+                  // Testar se funciona como constructor
+                  const testImg = new window.Image();
+                  if (!testImg || typeof testImg !== 'object') {
+                    needsPolyfill = true;
+                    // Verificar se pode redefinir
+                    const descriptor = Object.getOwnPropertyDescriptor(window, 'Image');
+                    canRedefine = !descriptor || descriptor.configurable !== false;
+                  }
+                }
+              } catch (e) {
+                console.log('Erro ao testar window.Image:', e.message);
+                needsPolyfill = true;
+                canRedefine = true;
+              }
+
+              if (needsPolyfill && canRedefine) {
+                console.log('window.Image precisa de polyfill e pode ser redefinido');
+
+                // Polyfill mais robusto para window.Image
+                function ImageConstructor(width, height) {
+                  const img = document.createElement('img');
+                  if (typeof width === 'number') img.width = width;
+                  if (typeof height === 'number') img.height = height;
+                  return img;
+                }
+
+                // Configurar como constructor válido
+                ImageConstructor.prototype = HTMLImageElement.prototype;
+                ImageConstructor.prototype.constructor = ImageConstructor;
+
+                // Tentar substituir de forma segura
+                try {
+                  Object.defineProperty(window, 'Image', {
+                    value: ImageConstructor,
+                    writable: true,
+                    configurable: true,
+                    enumerable: true
+                  });
+                  console.log('window.Image redefinido com sucesso');
+                } catch (e) {
+                  console.warn('Não foi possível redefinir window.Image:', e.message);
+                  // Tentar substituição direta como fallback
+                  try {
+                    window.Image = ImageConstructor;
+                    console.log('window.Image substituído como fallback');
+                  } catch (e2) {
+                    console.error('Falha total ao definir window.Image:', e2.message);
+                  }
+                }
+              } else if (needsPolyfill && !canRedefine) {
+                console.log('window.Image precisa de polyfill mas não pode ser redefinido');
+                console.log('Usando Avatar fallback-only para evitar problemas');
+              } else {
+                console.log('window.Image já funciona corretamente');
+              }
+
+              // Garantir que HTMLImageElement esteja disponível
+              if (!window.HTMLImageElement) {
+                window.HTMLImageElement = HTMLImageElement;
+              }
+
+              console.log('Polyfill finalizado. window.Image:', typeof window.Image);
+            }
+          })();
 
           // Acesso ao objeto LucideReact
           const LucideReact = scope.LucideReact;
