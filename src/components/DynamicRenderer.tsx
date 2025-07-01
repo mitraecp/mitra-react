@@ -111,7 +111,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarNav, SidebarNavItem, SidebarSection } from '@/components/ui/sidebar';
+import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarInput, SidebarInset, SidebarMenu, SidebarMenuAction, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSkeleton, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarRail, SidebarSeparator, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
@@ -125,6 +125,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from '@/components/ui/toast';
 import { useToast, toast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
+import { AppSidebar } from "@/components/app-sidebar"
+
 // Componentes de gráficos do Shadcn UI
 import {
   ChartContainer,
@@ -315,7 +317,7 @@ const componentRegistry = {
   Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue,
   Separator,
   Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger,
-  Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarNav, SidebarNavItem, SidebarSection,
+  Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarInput, SidebarInset, SidebarMenu, SidebarMenuAction, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSkeleton, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarRail, SidebarSeparator, SidebarTrigger, useSidebar,
   Skeleton,
   Slider,
   SonnerToaster,
@@ -329,6 +331,7 @@ const componentRegistry = {
   Toaster,
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
   useToast, toast,
+  AppSidebar,
 
   // Hooks e funções do @tanstack/react-table
   useReactTable,
@@ -975,11 +978,11 @@ const DynamicRenderer: React.FC = () => {
 
       // 6. Criar um wrapper para o componente transpilado
       const processedComponentCode = `
+        // Declarações de imports processados (ANTES do código do usuário)
+        ${importDeclarations}
+
         // Código do usuário transpilado (sem imports)
         ${cleanedCode}
-
-        // Declarações de imports processados
-        ${importDeclarations}
 
         // Componente wrapper que expõe o componente do usuário como ReactComponentMitra
         function ReactComponentMitra(props) {
