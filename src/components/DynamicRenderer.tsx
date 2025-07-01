@@ -1222,11 +1222,9 @@ const DynamicRenderer: React.FC = () => {
 
     // Estado inicial ou quando nenhum código/chave foi fornecido
     return (
-      LucideReact.Loader2 && (
-        <div className='flex-grow flex items-center justify-center h-[100vh] text-muted-foreground border rounded'>
-          <LucideReact.Loader2 className="h-8 w-8 mr-2 animate-spin" color='#333'/>
-        </div>
-      )
+      <div className="flex-grow flex items-center justify-center h-[100vh] text-muted-foreground">
+          <Skeleton className="w-full h-full animate-pulse" />
+      </div>
     );
   };
 
