@@ -781,23 +781,47 @@ const DynamicRenderer: React.FC = () => {
 
       // 4. Processar declarações import, export e diretivas do código transpilado
       // Função para processar todas as declarações import
-      const processImports = (code: string): { processedCode: string, imports: Map<string, string[]> } => {
+      const processImports = (code: string): { processedCode: string, imports: Map<string, string[]>, importMappings: Map<string, Map<string, string>> } => {
         // Mapa para armazenar os imports (módulo -> [componentes])
         const imports = new Map<string, string[]>();
+        // Mapa para armazenar os mapeamentos de nomes (módulo -> (nomeLocal -> nomeOriginal))
+        const importMappings = new Map<string, Map<string, string>>();
 
         // Clonar o código para não modificar o original durante a iteração
         let result = code;
 
-        // Regex para imports com chaves: import { X, Y } from 'module';
-        const importWithBracesRegex = /import\s+{\s*([\w\s,]+)\s*}\s+from\s+['"]([^'"]+)['"];?/g;
+        // Regex para imports com chaves: import { X, Y, Z as W } from 'module';
+        const importWithBracesRegex = /import\s+{\s*([\w\s,as]+)\s*}\s+from\s+['"]([^'"]+)['"];?/g;
         let match;
 
         // Encontrar todos os imports com chaves
         while ((match = importWithBracesRegex.exec(code)) !== null) {
-          const components = match[1].split(',').map(c => c.trim());
+          const rawComponents = match[1].split(',').map(c => c.trim()).filter(c => c.length > 0);
           const module = match[2];
 
-          // Armazenar os componentes importados
+          // Inicializar mapeamentos para este módulo se não existir
+          if (!importMappings.has(module)) {
+            importMappings.set(module, new Map<string, string>());
+          }
+          const moduleMapping = importMappings.get(module)!;
+
+          // Processar componentes, lidando com imports que usam 'as'
+          const components = rawComponents.map(comp => {
+            // Se o componente usa 'as', extrair ambos os nomes
+            if (comp.includes(' as ')) {
+              const parts = comp.split(' as ');
+              const originalName = parts[0].trim();
+              const localName = parts[1].trim();
+              // Armazenar o mapeamento: nome local -> nome original
+              moduleMapping.set(localName, originalName);
+              return localName; // Retorna o nome local
+            }
+            // Se não usa 'as', o nome local é igual ao original
+            moduleMapping.set(comp, comp);
+            return comp;
+          });
+
+          // Armazenar os componentes importados (apenas os não vazios)
           if (!imports.has(module)) {
             imports.set(module, []);
           }
@@ -832,11 +856,11 @@ const DynamicRenderer: React.FC = () => {
           result = filteredLines.join('\n');
         }
 
-        return { processedCode: result, imports };
+        return { processedCode: result, imports, importMappings };
       };
 
       // Processar imports e remover declarações
-      const { processedCode, imports } = processImports(transpiledCode);
+      const { processedCode, imports, importMappings } = processImports(transpiledCode);
 
       // Remover diretiva "use client"
       let cleanedCode = processedCode.replace(/"use client";?\s*/g, '');
@@ -860,6 +884,7 @@ const DynamicRenderer: React.FC = () => {
       // Processar imports do Lucide
       if (imports.has('lucide-react')) {
         const lucideComponents = imports.get('lucide-react') || [];
+        const lucideMappings = importMappings.get('lucide-react') || new Map();
         console.log('Componentes Lucide importados:', lucideComponents);
 
         importDeclarations += `
@@ -868,7 +893,13 @@ const DynamicRenderer: React.FC = () => {
           ${lucideComponents.map(comp => {
             // Remover espaços em branco e quebras de linha
             const cleanComp = comp.trim();
-            return `const ${cleanComp} = LucideReact.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+            // Validar se o componente existe e não está vazio
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            // Obter o nome original do componente (antes do 'as')
+            const originalName = lucideMappings.get(cleanComp) || cleanComp;
+            return `const ${cleanComp} = LucideReact.${originalName} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
           }).join('\n          ')}
         `;
       }
@@ -896,7 +927,11 @@ const DynamicRenderer: React.FC = () => {
             console.log('${scopeName} disponível:', ${scopeName});
             ${iconComponents.map(comp => {
               const cleanComp = comp.trim();
-              return `const ${cleanComp} = ${scopeName}.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+              // Validar se o componente existe e não está vazio
+              if (!cleanComp || cleanComp.length === 0) {
+                return '// Componente vazio ignorado';
+              }
+              return `const ${cleanComp} = ${scopeName}.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
             }).join('\n            ')}
           `;
         }
@@ -912,8 +947,12 @@ const DynamicRenderer: React.FC = () => {
           console.log('dateFns disponível:', dateFns);
           ${dateFnsComponents.map(comp => {
             const cleanComp = comp.trim();
+            // Validar se o componente existe e não está vazio
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
             // Usar as funções diretamente do scope, que já estão disponíveis
-            return `const ${cleanComp} = scope.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+            return `const ${cleanComp} = scope.${cleanComp} || (() => { throw new Error('${cleanComp} não encontrado no date-fns'); }); console.log('${cleanComp} importado:', ${cleanComp});`;
           }).join('\n          ')}
         `;
       }
@@ -927,7 +966,11 @@ const DynamicRenderer: React.FC = () => {
           // Importar locales do date-fns
           ${localeComponents.map(comp => {
             const cleanComp = comp.trim();
-            return `const ${cleanComp} = ptBR; console.log('${cleanComp} importado:', ${cleanComp});`;
+            // Validar se o componente existe e não está vazio
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            return `const ${cleanComp} = ptBR || {}; console.log('${cleanComp} importado:', ${cleanComp});`;
           }).join('\n          ')}
         `;
       }
