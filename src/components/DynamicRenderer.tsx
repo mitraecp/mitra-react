@@ -171,6 +171,7 @@ import {
 // Ícones
 import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
 import * as ReactIcons from 'react-icons'; // Importa todos os ícones do react-icons
+import * as TablerIcons from '@tabler/icons-react'; // Importa todos os ícones do Tabler
 import * as AiIcons from 'react-icons/ai'; // Ant Design Icons
 import * as BiIcons from 'react-icons/bi'; // BoxIcons
 import * as BsIcons from 'react-icons/bs'; // Bootstrap Icons
@@ -345,6 +346,17 @@ const componentRegistry = {
   LucideReact, // Expõe todo o objeto LucideReact
   // Adicionar ícones individuais do Lucide para acesso direto
   ...Object.entries(LucideReact).reduce((acc, [key, value]) => {
+    // Adicionar apenas os componentes (funções/classes), não as propriedades
+    if (typeof value === 'function') {
+      acc[key] = value;
+    }
+    return acc;
+  }, {} as Record<string, any>),
+
+  // Biblioteca Tabler Icons
+  TablerIcons, // Expõe todo o objeto TablerIcons
+  // Adicionar ícones individuais do Tabler para acesso direto
+  ...Object.entries(TablerIcons).reduce((acc, [key, value]) => {
     // Adicionar apenas os componentes (funções/classes), não as propriedades
     if (typeof value === 'function') {
       acc[key] = value;
@@ -975,6 +987,25 @@ const DynamicRenderer: React.FC = () => {
         `;
       }
 
+      // Processar imports do @tabler/icons-react
+      if (imports.has('@tabler/icons-react')) {
+        const tablerComponents = imports.get('@tabler/icons-react') || [];
+        console.log('Componentes @tabler/icons-react importados:', tablerComponents);
+
+        importDeclarations += `
+          // Importar componentes do @tabler/icons-react
+          console.log('TablerIcons disponível:', TablerIcons);
+          ${tablerComponents.map(comp => {
+            const cleanComp = comp.trim();
+            // Validar se o componente existe e não está vazio
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            return `const ${cleanComp} = TablerIcons.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
+
       // Processar outros imports conhecidos
       const knownModules = [
         '@/components/ui/card',
@@ -1005,6 +1036,8 @@ const DynamicRenderer: React.FC = () => {
         'react-icons/io', 'react-icons/io5', 'react-icons/lia', 'react-icons/lu', 'react-icons/md',
         'react-icons/pi', 'react-icons/ri', 'react-icons/rx', 'react-icons/si', 'react-icons/sl',
         'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi',
+        // Adicionar módulos do @tabler/icons-react
+        '@tabler/icons-react',
         // Adicionar módulos do date-fns
         'date-fns',
         'date-fns/locale'
@@ -1170,6 +1203,9 @@ const DynamicRenderer: React.FC = () => {
 
           // Acesso ao objeto LucideReact
           const LucideReact = scope.LucideReact;
+
+          // Acesso ao objeto TablerIcons
+          const TablerIcons = scope.TablerIcons;
 
           // Acesso aos objetos React Icons
           const ReactIcons = scope.ReactIcons;
