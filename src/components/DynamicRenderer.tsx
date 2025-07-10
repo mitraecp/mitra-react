@@ -57,7 +57,7 @@ import '@/styles/button-colors.css';
 // --- 1. Importar TODOS os componentes necessários UMA VEZ ---
 // Componentes básicos
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter, CardAction } from '@/components/ui/card';
 import { DatePicker, DatePickerDemo } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp';
@@ -283,7 +283,7 @@ const componentRegistry = {
 
   // Componentes UI (Shadcn UI)
   Button,
-  Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter,
+  Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter,CardAction,
   Input, InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator, Label, Checkbox,
   ImageRoot, Image, ImageFallback,
   LabelTag, LabelList,
