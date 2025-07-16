@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, lazy, Suspense } from 'react';
 // import { Dashboard } from "@/components/Dashboard";

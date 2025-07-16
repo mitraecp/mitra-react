@@ -397,6 +397,7 @@ function SearchForm({ ...props }) {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function SiteHeader() {
   const { toggleSidebar } = useSidebar()
   return (
