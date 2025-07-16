@@ -686,6 +686,8 @@ const DynamicRenderer: React.FC = () => {
   const [RenderedComponent, setRenderedComponent] = useState<React.FC | null>(null);
 
   useEffect(() => {
+    console.log('DynamicRenderer montado e pronto para receber mensagens');
+
     // Listener para mensagens RENDER_COMPONENT
     const unsubscribeRender = messageService.addListener('RENDER_COMPONENT', (code, componentData) => {
       console.log('RENDER_COMPONENT recebido:', {
@@ -1302,7 +1304,11 @@ const DynamicRenderer: React.FC = () => {
     // Estado inicial ou quando nenhum código/chave foi fornecido
     return (
       <div className="flex-grow flex items-center justify-center h-[100vh] text-muted-foreground">
-          <Skeleton className="w-full h-full animate-pulse" />
+        <div className="text-center space-y-4">
+          <div className="text-lg font-medium">Aguardando componente...</div>
+          <div className="text-sm">Pronto para receber código via postMessage</div>
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
       </div>
     );
   };
