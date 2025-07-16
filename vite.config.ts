@@ -47,6 +47,24 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Otimizações de performance
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separar vendor libraries em chunks menores
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['@radix-ui/react-slot', '@radix-ui/react-toast', '@radix-ui/react-tooltip'],
+          'chart-vendor': ['recharts'],
+          'icons-vendor': ['lucide-react', '@tabler/icons-react', 'react-icons'],
+        },
+      },
+    },
+    // Aumentar o limite de chunk size warning para chunks grandes conhecidos
+    chunkSizeWarningLimit: 1000,
+    // Usar minificação padrão (esbuild) que é mais rápida
+    minify: 'esbuild',
+  },
   server: {
     cors: {
       origin: "*",
