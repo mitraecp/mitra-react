@@ -75,6 +75,7 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { messageService } from "@/lib/message-service"
 
 
 // Data for the sidebar navigation
@@ -429,12 +430,60 @@ function SiteHeader() {
   )
 }
 
+const AppTeste = () => {
+
+  const handleOpenModal = async () => {
+    try {
+      const result = await messageService.sendInteraction('modal', {
+        screenName: 'Conteudo Modal',
+        width: 50,
+        height: 30,
+      });
+      console.log(`modalMitra result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar modalMitra:`, error);
+      throw error;
+    }
+  };
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      width: '100%',
+      fontFamily: 'sans-serif'
+    }}>
+      <button
+        onClick={handleOpenModal}
+        style={{
+          padding: '12px 24px',
+          fontSize: '16px',
+          color: 'white',
+          backgroundColor: '#6A1B9A',
+          border: 'none',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          transition: 'all 0.2s ease-in-out'
+        }}
+        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#4A148C'}
+        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#6A1B9A'}
+      >
+        Abrir Modal Mitra
+      </button>
+    </div>
+  );
+};
+
 
 export const SideBarFull = () => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col">
-        <SiteHeader />
+        <AppTeste />
         <div className="flex flex-1">
           <AppSidebar />
           <main className="flex-1">
