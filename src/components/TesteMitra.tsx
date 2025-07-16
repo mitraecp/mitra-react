@@ -484,6 +484,7 @@ export const SideBarFull = () => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col">
+        <SiteHeader />
         <AppTeste />
         <div className="flex flex-1">
           <AppSidebar />
