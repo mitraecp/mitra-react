@@ -105,104 +105,44 @@
   }
 }
 
-/* Garantir que as classes do Tailwind sejam aplicadas corretamente */
-.bg-card {
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
+
+
+
+
+/* Chart specific styles */
+@layer base {
+  [data-chart] {
+    background-color: hsl(var(--background));
+  }
+
+  .recharts-surface {
+    background-color: transparent !important;
+  }
+
+  .recharts-wrapper {
+    background-color: transparent !important;
+  }
+
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line {
+    stroke: hsl(var(--border));
+  }
+
+  .recharts-tooltip-wrapper {
+    background-color: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+  }
+
+  /* Garantir que as cores dos charts sejam aplicadas */
+  :root {
+    --color-chart-1: hsl(var(--chart-1));
+    --color-chart-2: hsl(var(--chart-2));
+    --color-chart-3: hsl(var(--chart-3));
+    --color-chart-4: hsl(var(--chart-4));
+    --color-chart-5: hsl(var(--chart-5));
+  }
 }
-
-.bg-background {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
-
-.bg-primary {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.bg-secondary {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-}
-
-.bg-muted {
-  background-color: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-}
-
-.bg-accent {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
-}
-
-.bg-popover {
-  background-color: hsl(var(--popover));
-  color: hsl(var(--popover-foreground));
-}
-
-.bg-destructive {
-  background-color: hsl(var(--destructive));
-  color: hsl(var(--destructive-foreground));
-}
-
-.border-border {
-  border-color: hsl(var(--border));
-}
-
-.text-foreground {
-  color: hsl(var(--foreground));
-}
-
-.text-primary {
-  color: hsl(var(--primary));
-}
-
-.text-primary-foreground {
-  color: hsl(var(--primary-foreground));
-}
-
-.text-secondary {
-  color: hsl(var(--secondary));
-}
-
-.text-secondary-foreground {
-  color: hsl(var(--secondary-foreground));
-}
-
-.text-muted {
-  color: hsl(var(--muted));
-}
-
-.text-muted-foreground {
-  color: hsl(var(--muted-foreground));
-}
-
-.text-accent {
-  color: hsl(var(--accent));
-}
-
-.text-accent-foreground {
-  color: hsl(var(--accent-foreground));
-}
-
-.text-card-foreground {
-  color: hsl(var(--card-foreground));
-}
-
-.text-popover-foreground {
-  color: hsl(var(--popover-foreground));
-}
-
-.text-destructive {
-  color: hsl(var(--destructive));
-}
-
-.text-destructive-foreground {
-  color: hsl(var(--destructive-foreground));
-}
-
-
 
 @layer base {
   * {
