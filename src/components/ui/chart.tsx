@@ -74,6 +74,36 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  // Função para resolver variáveis CSS
+  const resolveColor = (color: string, theme: string) => {
+    if (color.startsWith('var(--chart-')) {
+      // Extrair o número da variável (ex: var(--chart-1) -> 1)
+      const chartNumber = color.match(/var\(--chart-(\d+)\)/)?.[1]
+      if (chartNumber) {
+        // Valores das variáveis CSS baseados no tema
+        const lightColors = {
+          '1': '12 76% 61%',
+          '2': '173 58% 39%',
+          '3': '197 37% 24%',
+          '4': '43 74% 66%',
+          '5': '27 87% 67%'
+        }
+        const darkColors = {
+          '1': '220 70% 50%',
+          '2': '160 60% 45%',
+          '3': '30 80% 55%',
+          '4': '280 65% 60%',
+          '5': '340 75% 55%'
+        }
+
+        const colors = theme === 'dark' ? darkColors : lightColors
+        const resolvedColor = colors[chartNumber as keyof typeof colors]
+        return resolvedColor ? `hsl(${resolvedColor})` : color
+      }
+    }
+    return color
+  }
+
   return (
     <style
       dangerouslySetInnerHTML={{
@@ -86,7 +116,10 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
+
+    // Resolver a cor diretamente ao invés de usar referência
+    const resolvedColor = color ? resolveColor(color, theme) : null
+    return resolvedColor ? `  --color-${key}: ${resolvedColor};` : null
   })
   .join("\n")}
 }

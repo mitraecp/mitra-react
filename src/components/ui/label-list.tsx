@@ -11,7 +11,7 @@ export interface LabelProps {
 }
 
 export interface LabelListProps extends React.HTMLAttributes<HTMLDivElement> {
-  labels: LabelProps[]
+  labels?: LabelProps[]
   onRemoveLabel?: (index: number) => void
   variant?: "default" | "outline" | "secondary" | "destructive"
   size?: "default" | "sm"
@@ -57,7 +57,7 @@ Label.displayName = "Label"
 
 const LabelList = React.forwardRef<HTMLDivElement, LabelListProps>(
   ({
-    labels,
+    labels = [],
     onRemoveLabel,
     className,
     variant = "default",
@@ -69,13 +69,18 @@ const LabelList = React.forwardRef<HTMLDivElement, LabelListProps>(
     const [showAll, setShowAll] = React.useState(false)
 
     const displayedLabels = React.useMemo(() => {
+      // Verificação de segurança para labels
+      if (!labels || !Array.isArray(labels)) {
+        return []
+      }
+
       if (!maxLabels || showAll || labels.length <= maxLabels) {
         return labels
       }
       return labels.slice(0, maxLabels)
     }, [labels, maxLabels, showAll])
 
-    const hasMore = maxLabels && labels.length > maxLabels && !showAll
+    const hasMore = maxLabels && labels && labels.length > maxLabels && !showAll
 
     return (
       <div
