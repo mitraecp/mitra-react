@@ -1,14 +1,16 @@
-"use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
+import React from "react";
 import {
   BadgeCheck,
   Bell,
   BookOpen,
   Bot,
+  Calculator,
+  Calendar,
   ChevronRight,
   ChevronsUpDown,
-  Command,
+  Command as CommandIcon,
   CreditCard,
   Folder,
   Frame,
@@ -18,19 +20,17 @@ import {
   PieChart,
   Search,
   Send,
+  Settings,
   Settings2,
   Share,
   SidebarIcon,
   Sparkles,
   SquareTerminal,
   Trash2,
-} from "lucide-react"
+  User,
+} from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -38,13 +38,23 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,9 +63,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -64,7 +73,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -74,9 +82,7 @@ import {
   SidebarMenuSubItem,
   SidebarProvider,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { messageService } from "@/lib/message-service"
-
+} from "@/components/ui/sidebar";
 
 // Data for the sidebar navigation
 const data = {
@@ -138,12 +144,11 @@ const data = {
     { name: "Design Engineering", url: "#", icon: Frame },
     { name: "Sales & Marketing", url: "#", icon: PieChart },
   ],
-}
+};
 
 // Sub-components defined within the same file
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-function NavMain({ items }: { items: any[] }) {
+function NavMain({ items = [] }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -167,7 +172,7 @@ function NavMain({ items }: { items: any[] }) {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items?.map((subItem: any) => (
+                      {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
                             <a href={subItem.url}>
@@ -185,11 +190,11 @@ function NavMain({ items }: { items: any[] }) {
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }
 
-function NavProjects({ projects }: { projects: any[] }) {
-  const { isMobile } = useSidebar()
+function NavProjects({ projects = [] }) {
+  const { isMobile } = useSidebar();
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
@@ -239,15 +244,15 @@ function NavProjects({ projects }: { projects: any[] }) {
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }
 
-function NavSecondary({ items, ...props }: { items: any[] } & any) {
+function NavSecondary({ items = [], ...props }) {
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item: any) => (
+          {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
                 <a href={item.url}>
@@ -260,11 +265,13 @@ function NavSecondary({ items, ...props }: { items: any[] } & any) {
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }
 
-function NavUser({ user }: { user: any }) {
-  const { isMobile } = useSidebar()
+function NavUser({
+  user = { name: "User", email: "user@example.com", avatar: "" },
+}) {
+  const { isMobile } = useSidebar();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -338,10 +345,52 @@ function NavUser({ user }: { user: any }) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
 
-function AppSidebar({ ...props }) {
+function NavTabs({ activeTab, setActiveTab }) {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Componentes</SidebarGroupLabel>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={activeTab === "tab1"}
+            onClick={() => setActiveTab("tab1")}
+          >
+            <button
+              className={`w-full text-left ${
+                activeTab === "tab1" ? "border-l-4 border-blue-500" : ""
+              }`}
+            >
+              <div className="w-3 h-3 bg-blue-500 rounded-full mr-2" />
+              <span>Gerenciamento</span>
+            </button>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={activeTab === "tab2"}
+            onClick={() => setActiveTab("tab2")}
+          >
+            <button
+              className={`w-full text-left ${
+                activeTab === "tab2" ? "border-l-4 border-red-500" : ""
+              }`}
+            >
+              <div className="w-3 h-3 bg-red-500 rounded-full mr-2" />
+              <span>Dash Mitra</span>
+            </button>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+}
+
+function AppSidebar({ activeTab, setActiveTab, ...props }) {
   return (
     <Sidebar
       variant="sidebar"
@@ -356,7 +405,7 @@ function AppSidebar({ ...props }) {
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+                  <CommandIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">Acme Inc</span>
@@ -368,6 +417,7 @@ function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <NavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
@@ -376,30 +426,89 @@ function AppSidebar({ ...props }) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
+}
+
+function SearchDialog() {
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const down = (e) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        className="relative h-8 w-full justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
+        onClick={() => setOpen(true)}
+      >
+        <Search className="mr-2 h-4 w-4" />
+        Search...
+        <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <span className="text-xs">⌘</span>K
+        </kbd>
+      </Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Suggestions">
+            <CommandItem>
+              <Calendar className="mr-2 h-4 w-4" />
+              <span>Calendar</span>
+            </CommandItem>
+            <CommandItem>
+              <Search className="mr-2 h-4 w-4" />
+              <span>Search Emoji</span>
+            </CommandItem>
+            <CommandItem>
+              <Calculator className="mr-2 h-4 w-4" />
+              <span>Calculator</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Settings">
+            <CommandItem>
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+              <CommandShortcut>⌘P</CommandShortcut>
+            </CommandItem>
+            <CommandItem>
+              <CreditCard className="mr-2 h-4 w-4" />
+              <span>Billing</span>
+              <CommandShortcut>⌘B</CommandShortcut>
+            </CommandItem>
+            <CommandItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+              <CommandShortcut>⌘S</CommandShortcut>
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
+  );
 }
 
 function SearchForm({ ...props }) {
   return (
     <form {...props}>
-      <div className="relative">
-        <Label htmlFor="search" className="sr-only">
-          Search
-        </Label>
-        <SidebarInput
-          id="search"
-          placeholder="Search..."
-          className="pl-8"
-        />
-        <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
-      </div>
+      <SearchDialog />
     </form>
-  )
+  );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function SiteHeader() {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar } = useSidebar();
   return (
     <header className="sticky top-0 z-50 flex h-[50px] w-full shrink-0 items-center gap-2 border-b bg-background px-4">
       <Button
@@ -414,9 +523,7 @@ function SiteHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink href="#">
-              Building Your Application
-            </BreadcrumbLink>
+            <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem>
@@ -428,78 +535,89 @@ function SiteHeader() {
         <SearchForm />
       </div>
     </header>
-  )
+  );
 }
 
-const AppTeste = () => {
-
-  const handleOpenModal = async () => {
-    try {
-      const result = await messageService.sendInteraction('modal', {
-        screenName: 'Conteudo Modal',
-        width: 50,
-        height: 30,
-      });
-      console.log(`modalMitra result:`, result);
-      return result;
-    } catch (error) {
-      console.error(`Erro ao executar modalMitra:`, error);
-      throw error;
-    }
-  };
-
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100%',
-      width: '100%',
-      fontFamily: 'sans-serif'
-    }}>
-      <button
-        onClick={handleOpenModal}
-        style={{
-          padding: '12px 24px',
-          fontSize: '16px',
-          color: 'white',
-          backgroundColor: '#6A1B9A',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          transition: 'all 0.2s ease-in-out'
-        }}
-        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#4A148C'}
-        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#6A1B9A'}
-      >
-        Abrir Modal Mitra
-      </button>
-    </div>
-  );
-};
-
-
 export const SideBarFull = () => {
+  const [activeTab, setActiveTab] = React.useState("tab1");
+  
+  const [url, setUrl] = React.useState("https://mergerelease.mitralab.io");
+  const [token, setToken] = React.useState(
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkYW5pbGxvQG1pdHJhbGFiLmlvIiwiWC1UZW5hbnRJRCI6InRlbmFudF8xMTAyMCJ9.t-lbE6tbJajCGOoNPDz9Qpm2xbvkcHpsj32cbiiuVhDwYa6S9k8pJtMGQ32kJm53git1fWBbyPLc4tKX_nkWBA"
+  );
+
+  React.useEffect(() => {
+    const fetchUrl = async () => {
+      try {
+        const query_resp = await queryMitra("SELECT :VAR_URL");
+        const token_resp = await queryMitra("SELECT :VAR_INLINE_TOKEN");
+
+        if (query_resp) {
+          console.log("URL: ", query_resp);
+          setUrl(query_resp.data[0][0]);
+        }
+
+        if (token_resp) {
+          console.log("TOKEN: ", token_resp);
+          setToken(token_resp.data.data[0][0]);
+        }
+      } catch (error) {
+        console.error("Falha ao buscar a URL:", error);
+      }
+    };
+
+    fetchUrl();
+  }, []);
+
+  const screenId_1 = 12;
+  const screenId_2 = 9;
+
+  const fixedParams =
+    "/inlineLogin?bkApiUrl=https://api0.mitraecp.com:1004&inlineToken=";
+
+  const iframeSrc1 = `${url}${fixedParams}${token}&inlineScreenId=${screenId_1}&inlineUsername=22222`;
+  const iframeSrc2 = `${url}${fixedParams}${token}&inlineScreenId=${screenId_2}&inlineUsername=22222`;
+
+  console.log("HILBOOOOO", iframeSrc2);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col">
         <SiteHeader />
-        <AppTeste />
         <div className="flex flex-1">
-          <AppSidebar />
+          <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           <main className="flex-1">
-            <div className="flex flex-1 flex-col gap-4 p-4">
-              <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div className="aspect-video rounded-xl bg-muted/50" />
-                <div className="aspect-video rounded-xl bg-muted/50" />
-                <div className="aspect-video rounded-xl bg-muted/50" />
-              </div>
-              <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+            <div className="flex flex-1 flex-col h-full p-4">
+              {activeTab === "tab1" && (
+                <iframe
+                  id="MitraLegacy1"
+                  src={iframeSrc1}
+                  allow="clipboard-write"
+                  style={{ border: "none" }}
+                  className="h-full w-full border-4 border-blue-500 rounded-lg"
+                  loading="lazy"
+                />
+              )}
+
+              {activeTab === "tab2" && (
+                <iframe
+                  id="MitraLegacy2"
+                  src={iframeSrc2}
+                  allow="clipboard-write"
+                  style={{ border: "none" }}
+                  className="h-full w-full border-4 border-red-500 rounded-lg"
+                  loading="lazy"
+                />
+              )}
             </div>
           </main>
         </div>
       </div>
     </SidebarProvider>
-  )
+  );
+};
+
+// Componente de teste simples para usar no DynamicRenderer
+export function TestSideBar() {
+  return <SideBarFull />;
 }

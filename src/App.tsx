@@ -1,7 +1,7 @@
-import { SideBarFull } from '@/components/TesteMitra';
+import { TestSideBar } from '@/components/TesteMitra';
 
 function App() {
-  return <SideBarFull />;
+  return <TestSideBar />;
 }
 
 export default App;
