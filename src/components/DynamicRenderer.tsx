@@ -21,7 +21,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/comp
 import { Label as UILabel } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImageRoot, Image, ImageFallback } from '@/components/ui/image';
-import { Label as LabelTag, LabelList } from '@/components/ui/label-list';
+import { Label as LabelTag, LabelList as UILabelList } from '@/components/ui/label-list';
 // Componentes de layout
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -126,6 +126,7 @@ import {
   ReferenceLine,
   ErrorBar,
   Label,
+  LabelList,
   Tooltip as RechartsTooltip
 } from 'recharts';
 // Ícones
@@ -247,7 +248,7 @@ const componentRegistry = {
   Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter,CardAction,
   Input, InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator, UILabel, Checkbox,
   ImageRoot, Image, ImageFallback,
-  LabelTag, LabelList,
+  LabelTag, UILabelList,
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
   Alert, AlertDescription, AlertTitle,
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -430,7 +431,28 @@ const componentRegistry = {
   ReferenceLine,
   ErrorBar,
   Label,
+  LabelList,
   RechartsTooltip,
+
+  // Função utilitária para filtrar props do Recharts
+  filterRechartsProps: (props: any) => {
+    if (!props || typeof props !== 'object') return props;
+
+    const rechartsProps = [
+      'dataKey', 'nameKey', 'valueKey', 'cx', 'cy', 'innerRadius', 'outerRadius',
+      'startAngle', 'endAngle', 'fill', 'stroke', 'strokeWidth', 'strokeDasharray',
+      'activeIndex', 'activeShape', 'animationBegin', 'animationDuration',
+      'isAnimationActive', 'animationEasing', 'onAnimationStart', 'onAnimationEnd',
+      'payload', 'viewBox', 'coordinate', 'offset'
+    ];
+
+    const filteredProps = { ...props };
+    rechartsProps.forEach(prop => {
+      delete filteredProps[prop];
+    });
+
+    return filteredProps;
+  },
 
   // Componentes Pré-definidos
   Dashboard,
@@ -1032,6 +1054,26 @@ const DynamicRenderer: React.FC = () => {
             };
             window.Image.prototype = HTMLImageElement.prototype;
           }
+
+          // Função para filtrar props do Recharts que não devem ir para elementos DOM
+          window.filterRechartsProps = (props) => {
+            if (!props || typeof props !== 'object') return props;
+
+            const rechartsProps = [
+              'dataKey', 'nameKey', 'valueKey', 'cx', 'cy', 'innerRadius', 'outerRadius',
+              'startAngle', 'endAngle', 'fill', 'stroke', 'strokeWidth', 'strokeDasharray',
+              'activeIndex', 'activeShape', 'animationBegin', 'animationDuration',
+              'isAnimationActive', 'animationEasing', 'onAnimationStart', 'onAnimationEnd',
+              'payload', 'viewBox', 'coordinate', 'offset'
+            ];
+
+            const filteredProps = { ...props };
+            rechartsProps.forEach(prop => {
+              delete filteredProps[prop];
+            });
+
+            return filteredProps;
+          };
 
           // Componentes disponíveis
           const components = props.components || {};
