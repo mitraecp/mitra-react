@@ -83,6 +83,7 @@ import { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastT
 import { useToast, toast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from "@/components/app-sidebar"
+import { cn } from "@/lib/utils"
 
 // Componentes de gráficos do Shadcn UI
 import {
@@ -242,6 +243,9 @@ const componentRegistry = {
   useRef: React.useRef,
   useContext: React.useContext,
   // Adicione outros hooks se necessário
+
+  // Utilitários
+  cn,
 
   // Componentes UI (Shadcn UI)
   Button,
