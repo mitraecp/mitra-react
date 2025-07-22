@@ -708,18 +708,18 @@ const DynamicRenderer: React.FC = () => {
         // Verificar se é uma chave pré-definida
         if (predefinedComponentsMap.has(trimmedCode)) {
           setSelectedPredefinedKey(trimmedCode);
-          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'predefined', key: trimmedCode } as any);
+          messageService.sendMessage('COMPONENT_RENDERED', null, { success: true, type: 'predefined', key: trimmedCode }, window.componentData?.id || null);
 
         } else {
           // Se não for pré-definido, trata como código JSX
           setComponentCode(trimmedCode);
-          messageService.sendMessage('COMPONENT_RENDERED', null, null, { success: true, type: 'dynamic' } as any);
+          messageService.sendMessage('COMPONENT_RENDERED', null, { success: true, type: 'dynamic' }, window.componentData?.id || null);
         }
 
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao processar payload';
         setError(errorMessage);
-        messageService.sendMessage('ERROR', null, null, { message: errorMessage } as any);
+        messageService.sendMessage('ERROR', null, { errorMessage: `${errorMessage}` }, window.componentData?.id || null);
       }
     });
 
@@ -1195,7 +1195,7 @@ const DynamicRenderer: React.FC = () => {
       console.error('Erro no processamento do componente dinâmico:', err);
       setError(errorMessage);
       setRenderedComponent(null);
-      messageService.sendMessage('ERROR', null, null, { message: `Erro ao renderizar: ${errorMessage}` } as any);
+      messageService.sendMessage('ERROR', null, { errorMessage: `${errorMessage}` }, window.componentData?.id || null);
     }
 
   }, [componentCode]); // Dependência: re-executa SÓ quando o código mudar
