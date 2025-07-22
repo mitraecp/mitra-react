@@ -663,12 +663,115 @@ const predefinedComponentsMap = new Map<string, React.FC>([
   ['TOAST_DEMO', ToastDemo]
 ]);
 
+// Error Boundary específico para componentes dinâmicos
+class DynamicErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("JOOOOOOOO - ErrorBoundary:", error, errorInfo);
+
+    const errorData = {
+      source: 'React ErrorBoundary',
+      message: error?.message || String(error),
+      stack: error?.stack || 'No stack trace available',
+      componentStack: errorInfo?.componentStack,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    };
+
+    // Enviar erro via messageService
+    messageService.sendMessage('ERROR', null, errorData, window.componentData?.id || null);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-4 bg-red-100 text-red-800 rounded">
+          <h3 className="font-bold">Erro capturado pelo ErrorBoundary:</h3>
+          <pre className="mt-2 whitespace-pre-wrap">{this.state.error?.message || 'Erro desconhecido'}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // --- Componente Renderer Principal ---
 const DynamicRenderer: React.FC = () => {
   const [componentCode, setComponentCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedPredefinedKey, setSelectedPredefinedKey] = useState<string | null>(null);
   const [RenderedComponent, setRenderedComponent] = useState<React.FC | null>(null);
+
+  // Sistema de captura global de erros para código dinâmico
+  useEffect(() => {
+    const handleGlobalError = (event: ErrorEvent) => {
+      console.error("JOOOOOOOO - Global Error:", event.error || event.message);
+
+      // Verificar se o erro está relacionado ao código dinâmico
+      const isDynamicError = event.filename?.includes('eval') ||
+                           event.message?.includes('FixedComponent') ||
+                           event.message?.includes('ReactComponentMitra') ||
+                           event.error?.stack?.includes('eval');
+
+      if (isDynamicError) {
+        const errorData = {
+          source: 'Dynamic Component Execution',
+          message: event.message || 'Erro desconhecido',
+          stack: event.error?.stack || `at ${event.filename}:${event.lineno}:${event.colno}`,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        };
+
+        // Enviar erro via messageService
+        messageService.sendMessage('ERROR', null, errorData, window.componentData?.id || null);
+
+        // Atualizar estado local para mostrar erro na UI
+        setError(`Erro no código dinâmico: ${event.message}`);
+      }
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error("JOOOOOOOO - Unhandled Promise Rejection:", event.reason);
+
+      const errorData = {
+        source: 'Promise Rejection',
+        message: String(event.reason),
+        stack: event.reason?.stack || 'No stack trace available',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+
+      // Enviar erro via messageService
+      messageService.sendMessage('ERROR', null, errorData, window.componentData?.id || null);
+
+      // Atualizar estado local
+      setError(`Promise rejeitada: ${event.reason}`);
+    };
+
+    // Adicionar listeners globais
+    window.addEventListener('error', handleGlobalError, true); // true = capture phase
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('error', handleGlobalError, true);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   useEffect(() => {
     // Listener para mensagens RENDER_COMPONENT
@@ -1217,11 +1320,35 @@ const DynamicRenderer: React.FC = () => {
     }
 
     if (RenderedComponent) {
-      // Envolve o componente renderizado com um ErrorBoundary para capturar erros de renderização
-      // Você precisaria criar um componente ErrorBoundary simples
-      // return <ErrorBoundary><RenderedComponent /></ErrorBoundary>;
-      // Por enquanto, renderiza diretamente:
-      return <RenderedComponent />;
+      // Wrapper que captura erros durante a execução do componente dinâmico
+      const SafeDynamicComponent = () => {
+        try {
+          return <RenderedComponent />;
+        } catch (renderError) {
+          console.error("JOOOOOOOO - Render Error:", renderError);
+
+          const errorData = {
+            source: 'Dynamic Component Render',
+            message: renderError instanceof Error ? renderError.message : String(renderError),
+            stack: renderError instanceof Error ? renderError.stack : 'No stack trace available',
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            url: window.location.href
+          };
+
+          // Enviar erro via messageService
+          messageService.sendMessage('ERROR', null, errorData, window.componentData?.id || null);
+
+          return (
+            <div className="p-4 bg-red-100 text-red-800 rounded">
+              <h3 className="font-bold">Erro na renderização do componente dinâmico:</h3>
+              <pre className="mt-2 whitespace-pre-wrap">{renderError instanceof Error ? renderError.message : String(renderError)}</pre>
+            </div>
+          );
+        }
+      };
+
+      return <DynamicErrorBoundary><SafeDynamicComponent /></DynamicErrorBoundary>;
     }
 
     // Estado inicial ou quando nenhum código/chave foi fornecido
