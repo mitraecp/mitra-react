@@ -475,7 +475,21 @@ const componentRegistry = {
       console.log(`actionMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar actionMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'actionMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -486,7 +500,21 @@ const componentRegistry = {
       console.log(`formMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar formMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'formMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -497,7 +525,21 @@ const componentRegistry = {
       console.log(`detailMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar detailMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'detailMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -511,7 +553,21 @@ const componentRegistry = {
       console.log(`dbactionMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar dbactionMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'dbactionMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -522,7 +578,21 @@ const componentRegistry = {
       console.log(`modalMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar modalMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'modalMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -536,7 +606,21 @@ const componentRegistry = {
       console.log(`setVariableMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar setVariableMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'setVariableMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -550,7 +634,21 @@ const componentRegistry = {
       console.log(`variableMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar variableMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'variableMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -566,7 +664,21 @@ const componentRegistry = {
       console.log(`queryMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar queryMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'queryMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -608,7 +720,21 @@ const componentRegistry = {
       console.log(`goToScreenMitra result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar goToScreenMitra:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'goToScreenMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
       throw error;
     }
   },
@@ -648,7 +774,22 @@ const componentRegistry = {
       console.log(`queryMitraWidget result:`, result);
       return result;
     } catch (error) {
+      console.error("JOOOOOOOO", error);
       console.error(`Erro ao executar queryMitraWidget:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'queryMitraWidget',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        queryDireta,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, window.componentData?.id || null);
+
       throw error;
     }
   }
