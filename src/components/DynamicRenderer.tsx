@@ -1371,7 +1371,6 @@ const DynamicRenderer: React.FC = () => {
 
           // Acesso aos objetos date-fns (disponíveis via scope)
           const dateFns = scope.dateFns;
-          const ptBR = scope.ptBR;
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${processedComponentCode}
