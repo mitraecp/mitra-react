@@ -41,7 +41,7 @@ export class MessageService {
   private listeners: Map<MessageType, Array<(code: string | null, componentData?: any | null, componentId?: string | null) => void>> = new Map();
   private pendingQueries: Map<string, PendingQuery> = new Map();
   private ready = false;
-  private queryTimeoutMs = 120000; // 2 minutos de timeout para consultas
+  private queryTimeoutMs = 480000; // 8 minutos de timeout para consultas
 
   private constructor() {
     // Configurar o listener de mensagens
