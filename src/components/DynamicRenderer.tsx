@@ -84,6 +84,26 @@ import { useToast, toast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from "@/components/app-sidebar"
 import { cn } from "@/lib/utils"
+import * as z from "zod"
+
+// React Hook Form e Zod Resolver
+import { useForm, useController, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+// Ícones
+import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
+
+// Componente DynamicIcon para compatibilidade
+const DynamicIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
+  const IconComponent = LucideReact[name as keyof typeof LucideReact] as React.ComponentType<any>;
+
+  if (!IconComponent) {
+    console.warn(`Ícone "${name}" não encontrado no Lucide React`);
+    return <LucideReact.HelpCircle {...props} />;
+  }
+
+  return <IconComponent {...props} />;
+};
 
 // Componentes de gráficos do Shadcn UI
 import {
@@ -130,40 +150,6 @@ import {
   LabelList,
   Tooltip as RechartsTooltip
 } from 'recharts';
-// Ícones
-import * as LucideReact from 'lucide-react'; // Importa todos os ícones como um objeto
-import * as ReactIcons from 'react-icons'; // Importa todos os ícones do react-icons
-import * as TablerIcons from '@tabler/icons-react'; // Importa todos os ícones do Tabler
-import * as AiIcons from 'react-icons/ai'; // Ant Design Icons
-import * as BiIcons from 'react-icons/bi'; // BoxIcons
-import * as BsIcons from 'react-icons/bs'; // Bootstrap Icons
-import * as CgIcons from 'react-icons/cg'; // css.gg
-import * as DiIcons from 'react-icons/di'; // Devicons
-import * as FaIcons from 'react-icons/fa'; // Font Awesome 5
-import * as Fa6Icons from 'react-icons/fa6'; // Font Awesome 6
-import * as FcIcons from 'react-icons/fc'; // Flat Color Icons
-import * as FiIcons from 'react-icons/fi'; // Feather
-import * as GiIcons from 'react-icons/gi'; // Game Icons
-import * as GoIcons from 'react-icons/go'; // Github Octicons
-import * as GrIcons from 'react-icons/gr'; // Grommet-Icons
-import * as HiIcons from 'react-icons/hi'; // Heroicons
-import * as Hi2Icons from 'react-icons/hi2'; // Heroicons 2
-import * as ImIcons from 'react-icons/im'; // IcoMoon Free
-import * as IoIcons from 'react-icons/io'; // Ionicons 4
-import * as Io5Icons from 'react-icons/io5'; // Ionicons 5
-import * as LiaIcons from 'react-icons/lia'; // Line Awesome
-import * as LuIcons from 'react-icons/lu'; // Lucide
-import * as MdIcons from 'react-icons/md'; // Material Design icons
-import * as PiIcons from 'react-icons/pi'; // Phosphor Icons
-import * as RiIcons from 'react-icons/ri'; // Remix Icon
-import * as RxIcons from 'react-icons/rx'; // Radix Icons
-import * as SiIcons from 'react-icons/si'; // Simple Icons
-import * as SlIcons from 'react-icons/sl'; // Simple Line Icons
-import * as TbIcons from 'react-icons/tb'; // Tabler Icons
-import * as TfiIcons from 'react-icons/tfi'; // Themify Icons
-import * as TiIcons from 'react-icons/ti'; // Typicons
-import * as VscIcons from 'react-icons/vsc'; // VS Code Icons
-import * as WiIcons from 'react-icons/wi'; // Weather Icons
 
 // Date-fns - Biblioteca de manipulação de datas
 import * as dateFns from 'date-fns';
@@ -246,6 +232,13 @@ const componentRegistry = {
 
   // Utilitários
   cn,
+  z, // Zod para validação de esquemas
+
+  // React Hook Form
+  useForm,
+  useController,
+  Controller,
+  zodResolver,
 
   // Componentes UI (Shadcn UI)
   Button,
@@ -299,13 +292,8 @@ const componentRegistry = {
   useToast, toast,
   AppSidebar,
 
-  // Hooks e funções do @tanstack/react-table
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  flexRender,
+  // Componente de ícones dinâmicos
+  DynamicIcon,
 
   // Biblioteca de Ícones
   LucideReact, // Expõe todo o objeto LucideReact
@@ -318,49 +306,13 @@ const componentRegistry = {
     return acc;
   }, {} as Record<string, any>),
 
-  // Biblioteca Tabler Icons
-  TablerIcons, // Expõe todo o objeto TablerIcons
-  // Adicionar ícones individuais do Tabler para acesso direto
-  ...Object.entries(TablerIcons).reduce((acc, [key, value]) => {
-    // Adicionar apenas os componentes (funções/classes), não as propriedades
-    if (typeof value === 'function') {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as Record<string, any>),
-
-  // Biblioteca React Icons - Expor todos os conjuntos de ícones
-  ReactIcons, // Objeto principal do react-icons
-  AiIcons, // Ant Design Icons
-  BiIcons, // BoxIcons
-  BsIcons, // Bootstrap Icons
-  CgIcons, // css.gg
-  DiIcons, // Devicons
-  FaIcons, // Font Awesome 5
-  Fa6Icons, // Font Awesome 6
-  FcIcons, // Flat Color Icons
-  FiIcons, // Feather
-  GiIcons, // Game Icons
-  GoIcons, // Github Octicons
-  GrIcons, // Grommet-Icons
-  HiIcons, // Heroicons
-  Hi2Icons, // Heroicons 2
-  ImIcons, // IcoMoon Free
-  IoIcons, // Ionicons 4
-  Io5Icons, // Ionicons 5
-  LiaIcons, // Line Awesome
-  LuIcons, // Lucide
-  MdIcons, // Material Design icons
-  PiIcons, // Phosphor Icons
-  RiIcons, // Remix Icon
-  RxIcons, // Radix Icons
-  SiIcons, // Simple Icons
-  SlIcons, // Simple Line Icons
-  TbIcons, // Tabler Icons
-  TfiIcons, // Themify Icons
-  TiIcons, // Typicons
-  VscIcons, // VS Code Icons
-  WiIcons, // Weather Icons
+  // Hooks e funções do @tanstack/react-table
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
 
   // Date-fns - Biblioteca de manipulação de datas
   dateFns, // Objeto principal do date-fns
@@ -1105,7 +1057,7 @@ const DynamicRenderer: React.FC = () => {
       };
 
       // Processar imports e remover declarações
-      const { processedCode, imports, importMappings } = processImports(transpiledCode);
+      const { processedCode, imports } = processImports(transpiledCode);
 
       // Remover diretiva "use client"
       let cleanedCode = processedCode.replace(/"use client";?\s*/g, '');
@@ -1129,58 +1081,77 @@ const DynamicRenderer: React.FC = () => {
       // Processar imports do Lucide
       if (imports.has('lucide-react')) {
         const lucideComponents = imports.get('lucide-react') || [];
-        const lucideMappings = importMappings.get('lucide-react') || new Map();
         console.log('Componentes Lucide importados:', lucideComponents);
 
         importDeclarations += `
           // Importar componentes do Lucide
           console.log('LucideReact disponível:', LucideReact);
           ${lucideComponents.map(comp => {
-            // Remover espaços em branco e quebras de linha
             const cleanComp = comp.trim();
             // Validar se o componente existe e não está vazio
             if (!cleanComp || cleanComp.length === 0) {
               return '// Componente vazio ignorado';
             }
-            // Obter o nome original do componente (antes do 'as')
-            const originalName = lucideMappings.get(cleanComp) || cleanComp;
-            return `const ${cleanComp} = LucideReact.${originalName} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
+            return `const ${cleanComp} = LucideReact.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
           }).join('\n          ')}
         `;
       }
 
-      // Processar imports do React Icons
-      const reactIconsModules = [
-        'react-icons/ai', 'react-icons/bi', 'react-icons/bs', 'react-icons/cg', 'react-icons/di',
-        'react-icons/fa', 'react-icons/fa6', 'react-icons/fc', 'react-icons/fi', 'react-icons/gi',
-        'react-icons/go', 'react-icons/gr', 'react-icons/hi', 'react-icons/hi2', 'react-icons/im',
-        'react-icons/io', 'react-icons/io5', 'react-icons/lia', 'react-icons/lu', 'react-icons/md',
-        'react-icons/pi', 'react-icons/ri', 'react-icons/rx', 'react-icons/si', 'react-icons/sl',
-        'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi'
-      ];
+      // Processamento simplificado - apenas componentes básicos
 
-      reactIconsModules.forEach(module => {
-        if (imports.has(module)) {
-          const iconComponents = imports.get(module) || [];
-          const modulePrefix = module.split('/')[1].toUpperCase(); // ex: 'ai' -> 'AI'
-          const scopeName = `${modulePrefix.charAt(0).toUpperCase()}${modulePrefix.slice(1).toLowerCase()}Icons`; // ex: 'AiIcons'
+      // Processar imports do Zod
+      if (imports.has('zod')) {
+        const zodComponents = imports.get('zod') || [];
+        console.log('Componentes Zod importados:', zodComponents);
 
-          console.log(`Componentes ${module} importados:`, iconComponents);
+        importDeclarations += `
+          // Zod já está disponível como 'z' no escopo
+          ${zodComponents.map(comp => {
+            const cleanComp = comp.trim();
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            if (cleanComp === 'z') {
+              return `const z = scope.z; console.log('z (Zod) importado:', z);`;
+            }
+            return `const ${cleanComp} = scope.z; console.log('${cleanComp} importado como z:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
 
-          importDeclarations += `
-            // Importar componentes do ${module}
-            console.log('${scopeName} disponível:', ${scopeName});
-            ${iconComponents.map(comp => {
-              const cleanComp = comp.trim();
-              // Validar se o componente existe e não está vazio
-              if (!cleanComp || cleanComp.length === 0) {
-                return '// Componente vazio ignorado';
-              }
-              return `const ${cleanComp} = ${scopeName}.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
-            }).join('\n            ')}
-          `;
-        }
-      });
+      // Processar imports do React Hook Form
+      if (imports.has('react-hook-form')) {
+        const rhfComponents = imports.get('react-hook-form') || [];
+        console.log('Componentes React Hook Form importados:', rhfComponents);
+
+        importDeclarations += `
+          // React Hook Form já está disponível no escopo
+          ${rhfComponents.map(comp => {
+            const cleanComp = comp.trim();
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            return `const ${cleanComp} = scope.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
+
+      // Processar imports do @hookform/resolvers/zod
+      if (imports.has('@hookform/resolvers/zod')) {
+        const resolverComponents = imports.get('@hookform/resolvers/zod') || [];
+        console.log('Componentes @hookform/resolvers/zod importados:', resolverComponents);
+
+        importDeclarations += `
+          // Zod Resolver já está disponível no escopo
+          ${resolverComponents.map(comp => {
+            const cleanComp = comp.trim();
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            return `const ${cleanComp} = scope.${cleanComp}; console.log('${cleanComp} importado:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
 
       // Processar imports do date-fns
       if (imports.has('date-fns')) {
@@ -1220,24 +1191,7 @@ const DynamicRenderer: React.FC = () => {
         `;
       }
 
-      // Processar imports do @tabler/icons-react
-      if (imports.has('@tabler/icons-react')) {
-        const tablerComponents = imports.get('@tabler/icons-react') || [];
-        console.log('Componentes @tabler/icons-react importados:', tablerComponents);
-
-        importDeclarations += `
-          // Importar componentes do @tabler/icons-react
-          console.log('TablerIcons disponível:', TablerIcons);
-          ${tablerComponents.map(comp => {
-            const cleanComp = comp.trim();
-            // Validar se o componente existe e não está vazio
-            if (!cleanComp || cleanComp.length === 0) {
-              return '// Componente vazio ignorado';
-            }
-            return `const ${cleanComp} = TablerIcons.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
-          }).join('\n          ')}
-        `;
-      }
+      // Tabler Icons removido para otimização
 
       // Processar outros imports conhecidos
       const knownModules = [
@@ -1261,16 +1215,10 @@ const DynamicRenderer: React.FC = () => {
         '@/hooks/use-toast',
         '@tanstack/react-table',
         'recharts',
-        // Adicionar módulos do react-icons
-        'react-icons',
-        'react-icons/ai', 'react-icons/bi', 'react-icons/bs', 'react-icons/cg', 'react-icons/di',
-        'react-icons/fa', 'react-icons/fa6', 'react-icons/fc', 'react-icons/fi', 'react-icons/gi',
-        'react-icons/go', 'react-icons/gr', 'react-icons/hi', 'react-icons/hi2', 'react-icons/im',
-        'react-icons/io', 'react-icons/io5', 'react-icons/lia', 'react-icons/lu', 'react-icons/md',
-        'react-icons/pi', 'react-icons/ri', 'react-icons/rx', 'react-icons/si', 'react-icons/sl',
-        'react-icons/tb', 'react-icons/tfi', 'react-icons/ti', 'react-icons/vsc', 'react-icons/wi',
-        // Adicionar módulos do @tabler/icons-react
-        '@tabler/icons-react',
+        'lucide-react',
+        'zod',
+        'react-hook-form',
+        '@hookform/resolvers/zod',
         // Adicionar módulos do date-fns
         'date-fns',
         'date-fns/locale'
@@ -1284,6 +1232,10 @@ const DynamicRenderer: React.FC = () => {
           `;
         }
       });
+
+      // Debug: Verificar se z está disponível
+      console.log('Zod (z) disponível no escopo:', z);
+      console.log('Tipo de z:', typeof z);
 
       // 6. Criar um wrapper para o componente transpilado
       const processedComponentCode = `
@@ -1373,6 +1325,10 @@ const DynamicRenderer: React.FC = () => {
           const clearTimeout = window.clearTimeout || globalThis.clearTimeout;
           const setInterval = window.setInterval || globalThis.setInterval;
           const clearInterval = window.clearInterval || globalThis.clearInterval;
+
+          // Acesso aos utilitários
+          const cn = scope.cn;
+          const z = scope.z;
 
           // Acesso ao objeto LucideReact
           const LucideReact = scope.LucideReact;
