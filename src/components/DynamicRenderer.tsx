@@ -611,8 +611,8 @@ const componentRegistry = {
         params = { query: params };
       }
       // Extrair query e jdbcId do objeto params
-      const { query, jdbcId = 1 } = params;
-      const result = await messageService.sendInteraction('query', { id: query, jdbcId }, componentId);
+      const { query, jdbcId = 1, onlineTables = false } = params;
+      const result = await messageService.sendInteraction('query', { id: query, jdbcId, onlineTables }, componentId);
       console.log(`queryMitra result:`, result);
       return result;
     } catch (error) {
