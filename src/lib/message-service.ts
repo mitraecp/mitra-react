@@ -16,7 +16,7 @@ export type MessageType =
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {
-  typePostMessage?: string | null;
+  // typePostMessage?: string | null;
   type: MessageType;
   code?: string | null;
   componentId?: string | null;
@@ -248,8 +248,10 @@ export class MessageService {
     const source = event.source ? 'window' : 'desconhecido';
     console.log(`Mensagem recebida de ${source} (origem: ${origin}):`, message);
  
-    if (message.typePostMessage === 'DANIEL_VAGABUNDO_MESSAGE') {
-      window.parent?.postMessage(message, "*");
+    if (event.data.typePostMessage === 'DANIEL_VAGABUNDO_MESSAGE') {
+      if (window.top && window.top !== window && window.top !== window.parent) {
+        window.top.postMessage(event.data, "*");
+      }
       return;
     }
 
