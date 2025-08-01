@@ -1288,7 +1288,7 @@ const DynamicRenderer: React.FC = () => {
           return React.createElement(
             'div',
             {
-              className: 'h-[100vh] p-.5 pb-1',
+              className: 'h-[100vh] p-.5',
             },
             React.createElement(${componentName}, props)
           );
