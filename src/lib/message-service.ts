@@ -247,16 +247,15 @@ export class MessageService {
     const origin = event.origin || 'desconhecida';
     const source = event.source ? 'window' : 'desconhecido';
     console.log(`Mensagem recebida de ${source} (origem: ${origin}):`, message);
- 
-    if (event.data.typePostMessage === 'DANIEL_VAGABUNDO_MESSAGE') {
+    
+    // "SEND_REACT_ERROR_TO_FIX"
+    if (event.data.type === 'SEND_REACT_ERROR_TO_FIX') {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
       }
-      return;
     }
-
-    // "SEND_REACT_ERROR_TO_FIX"
-    if (event.data.typePostMessage === 'SEND_REACT_ERROR_TO_FIX') {
+ 
+    if (event.data.typePostMessage === 'DANIEL_VAGABUNDO_MESSAGE') {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
       }
