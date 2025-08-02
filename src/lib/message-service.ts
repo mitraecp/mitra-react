@@ -255,6 +255,14 @@ export class MessageService {
       return;
     }
 
+    // "SEND_REACT_ERROR_TO_FIX"
+    if (event.data.typePostMessage === 'SEND_REACT_ERROR_TO_FIX') {
+      if (window.top && window.top !== window && window.top !== window.parent) {
+        window.top.postMessage(event.data, "*");
+      }
+      return;
+    }
+
     // Verificar se é uma resposta de interação assíncrona (formato padrão)
     if (message.requestId && (
         message.type === 'QUERY_RESPONSE' ||
