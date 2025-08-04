@@ -296,15 +296,15 @@ const componentRegistry = {
   DynamicIcon,
 
   // Biblioteca de Ícones
-  LucideReact, // Expõe todo o objeto LucideReact
-  // Adicionar ícones individuais do Lucide para acesso direto
-  ...Object.entries(LucideReact).reduce((acc, [key, value]) => {
-    // Adicionar apenas os componentes (funções/classes), não as propriedades
-    if (typeof value === 'function') {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as Record<string, any>),
+  // LucideReact, // Expõe todo o objeto LucideReact
+  // // Adicionar ícones individuais do Lucide para acesso direto
+  // ...Object.entries(LucideReact).reduce((acc, [key, value]) => {
+  //   // Adicionar apenas os componentes (funções/classes), não as propriedades
+  //   if (typeof value === 'function') {
+  //     acc[key] = value;
+  //   }
+  //   return acc;
+  // }, {} as Record<string, any>),
 
   // Hooks e funções do @tanstack/react-table
   useReactTable,
@@ -1079,23 +1079,23 @@ const DynamicRenderer: React.FC = () => {
       let importDeclarations = '';
 
       // Processar imports do Lucide
-      if (imports.has('lucide-react')) {
-        const lucideComponents = imports.get('lucide-react') || [];
-        console.log('Componentes Lucide importados:', lucideComponents);
+      // if (imports.has('lucide-react')) {
+      //   const lucideComponents = imports.get('lucide-react') || [];
+      //   console.log('Componentes Lucide importados:', lucideComponents);
 
-        importDeclarations += `
-          // Importar componentes do Lucide
-          console.log('LucideReact disponível:', LucideReact);
-          ${lucideComponents.map(comp => {
-            const cleanComp = comp.trim();
-            // Validar se o componente existe e não está vazio
-            if (!cleanComp || cleanComp.length === 0) {
-              return '// Componente vazio ignorado';
-            }
-            return `const ${cleanComp} = LucideReact.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
-          }).join('\n          ')}
-        `;
-      }
+      //   importDeclarations += `
+      //     // Importar componentes do Lucide
+      //     console.log('LucideReact disponível:', LucideReact);
+      //     ${lucideComponents.map(comp => {
+      //       const cleanComp = comp.trim();
+      //       // Validar se o componente existe e não está vazio
+      //       if (!cleanComp || cleanComp.length === 0) {
+      //         return '// Componente vazio ignorado';
+      //       }
+      //       return `const ${cleanComp} = LucideReact.${cleanComp} || (() => React.createElement('div', {}, '${cleanComp} não encontrado')); console.log('${cleanComp} importado:', ${cleanComp});`;
+      //     }).join('\n          ')}
+      //   `;
+      // }
 
       // Processamento simplificado - apenas componentes básicos
 
@@ -1330,8 +1330,8 @@ const DynamicRenderer: React.FC = () => {
           const cn = scope.cn;
           const z = scope.z;
 
-          // Acesso ao objeto LucideReact
-          const LucideReact = scope.LucideReact;
+          // // Acesso ao objeto LucideReact
+          // const LucideReact = scope.LucideReact;
 
           // Acesso ao objeto TablerIcons
           const TablerIcons = scope.TablerIcons;
