@@ -553,8 +553,8 @@ const componentRegistry = {
     try {
       console.log(`setVariableMitra(${JSON.stringify(params)})`);
       // Garantir que estamos enviando name e content, não name e value
-      const { name, content } = params;
-      const result = await messageService.sendInteraction('variable', { name, content }, componentId);
+      const { name, content, reactivity = false } = params;
+      const result = await messageService.sendInteraction('variable', { name, content, reactivity }, componentId);
       console.log(`setVariableMitra result:`, result);
       return result;
     } catch (error) {
