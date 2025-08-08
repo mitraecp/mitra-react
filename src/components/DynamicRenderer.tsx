@@ -85,6 +85,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from "@/components/app-sidebar"
 import { cn } from "@/lib/utils"
 import * as z from "zod"
+import clsx from "clsx"
 
 // React Hook Form e Zod Resolver
 import { useForm, useController, Controller } from 'react-hook-form'
@@ -232,6 +233,7 @@ const componentRegistry = {
 
   // Utilitários
   cn,
+  clsx, // Biblioteca para combinação de classes CSS
   z, // Zod para validação de esquemas
 
   // React Hook Form
@@ -1173,6 +1175,26 @@ const DynamicRenderer: React.FC = () => {
         `;
       }
 
+      // Processar imports do clsx
+      if (imports.has('clsx')) {
+        const clsxComponents = imports.get('clsx') || [];
+        console.log('Componentes clsx importados:', clsxComponents);
+
+        importDeclarations += `
+          // clsx já está disponível no escopo
+          ${clsxComponents.map(comp => {
+            const cleanComp = comp.trim();
+            if (!cleanComp || cleanComp.length === 0) {
+              return '// Componente vazio ignorado';
+            }
+            if (cleanComp === 'default' || cleanComp === 'clsx') {
+              return `const clsx = scope.clsx; console.log('clsx importado:', clsx);`;
+            }
+            return `const ${cleanComp} = scope.clsx; console.log('${cleanComp} importado como clsx:', ${cleanComp});`;
+          }).join('\n          ')}
+        `;
+      }
+
       // Processar imports do date-fns/locale
       if (imports.has('date-fns/locale')) {
         const localeComponents = imports.get('date-fns/locale') || [];
@@ -1219,6 +1241,9 @@ const DynamicRenderer: React.FC = () => {
         'zod',
         'react-hook-form',
         '@hookform/resolvers/zod',
+        // 'react-day-picker',
+        // 'react-day-picker/persian',
+        'clsx',
         // Adicionar módulos do date-fns
         'date-fns',
         'date-fns/locale'
