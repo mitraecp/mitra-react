@@ -139,7 +139,7 @@ export class MessageService {
     }
 
     // Lista de tipos de interações que são assíncronas
-    const asyncInteractions = ['query', 'action', 'form', 'dbaction', 'variable', 'goToScreen'];
+    const asyncInteractions = ['query', 'action', 'form', 'dbaction', 'variable', 'goToScreen', 'variableQuery'];
 
     // Se for uma interação assíncrona, retornar uma Promise
     if (asyncInteractions.includes(interactionType)) {
