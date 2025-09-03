@@ -729,6 +729,26 @@ const componentRegistry = {
     // A implementação depende do contexto específico da aplicação
   },
 
+  uploadFileMitra: async (params: any): Promise<any> => {
+    try {
+      const result = await messageService.sendInteraction('upload', params);
+      console.log(`uploadFileMitra result:`, result);
+      return result;
+    } catch (error) {
+      const errorData = {
+        source: 'uploadFileMitra',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData || window.componentData?.id || null);
+      throw error;
+    }
+  },
+
   // Função para executar consultas diretamente na API Mitra sem usar postMessage
   queryMitraWidget: async (params: any, queryDireta: string ): Promise<any> => {
     try {
