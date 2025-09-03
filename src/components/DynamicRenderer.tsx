@@ -732,7 +732,7 @@ const componentRegistry = {
   uploadFileMitra: async (params: any): Promise<any> => {
     try {
       console.log(`params uploadFileMitra(${JSON.stringify(params)})`);
-      const result = await messageService.sendInteraction('upload', { file: params });
+      const result = await messageService.sendInteraction('upload', { file: params.file });
       console.log(`uploadFileMitra result:`, result);
       return result;
     } catch (error) {
