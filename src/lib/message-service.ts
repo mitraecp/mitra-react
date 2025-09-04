@@ -12,6 +12,7 @@ export type MessageType =
   | 'FORM_RESPONSE'
   | 'DBACTION_RESPONSE'
   | 'VARIABLE_RESPONSE'
+  | 'UPLOAD_RESPONSE'
   | 'GOTOSCREEN_RESPONSE';
 
 // Interface para as mensagens trocadas
@@ -139,7 +140,7 @@ export class MessageService {
     }
 
     // Lista de tipos de interações que são assíncronas
-    const asyncInteractions = ['query', 'action', 'form', 'dbaction', 'variable', 'goToScreen', 'variableQuery'];
+    const asyncInteractions = ['query', 'action', 'form', 'dbaction', 'variable', 'goToScreen', 'variableQuery', 'upload'];
 
     // Se for uma interação assíncrona, retornar uma Promise
     if (asyncInteractions.includes(interactionType)) {
@@ -269,7 +270,8 @@ export class MessageService {
         message.type === 'FORM_RESPONSE' ||
         message.type === 'DBACTION_RESPONSE' ||
         message.type === 'VARIABLE_RESPONSE' ||
-        message.type === 'GOTOSCREEN_RESPONSE'
+        message.type === 'GOTOSCREEN_RESPONSE' ||
+        message.type === 'UPLOAD_RESPONSE'
       )) {
       this.handleAsyncResponse(message);
       return;
