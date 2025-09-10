@@ -636,6 +636,31 @@ const componentRegistry = {
       throw error;
     }
   },
+  updateMitraComponents: async (params: any, componentId?: string | null): Promise<any> => {
+    try {
+      console.log(`updateMitraComponents(${JSON.stringify(params)})`);
+
+      const result = await messageService.sendInteraction('updateComponents', params, componentId);
+      console.log(`updateMitraComponents result:`, result);
+      return result;
+    } catch (error) {
+      console.error(`Erro ao executar updateMitraComponents:`, error);
+
+      // Enviar erro via messageService
+      const errorData = {
+        source: 'updateMitraComponents',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace available',
+        params: JSON.stringify(params),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      messageService.sendMessage('ERROR', null, errorData, componentId || window.componentData?.id || null);
+
+      throw error;
+    }
+  },
   queryMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
       console.log(`queryMitra(${JSON.stringify(params)})`);
