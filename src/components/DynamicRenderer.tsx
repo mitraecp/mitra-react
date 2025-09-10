@@ -638,7 +638,7 @@ const componentRegistry = {
   },
   updateMitraComponents: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`updateMitraComponents(${params ? JSON.stringify(params) : ''})`);
+      console.log(`updateMitraComponents:`, params);
 
       const result = await messageService.sendInteraction('updateComponents', { params }, componentId);
       console.log(`updateMitraComponents result:`, result);
