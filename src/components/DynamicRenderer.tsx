@@ -1175,7 +1175,7 @@ const DynamicRenderer: React.FC = () => {
 
       // --- Instrumentação para expor updateMitra definida DENTRO do componente raiz ---
       try {
-        const exposeLine = "try { if (typeof updateMitra === 'function') { window.__mitraUpdateMitra = updateMitra; if (window.parent) setTimeout(() => window.parent.postMessage({type:'HAS_UPDATE_MITRA'}, '*'), 0); } } catch(_) {}";
+        const exposeLine = "try { if (typeof updateMitra === 'function') { window.__mitraUpdateMitra = updateMitra; if (window.parent) setTimeout(() => window.parent.postMessage({type:'HAS_UPDATE_MITRA', componentId:(window.componentData && window.componentData.id) || window.componentId || null}, '*'), 0); } } catch(_) {}";
         // Escapar nome do componente para regex
         const compNameEsc = componentName.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
         const fnPattern = new RegExp(`function\\s+${compNameEsc}\\s*\\(([^)]*)\\)\\s*{`);
