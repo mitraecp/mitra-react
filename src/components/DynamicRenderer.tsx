@@ -747,12 +747,12 @@ const componentRegistry = {
       throw error;
     }
   },
-  // Adicionar updateMitra conforme documentação
-  updateMitra: (params?: any) => {
-    console.log(`updateMitra(${JSON.stringify(params)})`);
-    // Este método é chamado pelo componente pai para controlar manualmente os updates
-    // A implementação depende do contexto específico da aplicação
-  },
+  // // Adicionar updateMitra conforme documentação
+  // updateMitra: (params?: any) => {
+  //   console.log(`updateMitra(${JSON.stringify(params)})`);
+  //   // Este método é chamado pelo componente pai para controlar manualmente os updates
+  //   // A implementação depende do contexto específico da aplicação
+  // },
 
   uploadFileMitra: async (params: any): Promise<any> => {
     try {
@@ -1015,6 +1015,28 @@ const DynamicRenderer: React.FC = () => {
     };
   }, []); // Dependência vazia para rodar apenas na montagem
 
+  // Listener global para UPDATE_MITRA vindo via postMessage do app1
+  useEffect(() => {
+    const handlePostMessage = (event: MessageEvent) => {
+      const data = event.data;
+      const isUpdate = data === 'UPDATE_MITRA' || (data && (data.type === 'UPDATE_MITRA' || data.action === 'UPDATE_MITRA'));
+      if (isUpdate) {
+        try {
+          if (typeof window.__mitraUpdateMitra === 'function') {
+            console.log('[DynamicRenderer] Chamando updateMitra do componente dinâmico');
+            window.__mitraUpdateMitra();
+          } else {
+            console.log('[DynamicRenderer] UPDATE_MITRA recebido mas nenhuma função updateMitra foi registrada');
+          }
+        } catch (err) {
+          console.error('[DynamicRenderer] Erro ao executar updateMitra:', err);
+        }
+      }
+    };
+    window.addEventListener('message', handlePostMessage);
+    return () => window.removeEventListener('message', handlePostMessage);
+  }, []);
+
   // Memoizar a compilação do componente dinâmico
   // Isso só será re-executado quando `componentCode` mudar.
   useEffect(() => {
@@ -1150,6 +1172,25 @@ const DynamicRenderer: React.FC = () => {
       cleanedCode = cleanedCode.replace(/export\s+default\s+(\w+);?/g, '');
       // Remover declarações export { ... }
       cleanedCode = cleanedCode.replace(/export\s+{[^}]*};?/g, '');
+
+      // --- Instrumentação para expor updateMitra definida DENTRO do componente raiz ---
+      try {
+        const exposeLine = "try { if (typeof updateMitra === 'function') { window.__mitraUpdateMitra = updateMitra; if (window.parent) setTimeout(() => window.parent.postMessage({type:'HAS_UPDATE_MITRA'}, '*'), 0); } } catch(_) {}";
+        // Escapar nome do componente para regex
+        const compNameEsc = componentName.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const fnPattern = new RegExp(`function\\s+${compNameEsc}\\s*\\(([^)]*)\\)\\s*{`);
+        const arrowPattern = new RegExp(`const\\s+${compNameEsc}\\s*=\\s*\\([^)]*\\)\\s*=>\\s*{`);
+        if (fnPattern.test(cleanedCode)) {
+          cleanedCode = cleanedCode.replace(fnPattern, (m) => m + "\n" + exposeLine + "\n");
+        } else if (arrowPattern.test(cleanedCode)) {
+          cleanedCode = cleanedCode.replace(arrowPattern, (m) => m + "\n" + exposeLine + "\n");
+        } else {
+          // fallback: se não encontrou, tentaremos expor fora (não terá acesso à função interna, mas registramos tentativa)
+          cleanedCode = exposeLine + "\n" + cleanedCode;
+        }
+      } catch (e) {
+        console.warn('Falha ao instrumentar updateMitra:', e);
+      }
 
       // 5. Processar os imports para disponibilizar os componentes
       let importDeclarations = '';
