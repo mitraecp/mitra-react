@@ -636,19 +636,19 @@ const componentRegistry = {
       throw error;
     }
   },
-  updateMitraComponents: async (params: any, componentId?: string | null): Promise<any> => {
+  updateComponentsMitra: async (params: any, componentId?: string | null): Promise<any> => {
     try {
-      console.log(`updateMitraComponents:`, params);
+      console.log(`updateComponentsMitra:`, params);
 
       const result = await messageService.sendInteraction('updateComponents', { params }, componentId);
-      console.log(`updateMitraComponents result:`, result);
+      console.log(`updateComponentsMitra result:`, result);
       return result;
     } catch (error) {
-      console.error(`Erro ao executar updateMitraComponents:`, error);
+      console.error(`Erro ao executar updateComponentsMitra:`, error);
 
       // Enviar erro via messageService
       const errorData = {
-        source: 'updateMitraComponents',
+        source: 'updateComponentsMitra',
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : 'No stack trace available',
         params: JSON.stringify(params),
