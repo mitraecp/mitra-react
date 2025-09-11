@@ -1022,9 +1022,9 @@ const DynamicRenderer: React.FC = () => {
       const isUpdate = data === 'UPDATE_MITRA' || (data && (data.type === 'UPDATE_MITRA' || data.action === 'UPDATE_MITRA'));
       if (isUpdate) {
         try {
-          if (typeof window.__mitraUpdateMitra === 'function') {
+          if (typeof window.updateMitra === 'function') {
             console.log('[DynamicRenderer] Chamando updateMitra do componente dinâmico');
-            window.__mitraUpdateMitra();
+            window.updateMitra();
           } else {
             console.log('[DynamicRenderer] UPDATE_MITRA recebido mas nenhuma função updateMitra foi registrada');
           }
@@ -1173,24 +1173,6 @@ const DynamicRenderer: React.FC = () => {
       // Remover declarações export { ... }
       cleanedCode = cleanedCode.replace(/export\s+{[^}]*};?/g, '');
 
-      // --- Instrumentação para expor updateMitra definida DENTRO do componente raiz ---
-      try {
-        const exposeLine = "try { if (typeof updateMitra === 'function') { window.__mitraUpdateMitra = updateMitra; if (window.parent) setTimeout(() => window.parent.postMessage({type:'HAS_UPDATE_MITRA', componentId:(window.componentData && window.componentData.id) || window.componentId || null}, '*'), 0); } } catch(_) {}";
-        // Escapar nome do componente para regex
-        const compNameEsc = componentName.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const fnPattern = new RegExp(`function\\s+${compNameEsc}\\s*\\(([^)]*)\\)\\s*{`);
-        const arrowPattern = new RegExp(`const\\s+${compNameEsc}\\s*=\\s*\\([^)]*\\)\\s*=>\\s*{`);
-        if (fnPattern.test(cleanedCode)) {
-          cleanedCode = cleanedCode.replace(fnPattern, (m) => m + "\n" + exposeLine + "\n");
-        } else if (arrowPattern.test(cleanedCode)) {
-          cleanedCode = cleanedCode.replace(arrowPattern, (m) => m + "\n" + exposeLine + "\n");
-        } else {
-          // fallback: se não encontrou, tentaremos expor fora (não terá acesso à função interna, mas registramos tentativa)
-          cleanedCode = exposeLine + "\n" + cleanedCode;
-        }
-      } catch (e) {
-        console.warn('Falha ao instrumentar updateMitra:', e);
-      }
 
       // 5. Processar os imports para disponibilizar os componentes
       let importDeclarations = '';
@@ -1381,6 +1363,30 @@ const DynamicRenderer: React.FC = () => {
       const processedComponentCode = `
         // Declarações de imports processados (ANTES do código do usuário)
         ${importDeclarations}
+
+        // Watchers para expor e anunciar updateComponent/updateMitra definidos no window
+        (function(){
+          var __announce = function(fn){
+            if (typeof fn === 'function') {
+              try { window.__mitraUpdateMitra = fn; } catch(e) {}
+              var componentId = (window.componentData && window.componentData.id) || window.componentId || null;
+              try { window.parent && window.parent.postMessage({ type: 'HAS_UPDATE_MITRA', componentId: componentId }, '*'); } catch(e) {}
+            }
+          };
+          var __watch = function(prop){
+            try {
+              var _val = window[prop];
+              if (typeof _val === 'function') __announce(_val);
+              Object.defineProperty(window, prop, {
+                configurable: true,
+                enumerable: true,
+                get: function(){ return _val; },
+                set: function(v){ _val = v; __announce(v); }
+              });
+            } catch(e) {}
+          };
+          __watch('updateMitra');
+        })();
 
         // Código do usuário transpilado (sem imports)
         ${cleanedCode}
