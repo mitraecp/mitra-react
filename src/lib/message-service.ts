@@ -7,6 +7,7 @@ export type MessageType =
   | 'LOG'
   | 'READY'
   | 'INTERACTIONS_MITRA'
+  | 'UPDATECOMPONENTS_RESPONSE'
   | 'QUERY_RESPONSE'
   | 'ACTION_RESPONSE'
   | 'FORM_RESPONSE'
@@ -265,6 +266,7 @@ export class MessageService {
 
     // Verificar se é uma resposta de interação assíncrona (formato padrão)
     if (message.requestId && (
+        message.type === 'UPDATECOMPONENTS_RESPONSE' ||
         message.type === 'QUERY_RESPONSE' ||
         message.type === 'ACTION_RESPONSE' ||
         message.type === 'FORM_RESPONSE' ||
