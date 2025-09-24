@@ -264,6 +264,13 @@ export class MessageService {
       return;
     }
 
+    if (event.data.typePostMessage === 'SET_CONTEXT_SCREEN') {
+      if (window.top && window.top !== window && window.top !== window.parent) {
+        window.top.postMessage(event.data, "*");
+      }
+      return;
+    }
+
     // Verificar se é uma resposta de interação assíncrona (formato padrão)
     if (message.requestId && (
         message.type === 'UPDATECOMPONENTS_RESPONSE' ||
