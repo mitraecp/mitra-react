@@ -357,7 +357,16 @@ export class MessageService {
     if (event.data.typePostMessage === "DANIEL_VAGABUNDO_MESSAGE") {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
+      }
+      if (window.parent && window.parent !== window) {
         window.parent.postMessage(event.data, "*");
+      }
+      if (
+        window.parent &&
+        window.parent.parent &&
+        window.parent.parent !== window.parent
+      ) {
+        window.parent.parent.postMessage(event.data, "*");
       }
       return;
     }
