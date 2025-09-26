@@ -14,7 +14,8 @@ export type MessageType =
   | "DBACTION_RESPONSE"
   | "VARIABLE_RESPONSE"
   | "UPLOAD_RESPONSE"
-  | "GOTOSCREEN_RESPONSE";
+  | "GOTOSCREEN_RESPONSE"
+  | "INIT_CHANNEL";
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {
@@ -58,6 +59,20 @@ export class MessageService {
   private constructor() {
     // Configurar o listener de mensagens
     window.addEventListener("message", this.handleMessage.bind(this));
+
+    const channel = new MessageChannel();
+    const port = channel.port1; // usado por C para enviar/receber
+    const portToSend = channel.port2; // será enviado para o avô
+
+    // porta para receber respostas
+    port.onmessage = (event) => {
+      console.log("Mensagem recebida do avô:", event.data);
+    };
+
+    // envia a porta para o avô via pai
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "INIT_CHANNEL" }, "*", [portToSend]);
+    }
 
     // Informar que está pronto para receber mensagens
     this.sendReadyMessage();
