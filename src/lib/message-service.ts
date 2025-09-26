@@ -315,9 +315,10 @@ export class MessageService {
     if (event.data.typePostMessage === "SET_SCREEN_CONTEXT") {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
+      }
+      if (window.parent && window.parent !== window) {
         window.parent.postMessage(event.data, "*");
       }
-      return;
     }
 
     if (!message || !message.type) {
