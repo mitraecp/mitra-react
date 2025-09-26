@@ -333,12 +333,14 @@ export class MessageService {
     if (event.data.type === "SEND_REACT_ERROR_TO_FIX") {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
+        window.parent.postMessage(event.data, "*");
       }
     }
 
     if (event.data.typePostMessage === "DANIEL_VAGABUNDO_MESSAGE") {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
+        window.parent.postMessage(event.data, "*");
       }
       return;
     }
