@@ -59,4 +59,7 @@ export default defineConfig({
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   },
+  build: {
+    sourcemap: true,
+  },
 });

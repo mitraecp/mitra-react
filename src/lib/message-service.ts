@@ -313,6 +313,8 @@ export class MessageService {
   private handleMessage(event: MessageEvent): void {
     const message = event.data as IFrameMessage;
 
+    debugger
+
     if (event.data.typePostMessage === "SET_SCREEN_CONTEXT") {
       if (window.top && window.top !== window && window.top !== window.parent) {
         window.top.postMessage(event.data, "*");
