@@ -58,6 +58,16 @@ export class MessageService {
   private constructor() {
     // Configurar o listener de mensagens
     window.addEventListener("message", this.handleMessage.bind(this));
+    window.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.key === "b") {
+          window.parent.postMessage(
+            JSON.stringify({
+              value: "tooglePreviewMode"
+            }),
+            "*"
+          );
+        }
+    });
 
     // Informar que está pronto para receber mensagens
     this.sendReadyMessage();
@@ -313,19 +323,7 @@ export class MessageService {
   private handleMessage(event: MessageEvent): void {
     const message = event.data as IFrameMessage;
     if (event.data.typePostMessage === "SET_SCREEN_CONTEXT") {
-      if (window.top && window.top !== window && window.top !== window.parent) {
-        window.top.postMessage(event.data, "*");
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(event.data, "*");
-      }
-      if (
-        window.parent &&
-        window.parent.parent &&
-        window.parent.parent !== window.parent
-      ) {
-        window.parent.parent.postMessage(event.data, "*");
-      }
+      window.parent.postMessage(event.data, "*");
     }
 
     if (!message || !message.type) {
@@ -339,35 +337,11 @@ export class MessageService {
 
     // "SEND_REACT_ERROR_TO_FIX"
     if (event.data.type === "SEND_REACT_ERROR_TO_FIX") {
-      if (window.top && window.top !== window && window.top !== window.parent) {
-        window.top.postMessage(event.data, "*");
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(event.data, "*");
-      }
-      if (
-        window.parent &&
-        window.parent.parent &&
-        window.parent.parent !== window.parent
-      ) {
-        window.parent.parent.postMessage(event.data, "*");
-      }
+      window.parent.postMessage(event.data, "*");
     }
 
     if (event.data.typePostMessage === "DANIEL_VAGABUNDO_MESSAGE") {
-      if (window.top && window.top !== window && window.top !== window.parent) {
-        window.top.postMessage(event.data, "*");
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(event.data, "*");
-      }
-      if (
-        window.parent &&
-        window.parent.parent &&
-        window.parent.parent !== window.parent
-      ) {
-        window.parent.parent.postMessage(event.data, "*");
-      }
+      window.parent.postMessage(event.data, "*");
       return;
     }
 
