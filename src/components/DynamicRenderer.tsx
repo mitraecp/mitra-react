@@ -1019,6 +1019,25 @@ const DynamicRenderer: React.FC = () => {
   useEffect(() => {
     const handlePostMessage = (event: MessageEvent) => {
       const data = event.data;
+      if(data.typePostMessage === 'SET_SCREEN_BUTTON_POSITION') {
+        const iframes = document.querySelectorAll('iframe');
+        let foundIframe = null;
+        if(iframes){
+          for (const iframe of iframes) {
+            if (iframe.contentWindow === event.source) {
+              foundIframe = iframe;
+              break;
+            }
+          }
+        }
+        const rect = foundIframe?.getBoundingClientRect();
+        window.parent.postMessage({ 
+          typePostMessage: 'SCREEN_BUTTON_POSITION',
+          position: { height: data.rect?.height, width: data.rect?.width, x: rect?.x + data.rect?.x, y: rect?.y + data.rect?.y },
+          screenId: data.screenId,
+          moduleId: data.moduleId
+        }, '*');
+      }
       const isUpdate = data === 'UPDATE_MITRA' || (data && (data.type === 'UPDATE_MITRA' || data.action === 'UPDATE_MITRA'));
       if (isUpdate) {
         try {
