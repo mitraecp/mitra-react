@@ -1,13 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 // import { Dashboard } from "@/components/Dashboard";
 // import { Button } from "@/components/ui/button";
 import DynamicRenderer from "@/components/DynamicRenderer";
+import { TweakCNEditor } from "@/components/TweakCNEditor";
 import { messageService } from "@/lib/message-service";
 import "@/lib/window-types";
 // import { Loader2 } from "lucide-react";
 
-function App() {
+function DefaultView() {
+  return (
+    <div className='flex-grow flex flex-col items-center justify-center h-full text-muted-foreground gap-4'>
+      <h1 className="text-2xl font-bold">MITRA React</h1>
+      <div className="flex gap-4">
+        <Link to="/tweakcn" className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+          Abrir TweakCN Editor
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function IframeApp() {
   const [renderMode, setRenderMode] = useState<'default' | 'dynamic'>('default');
 
   useEffect(() => {
@@ -55,9 +70,20 @@ function App() {
   }, []);
 
   return renderMode === 'default' ? (
-    <div className='flex-grow flex items-center justify-center h-full text-muted-foreground'></div>
+    <DefaultView />
   ) : (
     <DynamicRenderer />
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<IframeApp />} />
+        <Route path="/tweakcn" element={<TweakCNEditor />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
