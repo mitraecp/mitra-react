@@ -180,6 +180,9 @@ import {
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+// XLSX - Biblioteca para manipulação de planilhas Excel
+import * as XLSX from 'xlsx';
+
 // --- Componentes pré-definidos (mantidos por simplicidade) ---
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
 import { BarChartExample } from './BarChartExample';
@@ -341,6 +344,9 @@ const componentRegistry = {
   setMonth, // Definir mês
   setDate, // Definir dia
   ptBR, // Locale português brasileiro
+
+  // XLSX - Biblioteca para manipulação de planilhas Excel
+  XLSX, // Expõe todo o objeto XLSX
 
   // Leaflet
   L, // Expõe o objeto L do Leaflet
