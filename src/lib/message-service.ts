@@ -55,6 +55,10 @@ export class MessageService {
   private ready = false;
   private queryTimeoutMs = 480000; // 8 minutos de timeout para consultas
 
+  private lastRenderMsg:
+    | { code: string | null; componentData?: any | null; componentId?: string | null }
+    | null = null;
+
   private constructor() {
     // Configurar o listener de mensagens
     window.addEventListener("message", this.handleMessage.bind(this));
@@ -307,6 +311,13 @@ export class MessageService {
 
     this.listeners.get(type)?.push(callback);
 
+    // 👉 Se o listener é para RENDER_COMPONENT e já temos uma mensagem em buffer,
+    // entregue-a imediatamente (em microtask para não quebrar a ordem de montagem).
+    if (type === "RENDER_COMPONENT" && this.lastRenderMsg) {
+      const { code, componentData, componentId } = this.lastRenderMsg;
+      Promise.resolve().then(() => callback(code, componentData, componentId));
+    }
+
     // Retornar função para remover o listener
     return () => {
       const typeListeners = this.listeners.get(type);
@@ -375,6 +386,15 @@ export class MessageService {
     ) {
       this.handleAsyncResponseLegacy(message);
       return;
+    }
+
+    if (message.type === "RENDER_COMPONENT") {
+      // 👉 bufferiza a última payload
+      this.lastRenderMsg = {
+        code: message.code ?? null,
+        componentData: message.componentData,
+        componentId: message.componentId ?? null,
+      };
     }
 
     const callbacks = this.listeners.get(message.type);
