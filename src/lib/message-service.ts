@@ -39,6 +39,24 @@ interface PendingQuery {
   timeout: NodeJS.Timeout;
 }
 
+const isSafari = (() => {
+  const ua = navigator.userAgent || "";
+  // Safari “de verdade”: tem Safari, mas NÃO tem Chrome/Chromium/Edge/Opera/Brave
+  const isDesktopSafari =
+    /Safari/i.test(ua) && !/(Chrome|Chromium|Edg|OPR|Brave)/i.test(ua);
+
+  // Mobile Safari (iOS/iPadOS) — cobre iPad em modo “desktop”
+  const isMobileSafari =
+    /(iPhone|iPad|iPod)/i.test(ua) &&
+    /Safari/i.test(ua) &&
+    !/(CriOS|EdgiOS|FxiOS|OPiOS)/i.test(ua);
+
+  return isDesktopSafari || isMobileSafari;
+})();
+
+// Ative o replay só no Safari
+const ENABLE_RENDER_REPLAY_SAFARI = isSafari;
+
 export class MessageService {
   private static instance: MessageService;
   private listeners: Map<
@@ -54,6 +72,10 @@ export class MessageService {
   private pendingQueries: Map<string, PendingQuery> = new Map();
   private ready = false;
   private queryTimeoutMs = 480000; // 8 minutos de timeout para consultas
+
+  private lastRenderMsg:
+    | { code: string | null; componentData?: any | null; componentId?: string | null }
+    | null = null;
 
   private constructor() {
     // Configurar o listener de mensagens
@@ -307,6 +329,14 @@ export class MessageService {
 
     this.listeners.get(type)?.push(callback);
 
+    // Caso Safari
+    // 👉 Se o listener é para RENDER_COMPONENT e já temos uma mensagem em buffer,
+    // entregue-a imediatamente (em microtask para não quebrar a ordem de montagem).
+    if (ENABLE_RENDER_REPLAY_SAFARI && type === "RENDER_COMPONENT" && this.lastRenderMsg) {
+      const { code, componentData, componentId } = this.lastRenderMsg;
+      Promise.resolve().then(() => callback(code, componentData, componentId));
+    }
+
     // Retornar função para remover o listener
     return () => {
       const typeListeners = this.listeners.get(type);
@@ -375,6 +405,16 @@ export class MessageService {
     ) {
       this.handleAsyncResponseLegacy(message);
       return;
+    }
+
+    // 1) bufferizar somente no (Safari)
+    if (ENABLE_RENDER_REPLAY_SAFARI && message.type === "RENDER_COMPONENT") {
+      // 👉 bufferiza a última payload
+      this.lastRenderMsg = {
+        code: message.code ?? null,
+        componentData: message.componentData,
+        componentId: message.componentId ?? null,
+      };
     }
 
     const callbacks = this.listeners.get(message.type);
