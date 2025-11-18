@@ -329,9 +329,10 @@ export class MessageService {
 
     this.listeners.get(type)?.push(callback);
 
+    // Caso Safari
     // 👉 Se o listener é para RENDER_COMPONENT e já temos uma mensagem em buffer,
     // entregue-a imediatamente (em microtask para não quebrar a ordem de montagem).
-    if (ENABLE_RENDER_REPLAY_SAFARI &&type === "RENDER_COMPONENT" && this.lastRenderMsg) {
+    if (ENABLE_RENDER_REPLAY_SAFARI && type === "RENDER_COMPONENT" && this.lastRenderMsg) {
       const { code, componentData, componentId } = this.lastRenderMsg;
       Promise.resolve().then(() => callback(code, componentData, componentId));
     }
