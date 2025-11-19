@@ -41,9 +41,18 @@ interface PendingQuery {
 
 const isSafari = (() => {
   const ua = navigator.userAgent || "";
+
+  const isIOS = /(iPhone|iPad|iPod)/i.test(ua);
+
+  // Qualquer WebKit em iOS que não seja Chrome/Edge/Firefox/Opera
+  const isIOSWebKit =
+    isIOS && /AppleWebKit/i.test(ua) && !/(CriOS|FxiOS|OPiOS|EdgiOS)/i.test(ua);
+
   // Safari “de verdade”: tem Safari, mas NÃO tem Chrome/Chromium/Edge/Opera/Brave
   const isDesktopSafari =
-    /Safari/i.test(ua) && !/(Chrome|Chromium|Edg|OPR|Brave)/i.test(ua);
+    !isIOS &&
+    /Safari/i.test(ua) &&
+    !/(Chrome|Chromium|Edg|OPR|Brave)/i.test(ua);
 
   // Mobile Safari (iOS/iPadOS) — cobre iPad em modo “desktop”
   const isMobileSafari =
@@ -51,7 +60,7 @@ const isSafari = (() => {
     /Safari/i.test(ua) &&
     !/(CriOS|EdgiOS|FxiOS|OPiOS)/i.test(ua);
 
-  return isDesktopSafari || isMobileSafari;
+  return isDesktopSafari || isMobileSafari || isIOSWebKit;
 })();
 
 // Ative o replay só no Safari
@@ -73,22 +82,24 @@ export class MessageService {
   private ready = false;
   private queryTimeoutMs = 480000; // 8 minutos de timeout para consultas
 
-  private lastRenderMsg:
-    | { code: string | null; componentData?: any | null; componentId?: string | null }
-    | null = null;
+  private lastRenderMsg: {
+    code: string | null;
+    componentData?: any | null;
+    componentId?: string | null;
+  } | null = null;
 
   private constructor() {
     // Configurar o listener de mensagens
     window.addEventListener("message", this.handleMessage.bind(this));
     window.addEventListener("keydown", (event) => {
-        if (event.ctrlKey && event.key === "b") {
-          window.parent.postMessage(
-            JSON.stringify({
-              value: "tooglePreviewMode"
-            }),
-            "*"
-          );
-        }
+      if (event.ctrlKey && event.key === "b") {
+        window.parent.postMessage(
+          JSON.stringify({
+            value: "tooglePreviewMode",
+          }),
+          "*"
+        );
+      }
     });
 
     // Informar que está pronto para receber mensagens
@@ -332,7 +343,11 @@ export class MessageService {
     // Caso Safari
     // 👉 Se o listener é para RENDER_COMPONENT e já temos uma mensagem em buffer,
     // entregue-a imediatamente (em microtask para não quebrar a ordem de montagem).
-    if (ENABLE_RENDER_REPLAY_SAFARI && type === "RENDER_COMPONENT" && this.lastRenderMsg) {
+    if (
+      ENABLE_RENDER_REPLAY_SAFARI &&
+      type === "RENDER_COMPONENT" &&
+      this.lastRenderMsg
+    ) {
       const { code, componentData, componentId } = this.lastRenderMsg;
       Promise.resolve().then(() => callback(code, componentData, componentId));
     }
