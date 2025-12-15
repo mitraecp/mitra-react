@@ -183,6 +183,9 @@ import { ptBR } from 'date-fns/locale';
 // XLSX - Biblioteca para manipulação de planilhas Excel
 import * as XLSX from 'xlsx';
 
+// @tanstack/react-virtual - Biblioteca para virtualização de listas
+import { useVirtualizer, useWindowVirtualizer, Virtualizer } from '@tanstack/react-virtual';
+
 // --- Componentes pré-definidos (mantidos por simplicidade) ---
 import { Dashboard } from './Dashboard'; // Assumindo que você tem esse componente
 import { BarChartExample } from './BarChartExample';
@@ -347,6 +350,11 @@ const componentRegistry = {
 
   // XLSX - Biblioteca para manipulação de planilhas Excel
   XLSX, // Expõe todo o objeto XLSX
+
+  // @tanstack/react-virtual - Virtualização de listas
+  useVirtualizer, // Hook principal para virtualização
+  useWindowVirtualizer, // Hook para virtualização baseada na janela
+  Virtualizer, // Classe Virtualizer
 
   // Leaflet
   L, // Expõe o objeto L do Leaflet
