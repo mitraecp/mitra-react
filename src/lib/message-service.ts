@@ -385,7 +385,7 @@ export class MessageService {
       window.parent.postMessage(event.data, "*");
     }
 
-    if (event.data.typePostMessage === "DANIEL_VAGABUNDO_MESSAGE") {
+    if (event.data.typePostMessage === "IFRAME_POST_MESSAGE_HILBS") {
       window.parent.postMessage(event.data, "*");
       return;
     }
