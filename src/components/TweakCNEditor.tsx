@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import '../styles/tweakcn-globals.css';
 
 // Importar componentes do TweakCN
 // Nota: Alguns componentes podem precisar de ajustes para funcionar com Vite/React ao invés de Next.js

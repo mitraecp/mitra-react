@@ -1471,71 +1471,71 @@ const DynamicRenderer: React.FC = () => {
         'React', // React global
         `
           // Acesso aos dados do componente via variável global
-          const componentData = window.componentData || {};
+          var componentData = window.componentData || {};
 
           // Acesso a objetos globais de forma segura PRIMEIRO
-          const Date = window.Date || globalThis.Date;
-          const Array = window.Array || globalThis.Array;
-          const Object = window.Object || globalThis.Object;
-          const String = window.String || globalThis.String;
-          const Number = window.Number || globalThis.Number;
-          const Boolean = window.Boolean || globalThis.Boolean;
-          const RegExp = window.RegExp || globalThis.RegExp;
-          const Math = window.Math || globalThis.Math;
-          const JSON = window.JSON || globalThis.JSON;
-          const Map = window.Map || globalThis.Map;
-          const Set = window.Set || globalThis.Set;
-          const Promise = window.Promise || globalThis.Promise;
-          const setTimeout = window.setTimeout || globalThis.setTimeout;
-          const clearTimeout = window.clearTimeout || globalThis.clearTimeout;
-          const setInterval = window.setInterval || globalThis.setInterval;
-          const clearInterval = window.clearInterval || globalThis.clearInterval;
+          var Date = window.Date || globalThis.Date;
+          var Array = window.Array || globalThis.Array;
+          var Object = window.Object || globalThis.Object;
+          var String = window.String || globalThis.String;
+          var Number = window.Number || globalThis.Number;
+          var Boolean = window.Boolean || globalThis.Boolean;
+          var RegExp = window.RegExp || globalThis.RegExp;
+          var Math = window.Math || globalThis.Math;
+          var JSON = window.JSON || globalThis.JSON;
+          var Map = window.Map || globalThis.Map;
+          var Set = window.Set || globalThis.Set;
+          var Promise = window.Promise || globalThis.Promise;
+          var setTimeout = window.setTimeout || globalThis.setTimeout;
+          var clearTimeout = window.clearTimeout || globalThis.clearTimeout;
+          var setInterval = window.setInterval || globalThis.setInterval;
+          var clearInterval = window.clearInterval || globalThis.clearInterval;
 
           // Acesso aos utilitários
-          const cn = scope.cn;
-          const z = scope.z;
+          var cn = scope.cn;
+          var z = scope.z;
 
           // // Acesso ao objeto LucideReact
-          const LucideReact = scope.LucideReact;
+          var LucideReact = scope.LucideReact;
 
           // Acesso ao objeto TablerIcons
-          const TablerIcons = scope.TablerIcons;
+          var TablerIcons = scope.TablerIcons;
 
           // Acesso aos objetos React Icons
-          const ReactIcons = scope.ReactIcons;
-          const AiIcons = scope.AiIcons;
-          const BiIcons = scope.BiIcons;
-          const BsIcons = scope.BsIcons;
-          const CgIcons = scope.CgIcons;
-          const DiIcons = scope.DiIcons;
-          const FaIcons = scope.FaIcons;
-          const Fa6Icons = scope.Fa6Icons;
-          const FcIcons = scope.FcIcons;
-          const FiIcons = scope.FiIcons;
-          const GiIcons = scope.GiIcons;
-          const GoIcons = scope.GoIcons;
-          const GrIcons = scope.GrIcons;
-          const HiIcons = scope.HiIcons;
-          const Hi2Icons = scope.Hi2Icons;
-          const ImIcons = scope.ImIcons;
-          const IoIcons = scope.IoIcons;
-          const Io5Icons = scope.Io5Icons;
-          const LiaIcons = scope.LiaIcons;
-          const LuIcons = scope.LuIcons;
-          const MdIcons = scope.MdIcons;
-          const PiIcons = scope.PiIcons;
-          const RiIcons = scope.RiIcons;
-          const RxIcons = scope.RxIcons;
-          const SiIcons = scope.SiIcons;
-          const SlIcons = scope.SlIcons;
-          const TbIcons = scope.TbIcons;
-          const TfiIcons = scope.TfiIcons;
-          const TiIcons = scope.TiIcons;
-          const VscIcons = scope.VscIcons;
-          const WiIcons = scope.WiIcons;
+          var ReactIcons = scope.ReactIcons;
+          var AiIcons = scope.AiIcons;
+          var BiIcons = scope.BiIcons;
+          var BsIcons = scope.BsIcons;
+          var CgIcons = scope.CgIcons;
+          var DiIcons = scope.DiIcons;
+          var FaIcons = scope.FaIcons;
+          var Fa6Icons = scope.Fa6Icons;
+          var FcIcons = scope.FcIcons;
+          var FiIcons = scope.FiIcons;
+          var GiIcons = scope.GiIcons;
+          var GoIcons = scope.GoIcons;
+          var GrIcons = scope.GrIcons;
+          var HiIcons = scope.HiIcons;
+          var Hi2Icons = scope.Hi2Icons;
+          var ImIcons = scope.ImIcons;
+          var IoIcons = scope.IoIcons;
+          var Io5Icons = scope.Io5Icons;
+          var LiaIcons = scope.LiaIcons;
+          var LuIcons = scope.LuIcons;
+          var MdIcons = scope.MdIcons;
+          var PiIcons = scope.PiIcons;
+          var RiIcons = scope.RiIcons;
+          var RxIcons = scope.RxIcons;
+          var SiIcons = scope.SiIcons;
+          var SlIcons = scope.SlIcons;
+          var TbIcons = scope.TbIcons;
+          var TfiIcons = scope.TfiIcons;
+          var TiIcons = scope.TiIcons;
+          var VscIcons = scope.VscIcons;
+          var WiIcons = scope.WiIcons;
 
           // Acesso aos objetos date-fns (disponíveis via scope)
-          const dateFns = scope.dateFns;
+          var dateFns = scope.dateFns;
 
           // O código do usuário vem aqui. Ele deve definir 'ReactComponentMitra'.
           ${processedComponentCode}
@@ -1546,7 +1546,7 @@ const DynamicRenderer: React.FC = () => {
           }
 
           // Criar um componente que passa os componentes registrados como props
-          return (props) => {
+          return function(props) {
             return ReactComponentMitra({ ...props, components: scope });
           };
         `

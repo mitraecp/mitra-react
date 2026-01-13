@@ -9,6 +9,33 @@ import { messageService } from "@/lib/message-service";
 import "@/lib/window-types";
 // import { Loader2 } from "lucide-react";
 
+// Função para aplicar tema dinamicamente
+// Aceita variáveis CSS no formato OKLCH (TweakCN) ou qualquer outro formato
+function applyTheme(theme: any) {
+  console.log('🎨 Aplicando tema:', theme);
+  const root = document.documentElement;
+
+  // Se o tema for um objeto com propriedades, aplicar cada uma como variável CSS
+  if (theme && typeof theme === 'object') {
+    Object.keys(theme).forEach(key => {
+      const value = theme[key];
+
+      // Converter chaves para formato CSS variable (--nome-da-variavel)
+      // Aceita: "background", "card-foreground", "cardForeground", etc.
+      const cssVarName = key.startsWith('--')
+        ? key
+        : `--${key.replace(/_/g, '-').replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+
+      root.style.setProperty(cssVarName, value);
+      console.log(`  ${cssVarName}: ${value}`);
+    });
+
+    console.log('✅ Tema aplicado com sucesso!');
+  } else {
+    console.warn('⚠️ Tema inválido:', theme);
+  }
+}
+
 function DefaultView() {
   return (
     <div className='flex-grow flex flex-col items-center justify-center h-full text-muted-foreground gap-4'>
@@ -43,7 +70,7 @@ function IframeApp() {
       window.componentId = {};
 
       // Adicionar listener para mensagens RENDER_COMPONENT
-      messageService.addListener('RENDER_COMPONENT', (code, componentData, componentId) => {
+      messageService.addListener('RENDER_COMPONENT', (code, componentData, componentId, theme) => {
         // Atualizar a variável global componentData
         if (componentData) {
           window.componentData = componentData;
@@ -54,9 +81,23 @@ function IframeApp() {
           console.log('ID do componente recebido:', window.componentId);
         }
 
+        // Se recebeu um tema, aplicar as variáveis CSS
+        if (theme) {
+          console.log('Tema recebido:', theme);
+          applyTheme(theme);
+        }
+
         // Se o code for uma string, é código de componente
         if (typeof code === 'string') {
           console.log('Código de componente recebido');
+        }
+      });
+
+      // Adicionar listener para mensagens UPDATE_THEME (apenas atualiza o tema sem re-renderizar)
+      messageService.addListener('UPDATE_THEME', (theme) => {
+        if (theme) {
+          console.log('🎨 Atualizando tema (sem re-render):', theme);
+          applyTheme(theme);
         }
       });
     }

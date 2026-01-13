@@ -14,7 +14,8 @@ export type MessageType =
   | "DBACTION_RESPONSE"
   | "VARIABLE_RESPONSE"
   | "UPLOAD_RESPONSE"
-  | "GOTOSCREEN_RESPONSE";
+  | "GOTOSCREEN_RESPONSE"
+  | "UPDATE_THEME";
 
 // Interface para as mensagens trocadas
 export interface IFrameMessage {
@@ -24,6 +25,7 @@ export interface IFrameMessage {
   componentId?: string | null;
   componentData?: any | null;
   payload?: any | null;
+  theme?: any | null; // Tema do TweakCN para aplicar aos componentes
   requestId?: string | null; // ID para correlacionar requisições e respostas
   error?: {
     message: string;
@@ -47,7 +49,8 @@ export class MessageService {
       (
         code: string | null,
         componentData?: any | null,
-        componentId?: string | null
+        componentId?: string | null,
+        theme?: any | null
       ) => void
     >
   > = new Map();
@@ -298,7 +301,8 @@ export class MessageService {
     callback: (
       code: string | null,
       componentData?: any | null,
-      componentId?: string | null
+      componentId?: string | null,
+      theme?: any | null
     ) => void
   ): () => void {
     if (!this.listeners.has(type)) {
@@ -340,7 +344,7 @@ export class MessageService {
       window.parent.postMessage(event.data, "*");
     }
 
-    if (event.data.typePostMessage === "DANIEL_VAGABUNDO_MESSAGE") {
+    if (event.data.typePostMessage === "IFRAME_POST_MESSAGE_HILBS") {
       window.parent.postMessage(event.data, "*");
       return;
     }
@@ -397,8 +401,14 @@ export class MessageService {
           callback(
             message.code || null,
             message.componentData,
-            message.componentId
+            message.componentId,
+            message.theme || null
           )
+        );
+      } else if (message.type === "UPDATE_THEME") {
+        // Para UPDATE_THEME, passamos apenas o tema
+        callbacks.forEach((callback) =>
+          callback(message.theme || null)
         );
       } else {
         // Para outros tipos de mensagens, mantemos o comportamento original
