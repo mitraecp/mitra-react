@@ -63,9 +63,12 @@ function IframeApp() {
 
     // Enviar mensagem de que estamos prontos
     if (isInIframe) {
-      messageService.sendMessage('READY', null, null, { timestamp: Date.now()} as any);
+      const componentId =
+        new URLSearchParams(window.location.search)
+          .get('instance')
+          ?.match(/\d+/)?.[0] ?? null;
+      messageService.sendMessage('READY', null, null, componentId ? Number(componentId) : { timestamp: Date.now()} as any);
     }
-
 
   }, []);
 
