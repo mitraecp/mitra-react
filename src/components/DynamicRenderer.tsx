@@ -797,8 +797,13 @@ const componentRegistry = {
         AuthorizationToken = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YXluZXJAbWl0cmFsYWIuaW8iLCJYLVRlbmFudElEIjoidGVuYW50XzkxNDYifQ.AhFZFk9B2HeAzG47PXnUPJDluknZVX3UOtoGfz5A06IlQ7ln_G2LLuPQei3ijG6rshW5TDnZXs65di_bbgJobQ',
       } = params;
 
+      // Verificar se deve usar businessAiShortcut
+      // A flag vem do componentData passado pelo reactComponent.vue
+      const useBusinessAiShortcut = window.componentData?.useBusinessAiShortcut === true;
+      const endpoint = useBusinessAiShortcut ? '/businessAiShortcut/query' : '/iaShortcuts/query';
+
       // Make the API request
-      const response = await fetch(`${baseUrl}/iaShortcuts/query`, {
+      const response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json, text/plain, */*',
